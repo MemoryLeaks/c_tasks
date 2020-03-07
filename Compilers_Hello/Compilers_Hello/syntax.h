@@ -97,7 +97,8 @@ extern int yydebug;
     MY_DOT_DOUBLE = 307,
     MY_COMMA = 308,
     MY_SEMICOLON = 309,
-    MY_OTHER = 310
+    MY_OTHER = 310,
+    UNARY_MINUS = 311
   };
 #endif
 /* Tokens.  */
@@ -154,6 +155,7 @@ extern int yydebug;
 #define MY_COMMA 308
 #define MY_SEMICOLON 309
 #define MY_OTHER 310
+#define UNARY_MINUS 311
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -162,11 +164,11 @@ union YYSTYPE
 {
 #line 23 "syntax.y" /* yacc.c:1909  */
 
-		char *string;
-		int integer;
-		double real;
+		char *stringValue;
+		int integerValue;
+		double realValue;
 
-#line 170 "syntax.h" /* yacc.c:1909  */
+#line 172 "syntax.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

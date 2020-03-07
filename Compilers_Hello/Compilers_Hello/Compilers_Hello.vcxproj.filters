@@ -47,4 +47,9 @@
       <Filter>BisonFlex Files</Filter>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="syntax.output">
+      <Filter>Generated Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

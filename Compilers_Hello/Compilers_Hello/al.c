@@ -1001,7 +1001,7 @@ case 19:
 YY_RULE_SETUP
 #line 93 "al.l"
 { 
-					yylval.string = _strdup(yytext);
+					yylval.stringValue = _strdup(yytext);
 					return MY_ID;		
 				}
 	YY_BREAK
@@ -1020,7 +1020,7 @@ case 22:
 YY_RULE_SETUP
 #line 101 "al.l"
 {
-				yylval.integer = atoi(yytext);
+				yylval.integerValue = atoi(yytext);
 				return MY_INTEGER;    
 			}
 	YY_BREAK
@@ -1028,7 +1028,7 @@ case 23:
 YY_RULE_SETUP
 #line 106 "al.l"
 {
-				yylval.real = atof(yytext);
+				yylval.realValue = atof(yytext);
 				return MY_REAL;
 			}
 	YY_BREAK

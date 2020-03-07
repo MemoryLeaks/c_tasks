@@ -91,7 +91,7 @@ SEMICOLON		";"
 
 
 {identifier}	{ 
-					yylval.string = _strdup(yytext);
+					yylval.stringValue = _strdup(yytext);
 					return MY_ID;		
 				}
 
@@ -99,12 +99,12 @@ SEMICOLON		";"
 {blank}			{ }
 
 {integer}	{
-				yylval.integer = atoi(yytext);
+				yylval.integerValue = atoi(yytext);
 				return MY_INTEGER;    
 			}
 
 {real}	    {
-				yylval.real = atof(yytext);
+				yylval.realValue = atof(yytext);
 				return MY_REAL;
 			}
 

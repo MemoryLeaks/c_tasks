@@ -21,9 +21,9 @@
 
 %union
 {
-		char *string;
-		int integer;
-		double real;
+		char *stringValue;
+		int integerValue;
+		double realValue;
 }
 
 
@@ -88,7 +88,7 @@
 
 %token	MY_OTHER
 
-
+%expect 14 /* Einai to dangling IF kai ta OPERATORS*/
 
 
 /*---------- Priorities	-----------*/
@@ -105,7 +105,7 @@
 
 %left                   MY_MUL          MY_DIV          MY_MOD
 
-%right                  MY_NOT          MY_INC          MY_DEC
+%right                  MY_NOT          MY_INC          MY_DEC			UNARY_MINUS
 
 %left                   MY_DOT_SIMPLE   MY_DOT_DOUBLE
 
@@ -135,25 +135,28 @@ stmt		: expr MY_SEMICOLON		{ messageHandler("stmt", "expr;");	}
 		| MY_SEMICOLON			{ messageHandler("stmt", ";");	}
 		;
 
-expr	: assignexpr		{ messageHandler("expr", "assignexpr");		}
-				| expr MY_PLUS expr	{ messageHandler("expr", "expr + expr");	}
-				| expr MY_MINUS expr	{ messageHandler("expr", "expr - expr");	}
-				| expr MY_MUL expr	{ messageHandler("expr", "expr * expr");	}
-				| expr MY_DIV expr	{ messageHandler("expr", "expr / expr");	}
-				| expr MY_MOD expr	{ messageHandler("expr", "expr % expr");	}
-				| expr MY_G expr	{ messageHandler("expr", "expr > expr");	}
-				| expr MY_GE expr	{ messageHandler("expr", "expr >= expr");	}
-				| expr MY_L expr	{ messageHandler("expr", "expr < expr");	}
-				| expr MY_LE expr	{ messageHandler("expr", "expr <= expr");	}
-				| expr MY_EQUAL expr	{ messageHandler("expr", "expr == expr");	}
-				| expr MY_NEQUAL expr	{ messageHandler("expr", "expr != expr");	}
-				| expr MY_AND expr	{ messageHandler("expr", "expr AND expr");	}
-				| expr MY_OR expr	{ messageHandler("expr", "expr OR expr");	}
-		| term			{ messageHandler("expr", "term");		}
+expr	: assignexpr			{ messageHandler("expr", "assignexpr");		}
+		| expr operator expr	{ messageHandler("expr", "expr [operation] expr");	}
+		| term					{ messageHandler("expr", "term");			}
 		;
 
+operator	: MY_PLUS
+			| MY_MINUS
+			| MY_MUL
+			| MY_DIV
+			| MY_MOD
+			| MY_G
+			| MY_GE
+			| MY_L
+			| MY_LE
+			| MY_EQUAL
+			| MY_NEQUAL
+			| MY_AND
+			| MY_OR
+			;
+
 term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)"); }
-		| MY_MINUS expr				{ messageHandler("term", "-expr");	}
+		| MY_MINUS expr	%prec UNARY_MINUS		{ messageHandler("term", "-expr");	}
 		| MY_NOT expr				{ messageHandler("term", "not expr");	}
 		| MY_INC lvalue				{ messageHandler("term", "++yvalue");	}
 		| lvalue MY_INC				{ messageHandler("term", "lvalue++");	}
@@ -236,13 +239,13 @@ const		: MY_REAL	{ messageHandler("const", "real_value");	}
 		| MY_FALSE	{ messageHandler("const", "false");	}
 		;
 
-idlist		: MY_ID commalist	{ messageHandler("idlist", "identifier commalist");	}
+idlist		: MY_ID idwithcommas	{ messageHandler("idlist", "identifier idwithcommas");	}
 		| /*empty*/		{ messageHandler("idlist", "'e'");		}
 		;
 
-commalist	: MY_COMMA MY_ID commalist	{ messageHandler("commalist", ", identifier commalist");		}
-		| /*empty*/			{ messageHandler("commalist", "'e'");		}
-		;
+idwithcommas	: MY_COMMA MY_ID idwithcommas	{ messageHandler("idwithcommas", ", identifier idwithcommas");		}
+				| /*empty*/			{ messageHandler("idwithcommas", "'e'");		}
+				;
 
 ifstmt          : MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt		{ messageHandler("ifstmt", "if (expr) stmt");	}
 				| MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt MY_ELSE stmt { messageHandler("ifstmt", "if (expr) stmt else stmt");	}
