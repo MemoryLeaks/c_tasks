@@ -1,0 +1,4 @@
+^C:\USERS\DELL\SOURCE\REPOS\COMPILERS_HELLO\COMPILERS_HELLO\AL.L
+win_flex --wincompat -o al.c al.l
+^C:\USERS\DELL\SOURCE\REPOS\COMPILERS_HELLO\COMPILERS_HELLO\SYNTAX.Y
+win_bison --yacc --defines -o syntax.c syntax.y -v
