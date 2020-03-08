@@ -77,7 +77,11 @@
 	void messageHandler(const char *state1, const char *state2);
 
 
-#line 81 "syntax.c" /* yacc.c:339  */
+	unsigned int scope;
+	SymTable_T oSymTable;
+
+
+#line 85 "syntax.c" /* yacc.c:339  */
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -229,13 +233,13 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 23 "syntax.y" /* yacc.c:355  */
+#line 27 "syntax.y" /* yacc.c:355  */
 
 		char *stringValue;
 		int integerValue;
 		double realValue;
 
-#line 239 "syntax.c" /* yacc.c:355  */
+#line 243 "syntax.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -250,7 +254,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 254 "syntax.c" /* yacc.c:358  */
+#line 258 "syntax.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -534,15 +538,15 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   118,   118,   121,   122,   126,   127,   128,   129,   130,
-     131,   132,   133,   134,   135,   138,   139,   140,   143,   144,
-     145,   146,   147,   148,   149,   150,   151,   152,   153,   154,
-     155,   158,   159,   160,   161,   162,   163,   164,   165,   168,
-     171,   172,   173,   174,   175,   178,   179,   180,   181,   184,
-     185,   186,   187,   190,   191,   192,   195,   196,   199,   202,
-     205,   206,   209,   210,   213,   214,   217,   220,   221,   224,
-     227,   230,   231,   234,   235,   236,   237,   238,   239,   242,
-     243,   246,   247,   250,   251,   254,   257,   261,   262
+       0,   122,   122,   125,   126,   130,   131,   132,   133,   134,
+     135,   136,   137,   138,   139,   142,   143,   144,   147,   148,
+     149,   150,   151,   152,   153,   154,   155,   156,   157,   158,
+     159,   162,   163,   164,   165,   166,   167,   168,   169,   172,
+     175,   176,   177,   178,   179,   182,   183,   184,   185,   188,
+     189,   190,   191,   194,   195,   196,   199,   200,   203,   206,
+     209,   210,   213,   214,   217,   218,   221,   224,   225,   228,
+     231,   234,   235,   238,   239,   240,   241,   242,   243,   246,
+     247,   250,   251,   254,   255,   258,   261,   265,   266
 };
 #endif
 
@@ -1495,451 +1499,451 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 118 "syntax.y" /* yacc.c:1646  */
+#line 122 "syntax.y" /* yacc.c:1646  */
     { messageHandler("program", "statements");	}
-#line 1501 "syntax.c" /* yacc.c:1646  */
+#line 1505 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 121 "syntax.y" /* yacc.c:1646  */
+#line 125 "syntax.y" /* yacc.c:1646  */
     { messageHandler("statements", "stmt statements");	}
-#line 1507 "syntax.c" /* yacc.c:1646  */
+#line 1511 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 122 "syntax.y" /* yacc.c:1646  */
+#line 126 "syntax.y" /* yacc.c:1646  */
     { messageHandler("statements", "'e'");	}
-#line 1513 "syntax.c" /* yacc.c:1646  */
+#line 1517 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 126 "syntax.y" /* yacc.c:1646  */
+#line 130 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "expr;");	}
-#line 1519 "syntax.c" /* yacc.c:1646  */
+#line 1523 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 127 "syntax.y" /* yacc.c:1646  */
+#line 131 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "ifstmt");	}
-#line 1525 "syntax.c" /* yacc.c:1646  */
+#line 1529 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 128 "syntax.y" /* yacc.c:1646  */
+#line 132 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "whilestmt");	}
-#line 1531 "syntax.c" /* yacc.c:1646  */
+#line 1535 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 129 "syntax.y" /* yacc.c:1646  */
+#line 133 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "forstmt");	}
-#line 1537 "syntax.c" /* yacc.c:1646  */
+#line 1541 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 130 "syntax.y" /* yacc.c:1646  */
+#line 134 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "returnstmt");	}
-#line 1543 "syntax.c" /* yacc.c:1646  */
+#line 1547 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 131 "syntax.y" /* yacc.c:1646  */
+#line 135 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "break;");	}
-#line 1549 "syntax.c" /* yacc.c:1646  */
+#line 1553 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 132 "syntax.y" /* yacc.c:1646  */
+#line 136 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "continue;");	}
-#line 1555 "syntax.c" /* yacc.c:1646  */
+#line 1559 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 133 "syntax.y" /* yacc.c:1646  */
+#line 137 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "block");	}
-#line 1561 "syntax.c" /* yacc.c:1646  */
+#line 1565 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 134 "syntax.y" /* yacc.c:1646  */
+#line 138 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "funcdef");	}
-#line 1567 "syntax.c" /* yacc.c:1646  */
+#line 1571 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 135 "syntax.y" /* yacc.c:1646  */
+#line 139 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", ";");	}
-#line 1573 "syntax.c" /* yacc.c:1646  */
+#line 1577 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 138 "syntax.y" /* yacc.c:1646  */
+#line 142 "syntax.y" /* yacc.c:1646  */
     { messageHandler("expr", "assignexpr");		}
-#line 1579 "syntax.c" /* yacc.c:1646  */
+#line 1583 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 139 "syntax.y" /* yacc.c:1646  */
+#line 143 "syntax.y" /* yacc.c:1646  */
     { messageHandler("expr", "expr [operation] expr");	}
-#line 1585 "syntax.c" /* yacc.c:1646  */
+#line 1589 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 140 "syntax.y" /* yacc.c:1646  */
+#line 144 "syntax.y" /* yacc.c:1646  */
     { messageHandler("expr", "term");			}
-#line 1591 "syntax.c" /* yacc.c:1646  */
+#line 1595 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 158 "syntax.y" /* yacc.c:1646  */
+#line 162 "syntax.y" /* yacc.c:1646  */
     { messageHandler("term", "(expr)"); }
-#line 1597 "syntax.c" /* yacc.c:1646  */
+#line 1601 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 159 "syntax.y" /* yacc.c:1646  */
+#line 163 "syntax.y" /* yacc.c:1646  */
     { messageHandler("term", "-expr");	}
-#line 1603 "syntax.c" /* yacc.c:1646  */
+#line 1607 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 160 "syntax.y" /* yacc.c:1646  */
+#line 164 "syntax.y" /* yacc.c:1646  */
     { messageHandler("term", "not expr");	}
-#line 1609 "syntax.c" /* yacc.c:1646  */
+#line 1613 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 161 "syntax.y" /* yacc.c:1646  */
+#line 165 "syntax.y" /* yacc.c:1646  */
     { messageHandler("term", "++yvalue");	}
-#line 1615 "syntax.c" /* yacc.c:1646  */
+#line 1619 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 162 "syntax.y" /* yacc.c:1646  */
+#line 166 "syntax.y" /* yacc.c:1646  */
     { messageHandler("term", "lvalue++");	}
-#line 1621 "syntax.c" /* yacc.c:1646  */
+#line 1625 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 163 "syntax.y" /* yacc.c:1646  */
+#line 167 "syntax.y" /* yacc.c:1646  */
     { messageHandler("term", "--lvalue");	}
-#line 1627 "syntax.c" /* yacc.c:1646  */
+#line 1631 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 164 "syntax.y" /* yacc.c:1646  */
+#line 168 "syntax.y" /* yacc.c:1646  */
     { messageHandler("term", "lvalue++");	}
-#line 1633 "syntax.c" /* yacc.c:1646  */
+#line 1637 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 165 "syntax.y" /* yacc.c:1646  */
+#line 169 "syntax.y" /* yacc.c:1646  */
     { messageHandler("term", "primary");	}
-#line 1639 "syntax.c" /* yacc.c:1646  */
+#line 1643 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 168 "syntax.y" /* yacc.c:1646  */
+#line 172 "syntax.y" /* yacc.c:1646  */
     { messageHandler("assignexpr", "lvalue = expr");	}
-#line 1645 "syntax.c" /* yacc.c:1646  */
+#line 1649 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 171 "syntax.y" /* yacc.c:1646  */
+#line 175 "syntax.y" /* yacc.c:1646  */
     { messageHandler("primary", "lvalue");		}
-#line 1651 "syntax.c" /* yacc.c:1646  */
+#line 1655 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 172 "syntax.y" /* yacc.c:1646  */
+#line 176 "syntax.y" /* yacc.c:1646  */
     { messageHandler("primary", "call");		}
-#line 1657 "syntax.c" /* yacc.c:1646  */
+#line 1661 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 173 "syntax.y" /* yacc.c:1646  */
+#line 177 "syntax.y" /* yacc.c:1646  */
     { messageHandler("primary", "objectdef");	}
-#line 1663 "syntax.c" /* yacc.c:1646  */
+#line 1667 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 174 "syntax.y" /* yacc.c:1646  */
+#line 178 "syntax.y" /* yacc.c:1646  */
     { messageHandler("primary", "(funcdef)");	}
-#line 1669 "syntax.c" /* yacc.c:1646  */
+#line 1673 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 175 "syntax.y" /* yacc.c:1646  */
+#line 179 "syntax.y" /* yacc.c:1646  */
     { messageHandler("primary", "const");		}
-#line 1675 "syntax.c" /* yacc.c:1646  */
+#line 1679 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 178 "syntax.y" /* yacc.c:1646  */
+#line 182 "syntax.y" /* yacc.c:1646  */
     { messageHandler("lvalue", "identifier"); }
-#line 1681 "syntax.c" /* yacc.c:1646  */
+#line 1685 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 179 "syntax.y" /* yacc.c:1646  */
+#line 183 "syntax.y" /* yacc.c:1646  */
     { messageHandler("lvalue", "local_identifier"); }
-#line 1687 "syntax.c" /* yacc.c:1646  */
+#line 1691 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 180 "syntax.y" /* yacc.c:1646  */
+#line 184 "syntax.y" /* yacc.c:1646  */
     { messageHandler("lvalue", ":: identifier");}
-#line 1693 "syntax.c" /* yacc.c:1646  */
+#line 1697 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 181 "syntax.y" /* yacc.c:1646  */
+#line 185 "syntax.y" /* yacc.c:1646  */
     { messageHandler("lvalue", "member");		}
-#line 1699 "syntax.c" /* yacc.c:1646  */
+#line 1703 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 184 "syntax.y" /* yacc.c:1646  */
+#line 188 "syntax.y" /* yacc.c:1646  */
     { messageHandler("member", "lvalue.identifier");}
-#line 1705 "syntax.c" /* yacc.c:1646  */
+#line 1709 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 185 "syntax.y" /* yacc.c:1646  */
+#line 189 "syntax.y" /* yacc.c:1646  */
     { messageHandler("member", "lvalue[expr]");	}
-#line 1711 "syntax.c" /* yacc.c:1646  */
+#line 1715 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 186 "syntax.y" /* yacc.c:1646  */
+#line 190 "syntax.y" /* yacc.c:1646  */
     { messageHandler("member", "call.identifier");	}
-#line 1717 "syntax.c" /* yacc.c:1646  */
+#line 1721 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 187 "syntax.y" /* yacc.c:1646  */
+#line 191 "syntax.y" /* yacc.c:1646  */
     { messageHandler("member", "[expr]");		}
-#line 1723 "syntax.c" /* yacc.c:1646  */
+#line 1727 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 190 "syntax.y" /* yacc.c:1646  */
+#line 194 "syntax.y" /* yacc.c:1646  */
     { messageHandler("call", "call(elist)");	}
-#line 1729 "syntax.c" /* yacc.c:1646  */
+#line 1733 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 191 "syntax.y" /* yacc.c:1646  */
+#line 195 "syntax.y" /* yacc.c:1646  */
     { messageHandler("call", "lvalue callsuffix");	}
-#line 1735 "syntax.c" /* yacc.c:1646  */
+#line 1739 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 192 "syntax.y" /* yacc.c:1646  */
+#line 196 "syntax.y" /* yacc.c:1646  */
     { messageHandler("call", "(funcdef)(elist)");	}
-#line 1741 "syntax.c" /* yacc.c:1646  */
+#line 1745 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 195 "syntax.y" /* yacc.c:1646  */
+#line 199 "syntax.y" /* yacc.c:1646  */
     { messageHandler("callsuffix", "normcall");	}
-#line 1747 "syntax.c" /* yacc.c:1646  */
+#line 1751 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 196 "syntax.y" /* yacc.c:1646  */
+#line 200 "syntax.y" /* yacc.c:1646  */
     { messageHandler("callsuffix", "methodcall");	}
-#line 1753 "syntax.c" /* yacc.c:1646  */
+#line 1757 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 199 "syntax.y" /* yacc.c:1646  */
+#line 203 "syntax.y" /* yacc.c:1646  */
     { messageHandler("normcall", "(elist)");	}
-#line 1759 "syntax.c" /* yacc.c:1646  */
+#line 1763 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 202 "syntax.y" /* yacc.c:1646  */
+#line 206 "syntax.y" /* yacc.c:1646  */
     { messageHandler("methodcall", "..identifier(elist)");	}
-#line 1765 "syntax.c" /* yacc.c:1646  */
+#line 1769 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 205 "syntax.y" /* yacc.c:1646  */
+#line 209 "syntax.y" /* yacc.c:1646  */
     { messageHandler("elist", "expr comma-expressions");		}
-#line 1771 "syntax.c" /* yacc.c:1646  */
+#line 1775 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 206 "syntax.y" /* yacc.c:1646  */
+#line 210 "syntax.y" /* yacc.c:1646  */
     { messageHandler("elist", "'e'");		}
-#line 1777 "syntax.c" /* yacc.c:1646  */
+#line 1781 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 209 "syntax.y" /* yacc.c:1646  */
+#line 213 "syntax.y" /* yacc.c:1646  */
     { messageHandler("comma-expressions", ", expr comma-expressions");	}
-#line 1783 "syntax.c" /* yacc.c:1646  */
+#line 1787 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 210 "syntax.y" /* yacc.c:1646  */
+#line 214 "syntax.y" /* yacc.c:1646  */
     { messageHandler("comma-expressions", "'e'");	}
-#line 1789 "syntax.c" /* yacc.c:1646  */
+#line 1793 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 213 "syntax.y" /* yacc.c:1646  */
+#line 217 "syntax.y" /* yacc.c:1646  */
     { messageHandler("objectdef", "[elist]");	}
-#line 1795 "syntax.c" /* yacc.c:1646  */
+#line 1799 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 214 "syntax.y" /* yacc.c:1646  */
+#line 218 "syntax.y" /* yacc.c:1646  */
     { messageHandler("objectdef", "[indexed]");	}
-#line 1801 "syntax.c" /* yacc.c:1646  */
+#line 1805 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 217 "syntax.y" /* yacc.c:1646  */
+#line 221 "syntax.y" /* yacc.c:1646  */
     { messageHandler("indexed", "indexedelem commaindex");		}
-#line 1807 "syntax.c" /* yacc.c:1646  */
+#line 1811 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 220 "syntax.y" /* yacc.c:1646  */
+#line 224 "syntax.y" /* yacc.c:1646  */
     { messageHandler("commaindex", ", indexedelem commaindex");		}
-#line 1813 "syntax.c" /* yacc.c:1646  */
+#line 1817 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 221 "syntax.y" /* yacc.c:1646  */
+#line 225 "syntax.y" /* yacc.c:1646  */
     { messageHandler("commaindex", "'e'");		}
-#line 1819 "syntax.c" /* yacc.c:1646  */
+#line 1823 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 224 "syntax.y" /* yacc.c:1646  */
+#line 228 "syntax.y" /* yacc.c:1646  */
     { messageHandler("indexedelem", "{expr:expr}");		}
-#line 1825 "syntax.c" /* yacc.c:1646  */
+#line 1829 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 227 "syntax.y" /* yacc.c:1646  */
+#line 231 "syntax.y" /* yacc.c:1646  */
     { messageHandler("block", "{stmts}"); }
-#line 1831 "syntax.c" /* yacc.c:1646  */
+#line 1835 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 230 "syntax.y" /* yacc.c:1646  */
+#line 234 "syntax.y" /* yacc.c:1646  */
     { messageHandler("funcdef", "function (idlist) block"); }
-#line 1837 "syntax.c" /* yacc.c:1646  */
+#line 1841 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 231 "syntax.y" /* yacc.c:1646  */
+#line 235 "syntax.y" /* yacc.c:1646  */
     { messageHandler("funcdef", "function identifier (idlist) block");}
-#line 1843 "syntax.c" /* yacc.c:1646  */
+#line 1847 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 234 "syntax.y" /* yacc.c:1646  */
+#line 238 "syntax.y" /* yacc.c:1646  */
     { messageHandler("const", "real_value");	}
-#line 1849 "syntax.c" /* yacc.c:1646  */
+#line 1853 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 235 "syntax.y" /* yacc.c:1646  */
+#line 239 "syntax.y" /* yacc.c:1646  */
     { messageHandler("const", "integer_value");	}
-#line 1855 "syntax.c" /* yacc.c:1646  */
+#line 1859 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 236 "syntax.y" /* yacc.c:1646  */
+#line 240 "syntax.y" /* yacc.c:1646  */
     { messageHandler("const", "string");	}
-#line 1861 "syntax.c" /* yacc.c:1646  */
+#line 1865 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 237 "syntax.y" /* yacc.c:1646  */
+#line 241 "syntax.y" /* yacc.c:1646  */
     { messageHandler("const", "nil");	}
-#line 1867 "syntax.c" /* yacc.c:1646  */
+#line 1871 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 238 "syntax.y" /* yacc.c:1646  */
+#line 242 "syntax.y" /* yacc.c:1646  */
     { messageHandler("const", "true");	}
-#line 1873 "syntax.c" /* yacc.c:1646  */
+#line 1877 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 239 "syntax.y" /* yacc.c:1646  */
+#line 243 "syntax.y" /* yacc.c:1646  */
     { messageHandler("const", "false");	}
-#line 1879 "syntax.c" /* yacc.c:1646  */
+#line 1883 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 242 "syntax.y" /* yacc.c:1646  */
+#line 246 "syntax.y" /* yacc.c:1646  */
     { messageHandler("idlist", "identifier idwithcommas");	}
-#line 1885 "syntax.c" /* yacc.c:1646  */
+#line 1889 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 243 "syntax.y" /* yacc.c:1646  */
+#line 247 "syntax.y" /* yacc.c:1646  */
     { messageHandler("idlist", "'e'");		}
-#line 1891 "syntax.c" /* yacc.c:1646  */
+#line 1895 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 246 "syntax.y" /* yacc.c:1646  */
+#line 250 "syntax.y" /* yacc.c:1646  */
     { messageHandler("idwithcommas", ", identifier idwithcommas");		}
-#line 1897 "syntax.c" /* yacc.c:1646  */
+#line 1901 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 247 "syntax.y" /* yacc.c:1646  */
+#line 251 "syntax.y" /* yacc.c:1646  */
     { messageHandler("idwithcommas", "'e'");		}
-#line 1903 "syntax.c" /* yacc.c:1646  */
+#line 1907 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 250 "syntax.y" /* yacc.c:1646  */
+#line 254 "syntax.y" /* yacc.c:1646  */
     { messageHandler("ifstmt", "if (expr) stmt");	}
-#line 1909 "syntax.c" /* yacc.c:1646  */
+#line 1913 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 251 "syntax.y" /* yacc.c:1646  */
+#line 255 "syntax.y" /* yacc.c:1646  */
     { messageHandler("ifstmt", "if (expr) stmt else stmt");	}
-#line 1915 "syntax.c" /* yacc.c:1646  */
+#line 1919 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 254 "syntax.y" /* yacc.c:1646  */
+#line 258 "syntax.y" /* yacc.c:1646  */
     { messageHandler("whilestmt", "while (exrpr) stmt");	}
-#line 1921 "syntax.c" /* yacc.c:1646  */
+#line 1925 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 258 "syntax.y" /* yacc.c:1646  */
+#line 262 "syntax.y" /* yacc.c:1646  */
     { messageHandler("forstmt", "for (elist expr; expr; elist) stmt");	}
-#line 1927 "syntax.c" /* yacc.c:1646  */
+#line 1931 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 261 "syntax.y" /* yacc.c:1646  */
+#line 265 "syntax.y" /* yacc.c:1646  */
     { messageHandler("returnstmt", "return;");		}
-#line 1933 "syntax.c" /* yacc.c:1646  */
+#line 1937 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 262 "syntax.y" /* yacc.c:1646  */
+#line 266 "syntax.y" /* yacc.c:1646  */
     { messageHandler("returnstmt", "return expr;");		}
-#line 1939 "syntax.c" /* yacc.c:1646  */
+#line 1943 "syntax.c" /* yacc.c:1646  */
     break;
 
 
-#line 1943 "syntax.c" /* yacc.c:1646  */
+#line 1947 "syntax.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2167,7 +2171,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 264 "syntax.y" /* yacc.c:1906  */
+#line 268 "syntax.y" /* yacc.c:1906  */
 
 
 int yyerror (char *yaccProvidedMessage)
@@ -2195,6 +2199,8 @@ void messageHandler(const char *state1, const char *state2) {
 
 int main(int argc, char** argv) {
 
+	oSymTable = SymTable_new();
+
 	if (argc > 1) {
 		if (!(yyin = fopen(argv[1], "r"))) {
 			fprintf(stderr, "Cannot read file!\n");
@@ -2205,5 +2211,7 @@ int main(int argc, char** argv) {
 
 	yyout = stdout;
 	yyparse();
+	Print(oSymTable);
+	printScopeLists();
 	return 0;
 }

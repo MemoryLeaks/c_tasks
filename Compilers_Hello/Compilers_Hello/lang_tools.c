@@ -1,5 +1,7 @@
 #include "lang_tools.h"
 
+
+
 void print_alpha_tokens(void){
 	
 	if (token_tail == NULL) return;
@@ -10,7 +12,6 @@ void print_alpha_tokens(void){
 		printf("%d:\t #%d\t |%s|\t |%s|\n", traverser->line, traverser->position, traverser->value, traverser->type);
 	}
 }
-
 
 int alpha_token_insert(unsigned int line, const char* value, const char *type){
 
@@ -45,3 +46,246 @@ int alpha_token_insert(unsigned int line, const char* value, const char *type){
 	return 1;
 }
 
+
+static unsigned int SymTable_hash(const char* pcKey)
+{
+	size_t ui;
+	unsigned int uiHash = 0U;
+	for (ui = 0U; pcKey[ui] != '\0'; ui++)
+		uiHash = uiHash * HASH_MULTIPLIER + pcKey[ui];
+	return uiHash%SIZE;
+}
+
+SymTable_T SymTable_new()
+{
+	int i;
+	SymTable_T t = malloc(sizeof(struct SymTable));
+	t->size = 0;
+
+	/*initializing the array*/
+	for (i = 0; i < SIZE; t->BUCKETS[i] = NULL, i++);
+
+	/* Initializing the first Library functions */
+	SymTable_put(t, "print", 4, 0, 0, 1);
+	SymTable_put(t, "input", 4, 0, 0, 1);
+	SymTable_put(t, "objectmemberkeys", 4, 0, 0, 1);
+	SymTable_put(t, "objecttotalmembers", 4, 0, 0, 1);
+	SymTable_put(t, "objectcopy", 4, 0, 0, 1);
+	SymTable_put(t, "totalarguments", 4, 0, 0, 1);
+	SymTable_put(t, "argument", 4, 0, 0, 1);
+	SymTable_put(t, "typeof", 4, 0, 0, 1);
+	SymTable_put(t, "strtonum", 4, 0, 0, 1);
+	SymTable_put(t, "sqrt", 4, 0, 0, 1);
+	SymTable_put(t, "cos", 4, 0, 0, 1);
+	SymTable_put(t, "sin", 4, 0, 0, 1);
+	return t;
+}
+
+void SymTable_free(SymTable_T oSymTable)
+{
+	int i;
+	assert(oSymTable);
+	for (i = 0; i < SIZE; i++)
+	{
+		if (oSymTable->BUCKETS[i] != NULL)
+			free(oSymTable->BUCKETS[i]);
+	}
+	free(oSymTable);
+}
+
+unsigned int SymTable_getLength(SymTable_T oSymTable)
+{
+	assert(oSymTable);
+	return oSymTable->size;
+}
+
+int SymTable_contains(SymTable_T oSymTable, const char* pcKey)
+{
+	assert(oSymTable);
+	assert(SymTable_hash(pcKey) <= 509);
+
+	/*epistrefei TRUE an den eiani null, FALSE aneinai adio*/
+	return oSymTable->BUCKETS[SymTable_hash(pcKey)] != NULL;
+
+}
+
+int SymTable_put(SymTable_T oSymTable, const char* name, int type, int scope, int lineno, int active)
+{
+	SymbolTableEntry* p;
+	assert(oSymTable);
+	printf("Inserting %s with hash %d.\n",name,  SymTable_hash(name));
+	assert(SymTable_hash(name) <= 509);
+
+	/*H krisimi synthiki, se ligo tha ginei lookup */
+	//if (SymTable_contains(oSymTable, name) == TRUE) {
+	//	return FALSE;
+	//}
+
+	p = malloc(sizeof(SymbolTableEntry));
+	p->next = NULL;
+	
+	/*Function Creation Case*/
+	if (type > 2) {
+		Function* fun = malloc(sizeof(Function));
+		fun->name = name;
+		fun->scope = scope;
+		fun->line = lineno;
+
+		p->varVal = NULL;
+		p->isActive = active;
+		p->type = type;
+		p->funcVal = fun;
+	}
+	/*Variable Creation Case*/
+	else {
+		Variable* var = malloc(sizeof(Variable));
+		var->name = name;
+		var->scope = scope;
+		var->line = lineno;
+
+		p->funcVal = NULL;
+		p->isActive = active;
+		p->type = type;
+		p->varVal = var;
+	}
+
+	
+	if (oSymTable->BUCKETS[SymTable_hash(name)] == NULL)
+		oSymTable->BUCKETS[SymTable_hash(name)] = p;
+	else {
+		p->next = oSymTable->BUCKETS[SymTable_hash(name)];
+		oSymTable->BUCKETS[SymTable_hash(name)] = p;
+
+	}
+
+	scopeListAdd(p);
+	oSymTable->size++;
+	return TRUE;
+
+}
+
+int SymTable_remove(SymTable_T oSymTable, const char* pcKey)
+{
+	assert(oSymTable);
+	assert(SymTable_hash(pcKey) <= 509);
+
+	/*an den yparxei feugoume*/
+	if (SymTable_contains(oSymTable, pcKey) == FALSE)
+		return FALSE;
+
+	/*diagrafi tou stoixeiou*/
+	/*
+	oSymTable->BUCKETS[SymTable_hash(pcKey)]->key = NULL;
+	oSymTable->BUCKETS[SymTable_hash(pcKey)]->value = NULL;
+	*/
+	free(oSymTable->BUCKETS[SymTable_hash(pcKey)]);
+	oSymTable->BUCKETS[SymTable_hash(pcKey)] = NULL;
+	oSymTable->size--;
+
+	return TRUE;
+}
+
+void* SymTable_get(SymTable_T oSymTable, const char* pcKey)
+{
+	assert(oSymTable);
+	assert(SymTable_hash(pcKey) <= 509);
+
+	if (oSymTable->BUCKETS[SymTable_hash(pcKey)] != NULL)
+		return NULL;
+
+	/*an den yparxei epistrefoume 0*/
+	return (void*)FALSE;
+}
+
+
+void Print(SymTable_T oSymTable)
+{
+
+	assert(oSymTable);
+	unsigned int i = 0;
+	printf("Symbol Table contains the following %d symbols:\n", oSymTable->size);
+	for (i = 0; i < SIZE; i++) {
+		SymbolTableEntry* tmp = oSymTable->BUCKETS[i];
+		while (tmp != NULL) {
+			/*Variable Case*/
+			if (tmp->funcVal == NULL) {
+				printf("Symbol [Name: %s],\t[Type:%s],\t[Line: %d],\t[Scope: %d],\t[Active: %d].\n",
+					tmp->varVal->name, getSymbolType(tmp->type), tmp->varVal->line, tmp->varVal->scope, tmp->isActive);
+			}
+			/*Function Case*/
+			else {
+				printf("Symbol [Name: %s],\t[Type:%s],\t[Line: %d],\t[Scope: %d],\t[Active: %d].\n",
+					tmp->funcVal->name, getSymbolType(tmp->type), tmp->funcVal->line, tmp->funcVal->scope, tmp->isActive);
+			}
+
+			tmp = tmp->next;
+		}
+	}
+
+	printf("\n");
+}
+
+
+/* ---------------------------- SCOPE LIST AND ARGUMENTS KOLPA ----------------------------------------------- */
+
+void scopeListAdd(SymbolTableEntry *symbolon) {
+	int i;
+	/* Periptwsh synarthshs */
+	if (symbolon->varVal == NULL)
+		i = symbolon->funcVal->scope;
+	else 
+		i = symbolon->varVal->scope;
+
+	ScopeList *cell = malloc(sizeof(ScopeList));
+	cell->symbol = symbolon;
+	cell->next = NULL;
+
+	if (scopeHead[i] == NULL) {
+		scopeHead[i] = cell;
+	}
+	else {
+		cell->next = scopeHead[i];
+		scopeHead[i] = cell;
+	}
+
+}
+
+void printScopeLists() {
+	ScopeList* traverser;
+	int i;
+	printf("Printing the Scope Lists:\n");
+	for (i = 0; i < 72; i++) {
+		traverser = scopeHead[i];
+		printf("Scope List [%d]:\t", i);
+		while (traverser != NULL) {
+			if (traverser->symbol->varVal == NULL)
+				printf("Variable: [name= %s], [line number= %d], [scope= %d]\t",
+					traverser->symbol->funcVal->name, traverser->symbol->funcVal->line, traverser->symbol->funcVal->scope);
+			else if (traverser->symbol->funcVal == NULL)
+				printf("Function: [name= %s], [line number= %d], [scope= %d]\t",
+					traverser->symbol->varVal->name, traverser->symbol->varVal->line, traverser->symbol->varVal->scope);
+			traverser = traverser->next;
+
+		}
+		printf("\n");
+	}
+	printf("\n");
+}
+
+
+
+/*-------------------------------------------------------------------------------------------------------------*/
+
+char* getSymbolType(int x) {
+	if (x == 0)
+		return "GLOBAL";
+	else if (x == 1)
+		return "LOCAL";
+	else if (x == 2)
+		return "FORMAL";
+	else if (x == 3)
+		return "USERFUNC";
+	else
+		return "LIBFUNC";
+
+}

@@ -11,6 +11,10 @@
 	int yylex (void);
 	void messageHandler(const char *state1, const char *state2);
 
+
+	unsigned int scope;
+	SymTable_T oSymTable;
+
 %}
 
 
@@ -288,6 +292,8 @@ void messageHandler(const char *state1, const char *state2) {
 
 int main(int argc, char** argv) {
 
+	oSymTable = SymTable_new();
+
 	if (argc > 1) {
 		if (!(yyin = fopen(argv[1], "r"))) {
 			fprintf(stderr, "Cannot read file!\n");
@@ -298,5 +304,7 @@ int main(int argc, char** argv) {
 
 	yyout = stdout;
 	yyparse();
+	Print(oSymTable);
+	printScopeLists();
 	return 0;
 }
