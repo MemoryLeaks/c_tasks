@@ -79,7 +79,8 @@ typedef struct scopeList {
 ScopeList* scopeHead[72];
 void scopeListAdd(SymbolTableEntry* symbolon);
 void printScopeLists();
-
+void hide(int scope);
+int scope_lookup(char *symbol, int scope);
 
 SymTable_T SymTable_new(void);
 void SymTable_free(SymTable_T oSymTable);
@@ -87,10 +88,7 @@ unsigned int SymTable_getLength(SymTable_T oSymTable);
 
 /*Edw to type pairnei 0, 1, 2, 3, 4, kai tha ginei cast entos tou implementation*/
 int SymTable_put(SymTable_T oSymTable, const char* name, int type, int scope, int lineno, int active);
-
-int SymTable_remove(SymTable_T oSymTable, const char* pcKey);
-int SymTable_contains(SymTable_T oSymTable, const char* pcKey);
-void* SymTable_get(SymTable_T oSymTable, const char* pcKey);
+SymbolTableEntry* SymTable_get(SymTable_T oSymTable, const char* name);
 void Print(SymTable_T oSymTable);
 
 /* Helpers */

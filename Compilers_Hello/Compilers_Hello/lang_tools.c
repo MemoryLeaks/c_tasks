@@ -99,15 +99,6 @@ unsigned int SymTable_getLength(SymTable_T oSymTable)
 	return oSymTable->size;
 }
 
-int SymTable_contains(SymTable_T oSymTable, const char* pcKey)
-{
-	assert(oSymTable);
-	assert(SymTable_hash(pcKey) <= 509);
-
-	/*epistrefei TRUE an den eiani null, FALSE aneinai adio*/
-	return oSymTable->BUCKETS[SymTable_hash(pcKey)] != NULL;
-
-}
 
 int SymTable_put(SymTable_T oSymTable, const char* name, int type, int scope, int lineno, int active)
 {
@@ -127,7 +118,7 @@ int SymTable_put(SymTable_T oSymTable, const char* name, int type, int scope, in
 	/*Function Creation Case*/
 	if (type > 2) {
 		Function* fun = malloc(sizeof(Function));
-		fun->name = name;
+		fun->name = _strdup(name);
 		fun->scope = scope;
 		fun->line = lineno;
 
@@ -139,7 +130,7 @@ int SymTable_put(SymTable_T oSymTable, const char* name, int type, int scope, in
 	/*Variable Creation Case*/
 	else {
 		Variable* var = malloc(sizeof(Variable));
-		var->name = name;
+		var->name = _strdup(name);
 		var->scope = scope;
 		var->line = lineno;
 
@@ -164,39 +155,25 @@ int SymTable_put(SymTable_T oSymTable, const char* name, int type, int scope, in
 
 }
 
-int SymTable_remove(SymTable_T oSymTable, const char* pcKey)
-{
-	assert(oSymTable);
-	assert(SymTable_hash(pcKey) <= 509);
+SymbolTableEntry* SymTable_get(SymTable_T oSymTable, const char* name) {
+	int i = SymTable_hash(name);
+	int type = 0;
+	SymbolTableEntry * tmp = oSymTable->BUCKETS[i];
+	while (tmp != NULL) {
+		/*Variable Case*/
+		if (tmp->funcVal == NULL && strcmp(tmp->varVal->name, name) ==0) {
+			return tmp;
+		}
+		/*Function Case*/
+		else if (tmp->varVal == NULL && strcmp(tmp->funcVal->name, name) == 0) {
+			return tmp;
+		}
 
-	/*an den yparxei feugoume*/
-	if (SymTable_contains(oSymTable, pcKey) == FALSE)
-		return FALSE;
+		tmp = tmp->next;
+	}
 
-	/*diagrafi tou stoixeiou*/
-	/*
-	oSymTable->BUCKETS[SymTable_hash(pcKey)]->key = NULL;
-	oSymTable->BUCKETS[SymTable_hash(pcKey)]->value = NULL;
-	*/
-	free(oSymTable->BUCKETS[SymTable_hash(pcKey)]);
-	oSymTable->BUCKETS[SymTable_hash(pcKey)] = NULL;
-	oSymTable->size--;
-
-	return TRUE;
+	return NULL;
 }
-
-void* SymTable_get(SymTable_T oSymTable, const char* pcKey)
-{
-	assert(oSymTable);
-	assert(SymTable_hash(pcKey) <= 509);
-
-	if (oSymTable->BUCKETS[SymTable_hash(pcKey)] != NULL)
-		return NULL;
-
-	/*an den yparxei epistrefoume 0*/
-	return (void*)FALSE;
-}
-
 
 void Print(SymTable_T oSymTable)
 {
@@ -259,10 +236,10 @@ void printScopeLists() {
 		printf("Scope List [%d]:\t", i);
 		while (traverser != NULL) {
 			if (traverser->symbol->varVal == NULL)
-				printf("Variable: [name= %s], [line number= %d], [scope= %d]\t",
+				printf("Function: [name= %s], [line number= %d], [scope= %d]\t",
 					traverser->symbol->funcVal->name, traverser->symbol->funcVal->line, traverser->symbol->funcVal->scope);
 			else if (traverser->symbol->funcVal == NULL)
-				printf("Function: [name= %s], [line number= %d], [scope= %d]\t",
+				printf("Variable: [name= %s], [line number= %d], [scope= %d]\t",
 					traverser->symbol->varVal->name, traverser->symbol->varVal->line, traverser->symbol->varVal->scope);
 			traverser = traverser->next;
 
@@ -272,7 +249,36 @@ void printScopeLists() {
 	printf("\n");
 }
 
+void hide(int scope) {
+	ScopeList* traverser = scopeHead[scope];
+	while (traverser != NULL) {
+		traverser->symbol->isActive = 0;
+		traverser = traverser->next;
+	}
+	return;
+}
 
+
+int scope_lookup(char *symbol, int scope) {
+	ScopeList* traverser = scopeHead[scope];
+	while (traverser != NULL) {
+		if (traverser->symbol->isActive == 1) {
+			if (traverser->symbol->varVal == NULL && (strcmp(traverser->symbol->funcVal->name, symbol) == 0)) {
+				/*Same token found in this scope*/
+				printf("Brethike idio name synartisis!\n");
+				return TRUE;
+			}
+			else if (traverser->symbol->funcVal == NULL && (strcmp(traverser->symbol->varVal->name, symbol) == 0)) {
+				/*Same token found in this scope*/
+				printf("Brethike idio name metablitis!\n");
+				return TRUE;
+			}
+		}
+		traverser = traverser->next;
+	}
+	/*If not found in this scope we return FALSE, so you can add a new symbol in symbol table*/
+	return FALSE;
+}
 
 /*-------------------------------------------------------------------------------------------------------------*/
 
