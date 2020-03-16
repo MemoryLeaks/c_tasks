@@ -169,36 +169,38 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)"); }
 		| primary				{ messageHandler("term", "primary");	}
 		;
 
-assignexpr	: lvalue MY_ASSIGN expr { messageHandler("assignexpr", "lvalue = expr");	}
+assignexpr	: lvalue {
+						printf("Checking if [%s] is a library function or function\n", yylval.stringValue);
+						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+						if (symbol && symbol->type == 3)
+							printf("Error in line %d: You cannot use a user defined function in assignment expresion.\n", yylineno);
+						else if (symbol && symbol->type == 4)
+							printf("Error in line %d: You cannot use a library function in assignment expresion.\n", yylineno);
+
+					 } MY_ASSIGN expr { messageHandler("assignexpr", "lvalue = expr");	}
 			;
 
-primary		: lvalue		{ messageHandler("primary", "lvalue");		}
+primary		: lvalue		{  messageHandler("primary", "lvalue");	}
 		| call			{ messageHandler("primary", "call");		}
 		| objectdef		{ messageHandler("primary", "objectdef");	}
 		| MY_OPEN_PAR funcdef MY_CLOSE_PAR	{ messageHandler("primary", "(funcdef)");	}
 		| const					{ messageHandler("primary", "const");		}
 		;
 
-lvalue		: MY_ID	{	messageHandler("lvalue", "identifier");
-
+lvalue		: MY_ID	{	
 						/*Mpainei mesa otan eimaste global scope kai den yparxei hdh*/
-						if (scope_lookup(yytext, scope) == 0 && scope == 0) {
-							SymTable_put(oSymTable, yytext, 0, scope, yylineno, 1);
+						if (scope_lookup(yylval.stringValue, scope) == 0 && scope == 0) {
+							SymTable_put(oSymTable, yylval.stringValue, 0, scope, yylineno, 1);
 						}
 						/*Error gia local scopes. An den yparxei mesa. Akoma kai na yparxei san global thelei ::*/
-						else if (scope_lookup(yytext, scope) == 0 && scope > 0)
-							printf("Error in line %d: Symbol '%s' not found in local scope %d.\n", yylineno, yytext, scope);
-
-						printf("Searching [%s]\n", yytext);
-						SymbolTableEntry* symbol = SymTable_get(oSymTable, yytext);
-						if (symbol && symbol->type == 3)
-							printf("Error in line %d: You cannot use a user defined function in assignment expresion.\n", yylineno);
-						else if (symbol && symbol->type == 4)
-							printf("Error in line %d: You cannot use a library function in assignment expresion.\n", yylineno);
-
-						/*Den mpainei mesa se opoiodhpote scope. Prepei na paei apo LOCAL san Local*/
+						else if (scope_lookup(yylval.stringValue, scope) == 0 && scope > 0)
+							printf("Error in line %d: Symbol '%s' not found in local scope %d.\n", yylineno, yylval.stringValue, scope);
+						messageHandler("lvalue", "identifier"); 
 					}
-		| MY_LOCAL MY_ID	{ messageHandler("lvalue", "local_identifier"); }
+		| MY_LOCAL MY_ID	{ 
+								
+								messageHandler("lvalue", "local_identifier"); 
+							}
 		| MY_DOT_STREAM MY_ID	{ messageHandler("lvalue", ":: identifier");}
 		| member		{ messageHandler("lvalue", "member");		}
 		;
