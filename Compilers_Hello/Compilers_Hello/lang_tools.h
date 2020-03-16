@@ -81,6 +81,7 @@ void scopeListAdd(SymbolTableEntry* symbolon);
 void printScopeLists();
 void hide(int scope);
 int scope_lookup(char *symbol, int scope);
+int catholic_lookup(char* symbol);
 
 SymTable_T SymTable_new(void);
 void SymTable_free(SymTable_T oSymTable);

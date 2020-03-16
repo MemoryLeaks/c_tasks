@@ -280,6 +280,31 @@ int scope_lookup(char *symbol, int scope) {
 	return FALSE;
 }
 
+/*[EPISTREFEI SCOPE] Synarthsh h opoia psaxnei se OLA ta scopes. */
+int catholic_lookup(char* symbol) {
+	int scope = 0;
+	for (scope = 0; scope < 72; scope++) {
+		ScopeList* traverser = scopeHead[scope];
+		while (traverser != NULL) {
+			if (traverser->symbol->isActive == 1) {
+				if (traverser->symbol->varVal == NULL && (strcmp(traverser->symbol->funcVal->name, symbol) == 0)) {
+					/*Same token found in this scope*/
+					printf("Catholic: Brethike idio name synartisis!\n");
+					return scope;
+				}
+				else if (traverser->symbol->funcVal == NULL && (strcmp(traverser->symbol->varVal->name, symbol) == 0)) {
+					/*Same token found in this scope*/
+					printf("Catholic: Brethike idio name metablitis!\n");
+					return scope;
+				}
+			}
+			traverser = traverser->next;
+		}
+	}
+
+	return -1; /*To -1 shmainei den brethike*/
+}
+
 /*-------------------------------------------------------------------------------------------------------------*/
 
 char* getSymbolType(int x) {

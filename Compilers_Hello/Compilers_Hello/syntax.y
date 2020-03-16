@@ -12,7 +12,10 @@
 	void messageHandler(const char *state1, const char *state2);
 
 	int function_flag = 0;
-	unsigned int scope;
+	char funcName[8];
+	int function_counter = 0;
+
+	int scope;
 	SymTable_T oSymTable;
 
 %}
@@ -192,16 +195,46 @@ lvalue		: MY_ID	{
 						if (scope_lookup(yylval.stringValue, scope) == 0 && scope == 0) {
 							SymTable_put(oSymTable, yylval.stringValue, 0, scope, yylineno, 1);
 						}
-						/*Error gia local scopes. An den yparxei mesa. Akoma kai na yparxei san global thelei ::*/
-						else if (scope_lookup(yylval.stringValue, scope) == 0 && scope > 0)
-							printf("Error in line %d: Symbol '%s' not found in local scope %d.\n", yylineno, yylval.stringValue, scope);
+
+						/*Periptwsh gia scope 1. Edw AN DEN yparxei topika h san GLOBAL mpainei san LOCAL*/
+						if (scope_lookup(yylval.stringValue, scope) == 0 && scope_lookup(yylval.stringValue, scope - 1) == 0 && scope == 1) {
+							SymTable_put(oSymTable, yylval.stringValue, 1, scope, yylineno, 1);
+						}
+
+						/* SE OLES TIS ALLES PERIPTWSEIS MAS NOIAZEI NA FAEI ERROR AMA YPHRXE SE PROHGOYMENO ANOIXTO SCOPE */
+						if (scope > 1) {
+							int check = catholic_lookup(yylval.stringValue);
+
+							/* ERROR: giati yparxei se prohgoymena LOCAL SCOPES */
+							if (check > 0 && check < scope) {
+								printf("Error: Can't be accessed! Current scope: %d. Same active local symbol %s found in scope %d.\n",scope, yylval.stringValue, check);
+							}
+
+							SymTable_put(oSymTable, yylval.stringValue, 1, scope, yylineno, 1);
+						}
+
 						messageHandler("lvalue", "identifier"); 
 					}
 		| MY_LOCAL MY_ID	{ 
-								
+								/* Periptwsh pou briskomaste sto Global Scope */
+								if (scope_lookup(yylval.stringValue, scope) == 0 && scope == 0) {
+									SymTable_put(oSymTable, yylval.stringValue, 0, scope, yylineno, 1);
+								} else if (scope_lookup(yylval.stringValue, scope) == 0 && scope != 0) {
+									SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+									if (symbol && symbol->type == 4)
+										printf("Error in line %d: You cannot use a library function name as a local variable.\n", yylineno);
+									else
+										SymTable_put(oSymTable, yylval.stringValue, 1, scope, yylineno, 1);
+								}
+
 								messageHandler("lvalue", "local_identifier"); 
 							}
-		| MY_DOT_STREAM MY_ID	{ messageHandler("lvalue", ":: identifier");}
+		| MY_DOT_STREAM MY_ID	{
+									if (scope_lookup(yylval.stringValue, 0) == 0) {
+										printf("Error in line %d: Not found global symbol with name [%s].\n", yylineno, yylval.stringValue);
+									}
+									messageHandler("lvalue", ":: identifier");
+								}
 		| member		{ messageHandler("lvalue", "member");		}
 		;
 
@@ -255,8 +288,32 @@ block		: MY_OPEN_ANG {++scope;} stmts MY_CLOSE_ANG
 			}
 		;
 
-funcdef		: MY_FUNCTION MY_OPEN_PAR idlist MY_CLOSE_PAR block   { messageHandler("funcdef", "function (idlist) block"); }
-		| MY_FUNCTION MY_ID MY_OPEN_PAR idlist MY_CLOSE_PAR block { messageHandler("funcdef", "function identifier (idlist) block");}
+funcdef		: MY_FUNCTION {
+								/* Dhmiourgeia anonymous function */
+								char tmp[3];
+								memset(tmp, '\0', 3);
+								memset(funcName, '\0', 8);
+								strcpy(funcName, "@fnc");
+								sprintf(tmp, "%d", function_counter++);
+								strcat(funcName, tmp);
+								printf("Undefined function create [%s]\n", funcName);
+								SymTable_put(oSymTable, funcName, 3, scope, yylineno, 1);
+						  } 
+			  MY_OPEN_PAR idlist MY_CLOSE_PAR block   { messageHandler("funcdef", "function (idlist) block"); }
+		| MY_FUNCTION MY_ID {
+								/* Kanoume tous antistoixous elegxous gia errors kai edw */
+								printf("Checking if FUNCTION [%s] is allowed.\n", yylval.stringValue);
+								SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+
+								if (scope_lookup(yylval.stringValue, scope) == 1)
+									printf("Error in line %d: Redefinition of function symbol [%s].\n", yylineno, yylval.stringValue);
+								else if (symbol && symbol->type == 4)
+									printf("Error in line %d: User and Library Function name collision [%s].\n", yylineno, yylval.stringValue);
+								else
+									SymTable_put(oSymTable, yylval.stringValue, 3, scope, yylineno, 1);								
+
+							}
+		  MY_OPEN_PAR idlist MY_CLOSE_PAR block { messageHandler("funcdef", "function identifier (idlist) block");}
 		;
 
 const		: MY_REAL	{ messageHandler("const", "real_value");	}
