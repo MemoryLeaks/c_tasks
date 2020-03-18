@@ -165,10 +165,36 @@ operator	: MY_PLUS
 term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)"); }
 		| MY_MINUS expr	%prec UNARY_MINUS		{ messageHandler("term", "-expr");	}
 		| MY_NOT expr				{ messageHandler("term", "not expr");	}
-		| MY_INC lvalue				{ messageHandler("term", "++yvalue");	}
-		| lvalue MY_INC				{ messageHandler("term", "lvalue++");	}
-		| MY_DEC lvalue				{ messageHandler("term", "--lvalue");	}
-		| lvalue MY_DEC				{ messageHandler("term", "lvalue++");	}
+		| MY_INC lvalue				{
+										SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+										if (symbol && symbol->type == 3)
+											printf("Error in line %d: You cannot increase left a user defined function (%s).\n", yylineno, yylval.stringValue);
+										else if (symbol && symbol->type == 4)
+											printf("Error in line %d: You cannot increase left a library function (%s).\n", yylineno, yylval.stringValue);
+										messageHandler("term", "++yvalue");	
+									}
+		| lvalue {
+						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+						if (symbol && symbol->type == 3)
+							printf("Error in line %d: You cannot increase right a user defined function (%s).\n", yylineno, yylval.stringValue);
+						else if (symbol && symbol->type == 4)
+							printf("Error in line %d: You cannot increase right a library function (%s).\n", yylineno, yylval.stringValue);
+				 } MY_INC				{ messageHandler("term", "lvalue++");	}
+		| MY_DEC lvalue				{ 
+										SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+										if (symbol && symbol->type == 3)
+											printf("Error in line %d: You cannot decrease left a user defined function (%s).\n", yylineno, yylval.stringValue);
+										else if (symbol && symbol->type == 4)
+											printf("Error in line %d: You cannot decrease left a library function (%s).\n", yylineno, yylval.stringValue);
+										messageHandler("term", "--lvalue");	
+									}
+		| lvalue {
+						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+						if (symbol && symbol->type == 3)
+							printf("Error in line %d: You cannot decrease right a user defined function (%s).\n", yylineno, yylval.stringValue);
+						else if (symbol && symbol->type == 4)
+							printf("Error in line %d: You cannot decrease right a library function (%s).\n", yylineno, yylval.stringValue);
+				 } MY_DEC				{ messageHandler("term", "lvalue++");	}
 		| primary				{ messageHandler("term", "primary");	}
 		;
 
@@ -206,11 +232,12 @@ lvalue		: MY_ID	{
 							int check = catholic_lookup(yylval.stringValue);
 
 							/* ERROR: giati yparxei se prohgoymena LOCAL SCOPES */
-							if (check > 0 && check < scope) {
+							if (check > 0 && check < scope && function_flag) {
 								printf("Error: Can't be accessed! Current scope: %d. Same active local symbol %s found in scope %d.\n",scope, yylval.stringValue, check);
 							}
 
-							SymTable_put(oSymTable, yylval.stringValue, 1, scope, yylineno, 1);
+							if (check == -1)	/* Dhladh ama den yparxei pouthena */
+								SymTable_put(oSymTable, yylval.stringValue, 1, scope, yylineno, 1);
 						}
 
 						messageHandler("lvalue", "identifier"); 
@@ -298,8 +325,9 @@ funcdef		: MY_FUNCTION {
 								strcat(funcName, tmp);
 								printf("Undefined function create [%s]\n", funcName);
 								SymTable_put(oSymTable, funcName, 3, scope, yylineno, 1);
+								function_flag = 1;		/* Exoume na kanoume me block mias synartisis*/
 						  } 
-			  MY_OPEN_PAR idlist MY_CLOSE_PAR block   { messageHandler("funcdef", "function (idlist) block"); }
+			  MY_OPEN_PAR idlist MY_CLOSE_PAR block   { messageHandler("funcdef", "function (idlist) block"); function_flag = 0;}
 		| MY_FUNCTION MY_ID {
 								/* Kanoume tous antistoixous elegxous gia errors kai edw */
 								printf("Checking if FUNCTION [%s] is allowed.\n", yylval.stringValue);
@@ -310,10 +338,12 @@ funcdef		: MY_FUNCTION {
 								else if (symbol && symbol->type == 4)
 									printf("Error in line %d: User and Library Function name collision [%s].\n", yylineno, yylval.stringValue);
 								else
-									SymTable_put(oSymTable, yylval.stringValue, 3, scope, yylineno, 1);								
+									SymTable_put(oSymTable, yylval.stringValue, 3, scope, yylineno, 1);			
+								
+								function_flag = 1;
 
 							}
-		  MY_OPEN_PAR idlist MY_CLOSE_PAR block { messageHandler("funcdef", "function identifier (idlist) block");}
+		  MY_OPEN_PAR idlist MY_CLOSE_PAR block { messageHandler("funcdef", "function identifier (idlist) block"); function_flag = 0;}
 		;
 
 const		: MY_REAL	{ messageHandler("const", "real_value");	}
@@ -324,11 +354,32 @@ const		: MY_REAL	{ messageHandler("const", "real_value");	}
 		| MY_FALSE	{ messageHandler("const", "false");	}
 		;
 
-idlist		: MY_ID idwithcommas	{ messageHandler("idlist", "identifier idwithcommas");	}
+idlist		: MY_ID {
+						/* Theloume na anevasoume to scope apo twra. Giati tha anhkoun sto body ths synarthshs */
+						/* To prwto mpainei panta ektos ama einai library */
+						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+						if (symbol && symbol->type == 4) {
+							printf("Error in line %d: Formal Argument name collision with Library function [%s].\n", yylineno, yylval.stringValue);
+						} else {
+							SymTable_put(oSymTable, yylval.stringValue, 2, scope + 1, yylineno, 1);
+						}
+					} 
+			  idwithcommas	{ messageHandler("idlist", "identifier idwithcommas");	}
 		| /*empty*/		{ messageHandler("idlist", "'e'");		}
 		;
 
-idwithcommas	: MY_COMMA MY_ID idwithcommas	{ messageHandler("idwithcommas", ", identifier idwithcommas");		}
+idwithcommas	: MY_COMMA MY_ID {
+									/* To idio kai edw alla tsekaroume kai gia idio name sto scope */
+									SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+									if (symbol && symbol->type == 4) {
+										printf("Error in line %d: Formal Argument name collision with Library function [%s].\n", yylineno, yylval.stringValue);
+									} else if (scope_lookup(yylval.stringValue, scope + 1) == 1) {
+										printf("Error in line %d: Formal Argument redefinition [%s].\n", yylineno, yylval.stringValue);
+									} else {
+										SymTable_put(oSymTable, yylval.stringValue, 2, scope + 1, yylineno, 1);
+									}
+								 } 
+				  idwithcommas	{ messageHandler("idwithcommas", ", identifier idwithcommas");		}
 				| /*empty*/			{ messageHandler("idwithcommas", "'e'");		}
 				;
 
