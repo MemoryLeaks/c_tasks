@@ -2395,7 +2395,7 @@ int main(int argc, char** argv) {
 
 	yyout = stdout;
 	yyparse();
-	Print(oSymTable);
+
 	printScopeLists();
 	return 0;
 }

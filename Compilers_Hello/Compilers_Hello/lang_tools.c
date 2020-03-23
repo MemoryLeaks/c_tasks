@@ -233,18 +233,20 @@ void printScopeLists() {
 	printf("Printing the Scope Lists:\n");
 	for (i = 0; i < 72; i++) {
 		traverser = scopeHead[i];
-		printf("Scope List [%d]:\t", i);
+		if (traverser)
+			printf("\nScope List # [%d]:\n", i);
+
 		while (traverser != NULL) {
 			if (traverser->symbol->varVal == NULL)
-				printf("Function: [name= %s], [line number= %d], [scope= %d]\t",
+				printf("Function: [name= %s], [line number= %d], [scope= %d], ",
 					traverser->symbol->funcVal->name, traverser->symbol->funcVal->line, traverser->symbol->funcVal->scope);
 			else if (traverser->symbol->funcVal == NULL)
-				printf("Variable: [name= %s], [line number= %d], [scope= %d]\t",
+				printf("Variable: [name= %s], [line number= %d], [scope= %d], ",
 					traverser->symbol->varVal->name, traverser->symbol->varVal->line, traverser->symbol->varVal->scope);
+			printf("[Special Type= %s], [Activeness: %d].\n", getSymbolType(traverser->symbol->type), traverser->symbol->isActive);
 			traverser = traverser->next;
 
 		}
-		printf("\n");
 	}
 	printf("\n");
 }
