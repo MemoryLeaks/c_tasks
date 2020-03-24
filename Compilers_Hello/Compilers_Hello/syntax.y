@@ -199,7 +199,7 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)"); }
 		;
 
 assignexpr	: lvalue {
-						printf("Checking if [%s] is a library function or function\n", yylval.stringValue);
+						/* printf("Checking if [%s] is a library function or function\n", yylval.stringValue); */
 						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
 						if (symbol && symbol->type == 3)
 							printf("Error in line %d: You cannot use a user defined function in assignment expresion.\n", yylineno);
@@ -308,10 +308,18 @@ commaindex	: MY_COMMA indexedelem commaindex	{ messageHandler("commaindex", ", i
 indexedelem	: MY_OPEN_ANG expr MY_DOT_UD expr MY_CLOSE_ANG		{ messageHandler("indexedelem", "{expr:expr}");		}
 		;
 
-block		: MY_OPEN_ANG {++scope;} stmts MY_CLOSE_ANG 
+block		: MY_OPEN_ANG {++scope; if (function_flag == 1) function_flag = 0;} stmts MY_CLOSE_ANG 
 			{
 				hide(scope--); 
 				messageHandler("block", "{stmts}"); 
+			}
+		;
+
+funblock	: MY_OPEN_ANG {++scope; function_flag = 1;} stmts MY_CLOSE_ANG 
+			{
+				hide(scope--); 
+				function_flag = 0;
+				messageHandler("funblock", "{stmts}"); 
 			}
 		;
 
@@ -323,14 +331,14 @@ funcdef		: MY_FUNCTION {
 								strcpy(funcName, "@fnc");
 								sprintf(tmp, "%d", function_counter++);
 								strcat(funcName, tmp);
-								printf("Undefined function create [%s]\n", funcName);
+								/* printf("Undefined function create [%s]\n", funcName); */
 								SymTable_put(oSymTable, funcName, 3, scope, yylineno, 1);
-								function_flag = 1;		/* Exoume na kanoume me block mias synartisis*/
+
 						  } 
-			  MY_OPEN_PAR idlist MY_CLOSE_PAR block   { messageHandler("funcdef", "function (idlist) block"); function_flag = 0;}
+			  MY_OPEN_PAR idlist MY_CLOSE_PAR funblock   { messageHandler("funcdef", "function (idlist) funblock");}
 		| MY_FUNCTION MY_ID {
 								/* Kanoume tous antistoixous elegxous gia errors kai edw */
-								printf("Checking if FUNCTION [%s] is allowed.\n", yylval.stringValue);
+								/* printf("Checking if FUNCTION [%s] is allowed.\n", yylval.stringValue); */
 								SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
 
 								if (scope_lookup(yylval.stringValue, scope) == 1)
@@ -339,11 +347,10 @@ funcdef		: MY_FUNCTION {
 									printf("Error in line %d: User and Library Function name collision [%s].\n", yylineno, yylval.stringValue);
 								else
 									SymTable_put(oSymTable, yylval.stringValue, 3, scope, yylineno, 1);			
-								
-								function_flag = 1;
+
 
 							}
-		  MY_OPEN_PAR idlist MY_CLOSE_PAR block { messageHandler("funcdef", "function identifier (idlist) block"); function_flag = 0;}
+		  MY_OPEN_PAR idlist MY_CLOSE_PAR funblock { messageHandler("funcdef", "function identifier (idlist) funblock");}
 		;
 
 const		: MY_REAL	{ messageHandler("const", "real_value");	}

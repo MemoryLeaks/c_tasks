@@ -104,7 +104,7 @@ int SymTable_put(SymTable_T oSymTable, const char* name, int type, int scope, in
 {
 	SymbolTableEntry* p;
 	assert(oSymTable);
-	printf("Inserting %s with hash %d.\n",name,  SymTable_hash(name));
+	/* printf("Inserting %s with hash %d.\n",name,  SymTable_hash(name)); */
 	assert(SymTable_hash(name) <= 509);
 
 	/*H krisimi synthiki, se ligo tha ginei lookup */
@@ -267,12 +267,12 @@ int scope_lookup(char *symbol, int scope) {
 		if (traverser->symbol->isActive == 1) {
 			if (traverser->symbol->varVal == NULL && (strcmp(traverser->symbol->funcVal->name, symbol) == 0)) {
 				/*Same token found in this scope*/
-				printf("Brethike idio name synartisis!\n");
+				/* printf("Brethike idio name synartisis!\n"); */
 				return TRUE;
 			}
 			else if (traverser->symbol->funcVal == NULL && (strcmp(traverser->symbol->varVal->name, symbol) == 0)) {
 				/*Same token found in this scope*/
-				printf("Brethike idio name metablitis!\n");
+				/* printf("Brethike idio name metablitis!\n"); */
 				return TRUE;
 			}
 		}
@@ -291,12 +291,12 @@ int catholic_lookup(char* symbol) {
 			if (traverser->symbol->isActive == 1) {
 				if (traverser->symbol->varVal == NULL && (strcmp(traverser->symbol->funcVal->name, symbol) == 0)) {
 					/*Same token found in this scope*/
-					printf("Catholic: Brethike idio name synartisis!\n");
+					/* printf("Catholic: Brethike idio name synartisis!\n"); */
 					return scope;
 				}
 				else if (traverser->symbol->funcVal == NULL && (strcmp(traverser->symbol->varVal->name, symbol) == 0)) {
 					/*Same token found in this scope*/
-					printf("Catholic: Brethike idio name metablitis!\n");
+					/* printf("Catholic: Brethike idio name metablitis!\n"); */
 					return scope;
 				}
 			}
