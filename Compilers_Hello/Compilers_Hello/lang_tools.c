@@ -307,6 +307,26 @@ int catholic_lookup(char* symbol) {
 	return -1; /*To -1 shmainei den brethike*/
 }
 
+
+/*Epistrefei ena SYMBOLO se sygkekrimeni SCOPE LIST */
+SymbolTableEntry* ScopeListGetSymbolAt(char* symbol, int scope) {
+	ScopeList* traverser = scopeHead[scope];
+	while (traverser != NULL) {
+		if (traverser->symbol->isActive == 1) {
+			if (traverser->symbol->varVal == NULL && (strcmp(traverser->symbol->funcVal->name, symbol) == 0))
+			{
+				return traverser->symbol;
+			}
+			else if (traverser->symbol->funcVal == NULL && (strcmp(traverser->symbol->varVal->name, symbol) == 0)) {
+				return traverser->symbol;
+			}
+		}
+		traverser = traverser->next;
+	}
+
+	return NULL;
+}
+
 /*-------------------------------------------------------------------------------------------------------------*/
 
 char* getSymbolType(int x) {

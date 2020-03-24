@@ -232,8 +232,8 @@ lvalue		: MY_ID	{
 							int check = catholic_lookup(yylval.stringValue);
 
 							/* ERROR: giati yparxei se prohgoymena LOCAL SCOPES */
-							if (check > 0 && check < scope && function_flag) {
-								printf("Error: Can't be accessed! Current scope: %d. Same active local symbol %s found in scope %d.\n",scope, yylval.stringValue, check);
+							if (check > 0 && check < scope && function_flag && (ScopeListGetSymbolAt(yylval.stringValue, check)->type < 3)) {
+								printf("Error: Can't be accessed! Current scope: %d. Same active local variable symbol %s found in scope %d.\n",scope, yylval.stringValue, check);
 							}
 
 							if (check == -1)	/* Dhladh ama den yparxei pouthena */
@@ -424,7 +424,7 @@ void messageHandler(const char *state1, const char *state2) {
 	strcat(buffer, state2);
 	strcat(buffer,"\n");
 	fprintf(yyout, buffer, 1024);
-	*/
+*/
 }
 
 
