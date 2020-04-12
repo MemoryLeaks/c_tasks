@@ -6,6 +6,34 @@
 	extern char *yytext;
 	extern FILE *yyin;
 	extern FILE *yyout;
+
+	SymTable_T oSymTable;
+	int scope;
+
+	tesseract* quads = (tesseract*) 0;
+	unsigned total = 0;
+	unsigned int currQuad = 0;
+
+	char currentTemp[8];
+	int temp_counter = 0;
+
+	void tempIncreaseAndUse(){
+		memset(currentTemp, '\0', 8);
+		strcpy(currentTemp, "_t");
+
+		char tmp[3];
+		memset(tmp, '\0', 3);
+		sprintf(tmp, "%d", temp_counter++);
+
+		strcat(currentTemp, tmp);
+
+		if (scope == 0 && SymTable_get(oSymTable, currentTemp) == NULL)
+			SymTable_put(oSymTable, currentTemp, 0, scope, yylineno, 1);
+		else if (scope >= 1 && SymTable_get(oSymTable, currentTemp) == NULL)
+			SymTable_put(oSymTable, currentTemp, 1, scope, yylineno, 1);
+	}
+
+	int syntax_error = 0;
 	
 	int yyerror (char* yaccProvideMessage);
 	int yylex (void);
@@ -15,8 +43,6 @@
 	char funcName[8];
 	int function_counter = 0;
 
-	int scope;
-	SymTable_T oSymTable;
 
 %}
 
@@ -31,12 +57,23 @@
 		char *stringValue;
 		int integerValue;
 		double realValue;
+		expression *expressionValue;
 }
+
+%token  <integerValue> MY_INTEGER
+%token  <realValue> MY_REAL
+%token <stringValue> MY_STRING
+
+%type <expressionValue> expr
+%type <expressionValue> assignexpr
+%type <expressionValue> term
+%type <expressionValue> lvalue
+%type <expressionValue> const
+%type <expressionValue> primary
 
 
 %token MY_MULTILINE_COMMENTS
 %token MY_SIMPLE_COMMENTS
-%token  <string> MY_STRING
 
 %token  MY_IF
 %token	MY_ELSE
@@ -62,8 +99,6 @@
 %token  MY_ID
 %token  MY_BLANK
 %token  MY_NL
-%token  MY_INTEGER
-%token  MY_REAL
 
 %token  MY_ASSIGN
 %token  MY_EQUAL
@@ -95,7 +130,7 @@
 
 %token	MY_OTHER
 
-%expect 14 /* Einai to dangling IF kai ta OPERATORS*/
+%expect 1/* Einai to dangling IF kai ta OPERATORS*/
 
 
 /*---------- Priorities	-----------*/
@@ -125,7 +160,7 @@
 program		: stmts	{ messageHandler("program", "statements");	}
 		;
 
-stmts	: stmt stmts	{ messageHandler("statements", "stmt statements");	}
+stmts	: stmt { temp_counter = 0; } stmts	{ messageHandler("statements", "stmt statements");	}
 		| /*empty*/		{ messageHandler("statements", "'e'");	}
 		;
 
@@ -143,24 +178,49 @@ stmt		: expr MY_SEMICOLON		{ messageHandler("stmt", "expr;");	}
 		;
 
 expr	: assignexpr 		{ messageHandler("expr", "assignexpr");		}
-		| expr operator expr	{ messageHandler("expr", "expr [operation] expr");	}
+		| expr MY_PLUS expr	{ 
+								messageHandler("expr", "expr + expr");
+								tempIncreaseAndUse();
+								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
+								emit(1, $1, $3, $$);
+
+							}
+		| expr MY_MINUS expr	{ 
+									messageHandler("expr", "expr - expr");
+									tempIncreaseAndUse();
+									$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
+									emit(2, $1, $3, $$);
+								}
+		| expr MY_MUL expr	{ 
+								messageHandler("expr", "expr * expr"); 
+								tempIncreaseAndUse();
+								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
+								emit(3, $1, $3, $$);
+							}
+		| expr MY_DIV expr	{
+								messageHandler("expr", "expr * expr"); 
+								tempIncreaseAndUse();
+								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
+								emit(4, $1, $3, $$);
+								messageHandler("expr", "expr / expr");
+							}
+		| expr MY_MOD expr	{ 
+								messageHandler("expr", "expr % expr");
+								tempIncreaseAndUse();
+								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
+								emit(5, $1, $3, $$);
+								messageHandler("expr", "expr / expr");
+							}
+		| expr MY_G expr	{ messageHandler("expr", "expr > expr"); }
+		| expr MY_GE expr	{ messageHandler("expr", "expr >= expr"); }
+		| expr MY_L expr	{ messageHandler("expr", "expr < expr"); }
+		| expr MY_LE expr	{ messageHandler("expr", "expr <= expr"); }
+		| expr MY_EQUAL expr	{ messageHandler("expr", "expr == expr"); }
+		| expr MY_NEQUAL expr	{ messageHandler("expr", "expr != expr"); }
+		| expr MY_AND expr	{ messageHandler("expr", "expr AND expr"); }
+		| expr MY_OR expr	{ messageHandler("expr", "expr OR expr"); }
 		| term					{ messageHandler("expr", "term");			}
 		;
-
-operator	: MY_PLUS
-			| MY_MINUS
-			| MY_MUL
-			| MY_DIV
-			| MY_MOD
-			| MY_G
-			| MY_GE
-			| MY_L
-			| MY_LE
-			| MY_EQUAL
-			| MY_NEQUAL
-			| MY_AND
-			| MY_OR
-			;
 
 term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)"); }
 		| MY_MINUS expr	%prec UNARY_MINUS		{ messageHandler("term", "-expr");	}
@@ -201,12 +261,22 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)"); }
 assignexpr	: lvalue {
 						/* printf("Checking if [%s] is a library function or function\n", yylval.stringValue); */
 						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
-						if (symbol && symbol->type == 3)
+						if (symbol && symbol->type == 3) { 
+							syntax_error = 1;
 							printf("Error in line %d: You cannot use a user defined function in assignment expresion.\n", yylineno);
-						else if (symbol && symbol->type == 4)
+						}
+						else if (symbol && symbol->type == 4) {
+							syntax_error = 1;
 							printf("Error in line %d: You cannot use a library function in assignment expresion.\n", yylineno);
-
-					 } MY_ASSIGN expr { messageHandler("assignexpr", "lvalue = expr");	}
+						}
+					 } MY_ASSIGN expr 
+					 { 
+						messageHandler("assignexpr", "lvalue = expr");
+						$$ = NewExpr(6, SymTable_get(oSymTable, currentTemp), 0, NULL, 'F');
+						if (syntax_error == 0) {
+							emit(0, $4, NULL, $1);
+						}
+					 }
 			;
 
 primary		: lvalue		{  messageHandler("primary", "lvalue");	}
@@ -229,15 +299,20 @@ lvalue		: MY_ID	{
 
 						/* SE OLES TIS ALLES PERIPTWSEIS MAS NOIAZEI NA FAEI ERROR AMA YPHRXE SE PROHGOYMENO ANOIXTO SCOPE */
 						if (scope > 1) {
-							int check = catholic_lookup(yylval.stringValue);
-
+							int check = inside_out_lookup(yylval.stringValue, scope);
+							
 							/* ERROR: giati yparxei se prohgoymena LOCAL SCOPES */
 							if (check > 0 && check < scope && function_flag && (ScopeListGetSymbolAt(yylval.stringValue, check)->type < 3)) {
+								syntax_error = 1;
 								printf("Error: Can't be accessed! Current scope: %d. Same active local variable symbol %s found in scope %d.\n",scope, yylval.stringValue, check);
 							}
 
 							if (check == -1)	/* Dhladh ama den yparxei pouthena */
 								SymTable_put(oSymTable, yylval.stringValue, 1, scope, yylineno, 1);
+						}
+
+						if (syntax_error == 0){
+							$$ = NewExpr(0, SymTable_get(oSymTable, yylval.stringValue), 0, NULL, 'F');
 						}
 
 						messageHandler("lvalue", "identifier"); 
@@ -353,8 +428,18 @@ funcdef		: MY_FUNCTION {
 		  MY_OPEN_PAR idlist MY_CLOSE_PAR funblock { messageHandler("funcdef", "function identifier (idlist) funblock");}
 		;
 
-const		: MY_REAL	{ messageHandler("const", "real_value");	}
-		| MY_INTEGER	{ messageHandler("const", "integer_value");	}
+const		: MY_REAL	{	messageHandler("const", "real_value");
+							if ($1 == 0)
+								$$ = NewExpr(8, NULL, $1, NULL, 'F');
+							else
+								$$ = NewExpr(8, NULL, $1, NULL, 'T');
+						}
+		| MY_INTEGER	{	messageHandler("const", "integer_value");
+							if ($1 == 0)
+								$$ = NewExpr(8, NULL, $1, NULL, 'F');
+							else
+								$$ = NewExpr(8, NULL, $1, NULL, 'T');
+						}
 		| MY_STRING	{ messageHandler("const", "string");	}
 		| MY_NIL	{ messageHandler("const", "nil");	}
 		| MY_TRUE	{ messageHandler("const", "true");	}

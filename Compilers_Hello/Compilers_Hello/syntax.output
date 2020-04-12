@@ -10,8 +10,7 @@ Terminals unused in grammar
    MY_OTHER
 
 
-State 115 conflicts: 13 shift/reduce
-State 144 conflicts: 1 shift/reduce
+State 156 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -20,56 +19,56 @@ Grammar
 
     1 program: stmts
 
-    2 stmts: stmt stmts
-    3      | %empty
+    2 $@1: %empty
 
-    4 stmt: expr MY_SEMICOLON
-    5     | ifstmt
-    6     | whilestmt
-    7     | forstmt
-    8     | returnstmt
-    9     | MY_BREAK MY_SEMICOLON
-   10     | MY_CONTINUE MY_SEMICOLON
-   11     | block
-   12     | funcdef
-   13     | MY_SEMICOLON
+    3 stmts: stmt $@1 stmts
+    4      | %empty
 
-   14 expr: assignexpr
-   15     | expr operator expr
-   16     | term
+    5 stmt: expr MY_SEMICOLON
+    6     | ifstmt
+    7     | whilestmt
+    8     | forstmt
+    9     | returnstmt
+   10     | MY_BREAK MY_SEMICOLON
+   11     | MY_CONTINUE MY_SEMICOLON
+   12     | block
+   13     | funcdef
+   14     | MY_SEMICOLON
 
-   17 operator: MY_PLUS
-   18         | MY_MINUS
-   19         | MY_MUL
-   20         | MY_DIV
-   21         | MY_MOD
-   22         | MY_G
-   23         | MY_GE
-   24         | MY_L
-   25         | MY_LE
-   26         | MY_EQUAL
-   27         | MY_NEQUAL
-   28         | MY_AND
-   29         | MY_OR
+   15 expr: assignexpr
+   16     | expr MY_PLUS expr
+   17     | expr MY_MINUS expr
+   18     | expr MY_MUL expr
+   19     | expr MY_DIV expr
+   20     | expr MY_MOD expr
+   21     | expr MY_G expr
+   22     | expr MY_GE expr
+   23     | expr MY_L expr
+   24     | expr MY_LE expr
+   25     | expr MY_EQUAL expr
+   26     | expr MY_NEQUAL expr
+   27     | expr MY_AND expr
+   28     | expr MY_OR expr
+   29     | term
 
    30 term: MY_OPEN_PAR expr MY_CLOSE_PAR
    31     | MY_MINUS expr
    32     | MY_NOT expr
    33     | MY_INC lvalue
 
-   34 $@1: %empty
+   34 $@2: %empty
 
-   35 term: lvalue $@1 MY_INC
+   35 term: lvalue $@2 MY_INC
    36     | MY_DEC lvalue
 
-   37 $@2: %empty
+   37 $@3: %empty
 
-   38 term: lvalue $@2 MY_DEC
+   38 term: lvalue $@3 MY_DEC
    39     | primary
 
-   40 $@3: %empty
+   40 $@4: %empty
 
-   41 assignexpr: lvalue $@3 MY_ASSIGN expr
+   41 assignexpr: lvalue $@4 MY_ASSIGN expr
 
    42 primary: lvalue
    43        | call
@@ -114,21 +113,21 @@ Grammar
 
    71 indexedelem: MY_OPEN_ANG expr MY_DOT_UD expr MY_CLOSE_ANG
 
-   72 $@4: %empty
+   72 $@5: %empty
 
-   73 block: MY_OPEN_ANG $@4 stmts MY_CLOSE_ANG
+   73 block: MY_OPEN_ANG $@5 stmts MY_CLOSE_ANG
 
-   74 $@5: %empty
+   74 $@6: %empty
 
-   75 funblock: MY_OPEN_ANG $@5 stmts MY_CLOSE_ANG
+   75 funblock: MY_OPEN_ANG $@6 stmts MY_CLOSE_ANG
 
-   76 $@6: %empty
+   76 $@7: %empty
 
-   77 funcdef: MY_FUNCTION $@6 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
+   77 funcdef: MY_FUNCTION $@7 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
 
-   78 $@7: %empty
+   78 $@8: %empty
 
-   79 funcdef: MY_FUNCTION MY_ID $@7 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
+   79 funcdef: MY_FUNCTION MY_ID $@8 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
 
    80 const: MY_REAL
    81      | MY_INTEGER
@@ -137,14 +136,14 @@ Grammar
    84      | MY_TRUE
    85      | MY_FALSE
 
-   86 $@8: %empty
+   86 $@9: %empty
 
-   87 idlist: MY_ID $@8 idwithcommas
+   87 idlist: MY_ID $@9 idwithcommas
    88       | %empty
 
-   89 $@9: %empty
+   89 $@10: %empty
 
-   90 idwithcommas: MY_COMMA MY_ID $@9 idwithcommas
+   90 idwithcommas: MY_COMMA MY_ID $@10 idwithcommas
    91             | %empty
 
    92 ifstmt: MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt
@@ -162,46 +161,46 @@ Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-MY_MULTILINE_COMMENTS (258)
-MY_SIMPLE_COMMENTS (259)
+MY_INTEGER (258) 81
+MY_REAL (259) 80
 MY_STRING (260) 82
-MY_IF (261) 92 93
-MY_ELSE (262) 93
-MY_FOR (263) 95
-MY_WHILE (264) 94
-MY_DO (265)
-MY_CONTINUE (266) 10
-MY_BREAK (267) 9
-MY_RETURN (268) 96 97
-MY_AND (269) 28
-MY_OR (270) 29
-MY_NOT (271) 32
-MY_LOCAL (272) 48
-MY_GLOBAL (273)
-MY_STATIC (274)
-MY_NIL (275) 83
-MY_TRUE (276) 84
-MY_FALSE (277) 85
-MY_FUNCTION (278) 77 79
-MY_ID (279) 47 48 49 51 53 61 79 87 90
-MY_BLANK (280)
-MY_NL (281)
-MY_INTEGER (282) 81
-MY_REAL (283) 80
+MY_MULTILINE_COMMENTS (261)
+MY_SIMPLE_COMMENTS (262)
+MY_IF (263) 92 93
+MY_ELSE (264) 93
+MY_FOR (265) 95
+MY_WHILE (266) 94
+MY_DO (267)
+MY_CONTINUE (268) 11
+MY_BREAK (269) 10
+MY_RETURN (270) 96 97
+MY_AND (271) 27
+MY_OR (272) 28
+MY_NOT (273) 32
+MY_LOCAL (274) 48
+MY_GLOBAL (275)
+MY_STATIC (276)
+MY_NIL (277) 83
+MY_TRUE (278) 84
+MY_FALSE (279) 85
+MY_FUNCTION (280) 77 79
+MY_ID (281) 47 48 49 51 53 61 79 87 90
+MY_BLANK (282)
+MY_NL (283)
 MY_ASSIGN (284) 41
-MY_EQUAL (285) 26
-MY_NEQUAL (286) 27
-MY_PLUS (287) 17
+MY_EQUAL (285) 25
+MY_NEQUAL (286) 26
+MY_PLUS (287) 16
 MY_INC (288) 33 35
-MY_MINUS (289) 18 31
+MY_MINUS (289) 17 31
 MY_DEC (290) 36 38
-MY_MUL (291) 19
-MY_DIV (292) 20
-MY_MOD (293) 21
-MY_L (294) 24
-MY_LE (295) 25
-MY_G (296) 22
-MY_GE (297) 23
+MY_MUL (291) 18
+MY_DIV (292) 19
+MY_MOD (293) 20
+MY_L (294) 23
+MY_LE (295) 24
+MY_G (296) 21
+MY_GE (297) 22
 MY_OPEN_ANG (298) 71 73 75
 MY_OPEN_BRA (299) 52 54 66 67
 MY_OPEN_PAR (300) 30 45 55 57 60 61 77 79 92 93 94 95
@@ -213,7 +212,7 @@ MY_DOT_STREAM (305) 49
 MY_DOT_SIMPLE (306) 51 53
 MY_DOT_DOUBLE (307) 61
 MY_COMMA (308) 64 69 90
-MY_SEMICOLON (309) 4 9 10 13 95 96 97
+MY_SEMICOLON (309) 5 10 11 14 95 96 97
 MY_OTHER (310)
 UNARY_MINUS (311)
 
@@ -225,23 +224,24 @@ $accept (57)
 program (58)
     on left: 1, on right: 0
 stmts (59)
-    on left: 2 3, on right: 1 2 73 75
-stmt (60)
-    on left: 4 5 6 7 8 9 10 11 12 13, on right: 2 92 93 94 95
-expr (61)
-    on left: 14 15 16, on right: 4 15 30 31 32 41 52 54 62 64 71 92
-    93 94 95 97
-operator (62)
-    on left: 17 18 19 20 21 22 23 24 25 26 27 28 29, on right: 15
+    on left: 3 4, on right: 1 3 73 75
+$@1 (60)
+    on left: 2, on right: 3
+stmt (61)
+    on left: 5 6 7 8 9 10 11 12 13 14, on right: 3 92 93 94 95
+expr (62)
+    on left: 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29, on right:
+    5 16 17 18 19 20 21 22 23 24 25 26 27 28 30 31 32 41 52 54 62 64
+    71 92 93 94 95 97
 term (63)
-    on left: 30 31 32 33 35 36 38 39, on right: 16
-$@1 (64)
+    on left: 30 31 32 33 35 36 38 39, on right: 29
+$@2 (64)
     on left: 34, on right: 35
-$@2 (65)
+$@3 (65)
     on left: 37, on right: 38
 assignexpr (66)
-    on left: 41, on right: 14
-$@3 (67)
+    on left: 41, on right: 15
+$@4 (67)
     on left: 40, on right: 41
 primary (68)
     on left: 42 43 44 45 46, on right: 39
@@ -270,59 +270,59 @@ commaindex (79)
 indexedelem (80)
     on left: 71, on right: 68 69
 block (81)
-    on left: 73, on right: 11
-$@4 (82)
+    on left: 73, on right: 12
+$@5 (82)
     on left: 72, on right: 73
 funblock (83)
     on left: 75, on right: 77 79
-$@5 (84)
+$@6 (84)
     on left: 74, on right: 75
 funcdef (85)
-    on left: 77 79, on right: 12 45 57
-$@6 (86)
+    on left: 77 79, on right: 13 45 57
+$@7 (86)
     on left: 76, on right: 77
-$@7 (87)
+$@8 (87)
     on left: 78, on right: 79
 const (88)
     on left: 80 81 82 83 84 85, on right: 46
 idlist (89)
     on left: 87 88, on right: 77 79
-$@8 (90)
+$@9 (90)
     on left: 86, on right: 87
 idwithcommas (91)
     on left: 90 91, on right: 87 90
-$@9 (92)
+$@10 (92)
     on left: 89, on right: 90
 ifstmt (93)
-    on left: 92 93, on right: 5
+    on left: 92 93, on right: 6
 whilestmt (94)
-    on left: 94, on right: 6
+    on left: 94, on right: 7
 forstmt (95)
-    on left: 95, on right: 7
+    on left: 95, on right: 8
 returnstmt (96)
-    on left: 96 97, on right: 8
+    on left: 96 97, on right: 9
 
 
 State 0
 
     0 $accept: . program $end
 
-    MY_STRING      shift, and go to state 1
-    MY_IF          shift, and go to state 2
-    MY_FOR         shift, and go to state 3
-    MY_WHILE       shift, and go to state 4
-    MY_CONTINUE    shift, and go to state 5
-    MY_BREAK       shift, and go to state 6
-    MY_RETURN      shift, and go to state 7
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_FUNCTION    shift, and go to state 13
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_IF          shift, and go to state 4
+    MY_FOR         shift, and go to state 5
+    MY_WHILE       shift, and go to state 6
+    MY_CONTINUE    shift, and go to state 7
+    MY_BREAK       shift, and go to state 8
+    MY_RETURN      shift, and go to state 9
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_FUNCTION    shift, and go to state 15
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -332,7 +332,7 @@ State 0
     MY_DOT_STREAM  shift, and go to state 23
     MY_SEMICOLON   shift, and go to state 24
 
-    $default  reduce using rule 3 (stmts)
+    $default  reduce using rule 4 (stmts)
 
     program     go to state 25
     stmts       go to state 26
@@ -356,12 +356,26 @@ State 0
 
 State 1
 
+   81 const: MY_INTEGER .
+
+    $default  reduce using rule 81 (const)
+
+
+State 2
+
+   80 const: MY_REAL .
+
+    $default  reduce using rule 80 (const)
+
+
+State 3
+
    82 const: MY_STRING .
 
     $default  reduce using rule 82 (const)
 
 
-State 2
+State 4
 
    92 ifstmt: MY_IF . MY_OPEN_PAR expr MY_CLOSE_PAR stmt
    93       | MY_IF . MY_OPEN_PAR expr MY_CLOSE_PAR stmt MY_ELSE stmt
@@ -369,48 +383,48 @@ State 2
     MY_OPEN_PAR  shift, and go to state 43
 
 
-State 3
+State 5
 
    95 forstmt: MY_FOR . MY_OPEN_PAR elist MY_SEMICOLON expr MY_SEMICOLON elist MY_CLOSE_PAR stmt
 
     MY_OPEN_PAR  shift, and go to state 44
 
 
-State 4
+State 6
 
    94 whilestmt: MY_WHILE . MY_OPEN_PAR expr MY_CLOSE_PAR stmt
 
     MY_OPEN_PAR  shift, and go to state 45
 
 
-State 5
+State 7
 
-   10 stmt: MY_CONTINUE . MY_SEMICOLON
+   11 stmt: MY_CONTINUE . MY_SEMICOLON
 
     MY_SEMICOLON  shift, and go to state 46
 
 
-State 6
+State 8
 
-    9 stmt: MY_BREAK . MY_SEMICOLON
+   10 stmt: MY_BREAK . MY_SEMICOLON
 
     MY_SEMICOLON  shift, and go to state 47
 
 
-State 7
+State 9
 
    96 returnstmt: MY_RETURN . MY_SEMICOLON
    97           | MY_RETURN . expr MY_SEMICOLON
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -430,19 +444,19 @@ State 7
     const       go to state 38
 
 
-State 8
+State 10
 
    32 term: MY_NOT . expr
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -461,73 +475,59 @@ State 8
     const       go to state 38
 
 
-State 9
+State 11
 
    48 lvalue: MY_LOCAL . MY_ID
 
     MY_ID  shift, and go to state 51
 
 
-State 10
+State 12
 
    83 const: MY_NIL .
 
     $default  reduce using rule 83 (const)
 
 
-State 11
+State 13
 
    84 const: MY_TRUE .
 
     $default  reduce using rule 84 (const)
 
 
-State 12
+State 14
 
    85 const: MY_FALSE .
 
     $default  reduce using rule 85 (const)
 
 
-State 13
+State 15
 
-   77 funcdef: MY_FUNCTION . $@6 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
-   79        | MY_FUNCTION . MY_ID $@7 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
+   77 funcdef: MY_FUNCTION . $@7 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
+   79        | MY_FUNCTION . MY_ID $@8 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
 
     MY_ID  shift, and go to state 52
 
-    $default  reduce using rule 76 ($@6)
+    $default  reduce using rule 76 ($@7)
 
-    $@6  go to state 53
+    $@7  go to state 53
 
 
-State 14
+State 16
 
    47 lvalue: MY_ID .
 
     $default  reduce using rule 47 (lvalue)
 
 
-State 15
-
-   81 const: MY_INTEGER .
-
-    $default  reduce using rule 81 (const)
-
-
-State 16
-
-   80 const: MY_REAL .
-
-    $default  reduce using rule 80 (const)
-
-
 State 17
 
    33 term: MY_INC . lvalue
 
-    MY_LOCAL       shift, and go to state 9
-    MY_ID          shift, and go to state 14
+    MY_LOCAL       shift, and go to state 11
+    MY_ID          shift, and go to state 16
     MY_OPEN_PAR    shift, and go to state 54
     MY_DOT_STREAM  shift, and go to state 23
 
@@ -540,15 +540,15 @@ State 18
 
    31 term: MY_MINUS . expr
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -571,8 +571,8 @@ State 19
 
    36 term: MY_DEC . lvalue
 
-    MY_LOCAL       shift, and go to state 9
-    MY_ID          shift, and go to state 14
+    MY_LOCAL       shift, and go to state 11
+    MY_ID          shift, and go to state 16
     MY_OPEN_PAR    shift, and go to state 54
     MY_DOT_STREAM  shift, and go to state 23
 
@@ -583,11 +583,11 @@ State 19
 
 State 20
 
-   73 block: MY_OPEN_ANG . $@4 stmts MY_CLOSE_ANG
+   73 block: MY_OPEN_ANG . $@5 stmts MY_CLOSE_ANG
 
-    $default  reduce using rule 72 ($@4)
+    $default  reduce using rule 72 ($@5)
 
-    $@4  go to state 59
+    $@5  go to state 59
 
 
 State 21
@@ -595,15 +595,15 @@ State 21
    66 objectdef: MY_OPEN_BRA . elist MY_CLOSE_BRA
    67          | MY_OPEN_BRA . indexed MY_CLOSE_BRA
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -634,16 +634,16 @@ State 22
    45 primary: MY_OPEN_PAR . funcdef MY_CLOSE_PAR
    57 call: MY_OPEN_PAR . funcdef MY_CLOSE_PAR MY_OPEN_PAR elist MY_CLOSE_PAR
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_FUNCTION    shift, and go to state 13
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_FUNCTION    shift, and go to state 15
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -672,9 +672,9 @@ State 23
 
 State 24
 
-   13 stmt: MY_SEMICOLON .
+   14 stmt: MY_SEMICOLON .
 
-    $default  reduce using rule 13 (stmt)
+    $default  reduce using rule 14 (stmt)
 
 
 State 25
@@ -693,58 +693,29 @@ State 26
 
 State 27
 
-    2 stmts: stmt . stmts
+    3 stmts: stmt . $@1 stmts
 
-    MY_STRING      shift, and go to state 1
-    MY_IF          shift, and go to state 2
-    MY_FOR         shift, and go to state 3
-    MY_WHILE       shift, and go to state 4
-    MY_CONTINUE    shift, and go to state 5
-    MY_BREAK       shift, and go to state 6
-    MY_RETURN      shift, and go to state 7
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_FUNCTION    shift, and go to state 13
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
-    MY_INC         shift, and go to state 17
-    MY_MINUS       shift, and go to state 18
-    MY_DEC         shift, and go to state 19
-    MY_OPEN_ANG    shift, and go to state 20
-    MY_OPEN_BRA    shift, and go to state 21
-    MY_OPEN_PAR    shift, and go to state 22
-    MY_DOT_STREAM  shift, and go to state 23
-    MY_SEMICOLON   shift, and go to state 24
+    $default  reduce using rule 2 ($@1)
 
-    $default  reduce using rule 3 (stmts)
-
-    stmts       go to state 69
-    stmt        go to state 27
-    expr        go to state 28
-    term        go to state 29
-    assignexpr  go to state 30
-    primary     go to state 31
-    lvalue      go to state 32
-    member      go to state 33
-    call        go to state 34
-    objectdef   go to state 35
-    block       go to state 36
-    funcdef     go to state 37
-    const       go to state 38
-    ifstmt      go to state 39
-    whilestmt   go to state 40
-    forstmt     go to state 41
-    returnstmt  go to state 42
+    $@1  go to state 69
 
 
 State 28
 
-    4 stmt: expr . MY_SEMICOLON
-   15 expr: expr . operator expr
+    5 stmt: expr . MY_SEMICOLON
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
 
     MY_AND        shift, and go to state 70
     MY_OR         shift, and go to state 71
@@ -761,21 +732,19 @@ State 28
     MY_GE         shift, and go to state 82
     MY_SEMICOLON  shift, and go to state 83
 
-    operator  go to state 84
-
 
 State 29
 
-   16 expr: term .
+   29 expr: term .
 
-    $default  reduce using rule 16 (expr)
+    $default  reduce using rule 29 (expr)
 
 
 State 30
 
-   14 expr: assignexpr .
+   15 expr: assignexpr .
 
-    $default  reduce using rule 14 (expr)
+    $default  reduce using rule 15 (expr)
 
 
 State 31
@@ -787,30 +756,30 @@ State 31
 
 State 32
 
-   35 term: lvalue . $@1 MY_INC
-   38     | lvalue . $@2 MY_DEC
-   41 assignexpr: lvalue . $@3 MY_ASSIGN expr
+   35 term: lvalue . $@2 MY_INC
+   38     | lvalue . $@3 MY_DEC
+   41 assignexpr: lvalue . $@4 MY_ASSIGN expr
    42 primary: lvalue .
    51 member: lvalue . MY_DOT_SIMPLE MY_ID
    52       | lvalue . MY_OPEN_BRA expr MY_CLOSE_BRA
    56 call: lvalue . callsuffix
 
-    MY_OPEN_BRA    shift, and go to state 85
-    MY_OPEN_PAR    shift, and go to state 86
-    MY_DOT_SIMPLE  shift, and go to state 87
-    MY_DOT_DOUBLE  shift, and go to state 88
+    MY_OPEN_BRA    shift, and go to state 84
+    MY_OPEN_PAR    shift, and go to state 85
+    MY_DOT_SIMPLE  shift, and go to state 86
+    MY_DOT_DOUBLE  shift, and go to state 87
 
-    MY_ASSIGN  reduce using rule 40 ($@3)
-    MY_INC     reduce using rule 34 ($@1)
-    MY_DEC     reduce using rule 37 ($@2)
+    MY_ASSIGN  reduce using rule 40 ($@4)
+    MY_INC     reduce using rule 34 ($@2)
+    MY_DEC     reduce using rule 37 ($@3)
     $default   reduce using rule 42 (primary)
 
-    $@1         go to state 89
-    $@2         go to state 90
-    $@3         go to state 91
-    callsuffix  go to state 92
-    normcall    go to state 93
-    methodcall  go to state 94
+    $@2         go to state 88
+    $@3         go to state 89
+    $@4         go to state 90
+    callsuffix  go to state 91
+    normcall    go to state 92
+    methodcall  go to state 93
 
 
 State 33
@@ -827,9 +796,9 @@ State 34
    54       | call . MY_OPEN_BRA expr MY_CLOSE_BRA
    55 call: call . MY_OPEN_PAR elist MY_CLOSE_PAR
 
-    MY_OPEN_BRA    shift, and go to state 95
-    MY_OPEN_PAR    shift, and go to state 96
-    MY_DOT_SIMPLE  shift, and go to state 97
+    MY_OPEN_BRA    shift, and go to state 94
+    MY_OPEN_PAR    shift, and go to state 95
+    MY_DOT_SIMPLE  shift, and go to state 96
 
     $default  reduce using rule 43 (primary)
 
@@ -843,16 +812,16 @@ State 35
 
 State 36
 
-   11 stmt: block .
+   12 stmt: block .
 
-    $default  reduce using rule 11 (stmt)
+    $default  reduce using rule 12 (stmt)
 
 
 State 37
 
-   12 stmt: funcdef .
+   13 stmt: funcdef .
 
-    $default  reduce using rule 12 (stmt)
+    $default  reduce using rule 13 (stmt)
 
 
 State 38
@@ -864,30 +833,30 @@ State 38
 
 State 39
 
-    5 stmt: ifstmt .
-
-    $default  reduce using rule 5 (stmt)
-
-
-State 40
-
-    6 stmt: whilestmt .
+    6 stmt: ifstmt .
 
     $default  reduce using rule 6 (stmt)
 
 
-State 41
+State 40
 
-    7 stmt: forstmt .
+    7 stmt: whilestmt .
 
     $default  reduce using rule 7 (stmt)
 
 
-State 42
+State 41
 
-    8 stmt: returnstmt .
+    8 stmt: forstmt .
 
     $default  reduce using rule 8 (stmt)
+
+
+State 42
+
+    9 stmt: returnstmt .
+
+    $default  reduce using rule 9 (stmt)
 
 
 State 43
@@ -895,15 +864,15 @@ State 43
    92 ifstmt: MY_IF MY_OPEN_PAR . expr MY_CLOSE_PAR stmt
    93       | MY_IF MY_OPEN_PAR . expr MY_CLOSE_PAR stmt MY_ELSE stmt
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -911,7 +880,7 @@ State 43
     MY_OPEN_PAR    shift, and go to state 22
     MY_DOT_STREAM  shift, and go to state 23
 
-    expr        go to state 98
+    expr        go to state 97
     term        go to state 29
     assignexpr  go to state 30
     primary     go to state 31
@@ -926,15 +895,15 @@ State 44
 
    95 forstmt: MY_FOR MY_OPEN_PAR . elist MY_SEMICOLON expr MY_SEMICOLON elist MY_CLOSE_PAR stmt
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -951,7 +920,7 @@ State 44
     lvalue      go to state 32
     member      go to state 33
     call        go to state 34
-    elist       go to state 99
+    elist       go to state 98
     objectdef   go to state 35
     const       go to state 38
 
@@ -960,15 +929,15 @@ State 45
 
    94 whilestmt: MY_WHILE MY_OPEN_PAR . expr MY_CLOSE_PAR stmt
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -976,7 +945,7 @@ State 45
     MY_OPEN_PAR    shift, and go to state 22
     MY_DOT_STREAM  shift, and go to state 23
 
-    expr        go to state 100
+    expr        go to state 99
     term        go to state 29
     assignexpr  go to state 30
     primary     go to state 31
@@ -989,16 +958,16 @@ State 45
 
 State 46
 
-   10 stmt: MY_CONTINUE MY_SEMICOLON .
+   11 stmt: MY_CONTINUE MY_SEMICOLON .
 
-    $default  reduce using rule 10 (stmt)
+    $default  reduce using rule 11 (stmt)
 
 
 State 47
 
-    9 stmt: MY_BREAK MY_SEMICOLON .
+   10 stmt: MY_BREAK MY_SEMICOLON .
 
-    $default  reduce using rule 9 (stmt)
+    $default  reduce using rule 10 (stmt)
 
 
 State 48
@@ -1010,7 +979,19 @@ State 48
 
 State 49
 
-   15 expr: expr . operator expr
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
    97 returnstmt: MY_RETURN expr . MY_SEMICOLON
 
     MY_AND        shift, and go to state 70
@@ -1026,19 +1007,27 @@ State 49
     MY_LE         shift, and go to state 80
     MY_G          shift, and go to state 81
     MY_GE         shift, and go to state 82
-    MY_SEMICOLON  shift, and go to state 101
-
-    operator  go to state 84
+    MY_SEMICOLON  shift, and go to state 100
 
 
 State 50
 
-   15 expr: expr . operator expr
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
    32 term: MY_NOT expr .
 
     $default  reduce using rule 32 (term)
-
-    operator  go to state 84
 
 
 State 51
@@ -1050,27 +1039,27 @@ State 51
 
 State 52
 
-   79 funcdef: MY_FUNCTION MY_ID . $@7 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
+   79 funcdef: MY_FUNCTION MY_ID . $@8 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
 
-    $default  reduce using rule 78 ($@7)
+    $default  reduce using rule 78 ($@8)
 
-    $@7  go to state 102
+    $@8  go to state 101
 
 
 State 53
 
-   77 funcdef: MY_FUNCTION $@6 . MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
+   77 funcdef: MY_FUNCTION $@7 . MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
 
-    MY_OPEN_PAR  shift, and go to state 103
+    MY_OPEN_PAR  shift, and go to state 102
 
 
 State 54
 
    57 call: MY_OPEN_PAR . funcdef MY_CLOSE_PAR MY_OPEN_PAR elist MY_CLOSE_PAR
 
-    MY_FUNCTION  shift, and go to state 13
+    MY_FUNCTION  shift, and go to state 15
 
-    funcdef  go to state 104
+    funcdef  go to state 103
 
 
 State 55
@@ -1080,16 +1069,16 @@ State 55
    52       | lvalue . MY_OPEN_BRA expr MY_CLOSE_BRA
    56 call: lvalue . callsuffix
 
-    MY_OPEN_BRA    shift, and go to state 85
-    MY_OPEN_PAR    shift, and go to state 86
-    MY_DOT_SIMPLE  shift, and go to state 87
-    MY_DOT_DOUBLE  shift, and go to state 88
+    MY_OPEN_BRA    shift, and go to state 84
+    MY_OPEN_PAR    shift, and go to state 85
+    MY_DOT_SIMPLE  shift, and go to state 86
+    MY_DOT_DOUBLE  shift, and go to state 87
 
     $default  reduce using rule 33 (term)
 
-    callsuffix  go to state 92
-    normcall    go to state 93
-    methodcall  go to state 94
+    callsuffix  go to state 91
+    normcall    go to state 92
+    methodcall  go to state 93
 
 
 State 56
@@ -1098,19 +1087,29 @@ State 56
    54       | call . MY_OPEN_BRA expr MY_CLOSE_BRA
    55 call: call . MY_OPEN_PAR elist MY_CLOSE_PAR
 
-    MY_OPEN_BRA    shift, and go to state 95
-    MY_OPEN_PAR    shift, and go to state 96
-    MY_DOT_SIMPLE  shift, and go to state 97
+    MY_OPEN_BRA    shift, and go to state 94
+    MY_OPEN_PAR    shift, and go to state 95
+    MY_DOT_SIMPLE  shift, and go to state 96
 
 
 State 57
 
-   15 expr: expr . operator expr
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
    31 term: MY_MINUS expr .
 
     $default  reduce using rule 31 (term)
-
-    operator  go to state 84
 
 
 State 58
@@ -1120,38 +1119,38 @@ State 58
    52       | lvalue . MY_OPEN_BRA expr MY_CLOSE_BRA
    56 call: lvalue . callsuffix
 
-    MY_OPEN_BRA    shift, and go to state 85
-    MY_OPEN_PAR    shift, and go to state 86
-    MY_DOT_SIMPLE  shift, and go to state 87
-    MY_DOT_DOUBLE  shift, and go to state 88
+    MY_OPEN_BRA    shift, and go to state 84
+    MY_OPEN_PAR    shift, and go to state 85
+    MY_DOT_SIMPLE  shift, and go to state 86
+    MY_DOT_DOUBLE  shift, and go to state 87
 
     $default  reduce using rule 36 (term)
 
-    callsuffix  go to state 92
-    normcall    go to state 93
-    methodcall  go to state 94
+    callsuffix  go to state 91
+    normcall    go to state 92
+    methodcall  go to state 93
 
 
 State 59
 
-   73 block: MY_OPEN_ANG $@4 . stmts MY_CLOSE_ANG
+   73 block: MY_OPEN_ANG $@5 . stmts MY_CLOSE_ANG
 
-    MY_STRING      shift, and go to state 1
-    MY_IF          shift, and go to state 2
-    MY_FOR         shift, and go to state 3
-    MY_WHILE       shift, and go to state 4
-    MY_CONTINUE    shift, and go to state 5
-    MY_BREAK       shift, and go to state 6
-    MY_RETURN      shift, and go to state 7
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_FUNCTION    shift, and go to state 13
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_IF          shift, and go to state 4
+    MY_FOR         shift, and go to state 5
+    MY_WHILE       shift, and go to state 6
+    MY_CONTINUE    shift, and go to state 7
+    MY_BREAK       shift, and go to state 8
+    MY_RETURN      shift, and go to state 9
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_FUNCTION    shift, and go to state 15
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -1161,9 +1160,9 @@ State 59
     MY_DOT_STREAM  shift, and go to state 23
     MY_SEMICOLON   shift, and go to state 24
 
-    $default  reduce using rule 3 (stmts)
+    $default  reduce using rule 4 (stmts)
 
-    stmts       go to state 105
+    stmts       go to state 104
     stmt        go to state 27
     expr        go to state 28
     term        go to state 29
@@ -1186,15 +1185,15 @@ State 60
 
    71 indexedelem: MY_OPEN_ANG . expr MY_DOT_UD expr MY_CLOSE_ANG
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -1202,7 +1201,7 @@ State 60
     MY_OPEN_PAR    shift, and go to state 22
     MY_DOT_STREAM  shift, and go to state 23
 
-    expr        go to state 106
+    expr        go to state 105
     term        go to state 29
     assignexpr  go to state 30
     primary     go to state 31
@@ -1215,7 +1214,19 @@ State 60
 
 State 61
 
-   15 expr: expr . operator expr
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
    62 elist: expr . commaexprs
 
     MY_AND     shift, and go to state 70
@@ -1231,42 +1242,53 @@ State 61
     MY_LE      shift, and go to state 80
     MY_G       shift, and go to state 81
     MY_GE      shift, and go to state 82
-    MY_COMMA   shift, and go to state 107
+    MY_COMMA   shift, and go to state 106
 
     $default  reduce using rule 65 (commaexprs)
 
-    operator    go to state 84
-    commaexprs  go to state 108
+    commaexprs  go to state 107
 
 
 State 62
 
    66 objectdef: MY_OPEN_BRA elist . MY_CLOSE_BRA
 
-    MY_CLOSE_BRA  shift, and go to state 109
+    MY_CLOSE_BRA  shift, and go to state 108
 
 
 State 63
 
    67 objectdef: MY_OPEN_BRA indexed . MY_CLOSE_BRA
 
-    MY_CLOSE_BRA  shift, and go to state 110
+    MY_CLOSE_BRA  shift, and go to state 109
 
 
 State 64
 
    68 indexed: indexedelem . commaindex
 
-    MY_COMMA  shift, and go to state 111
+    MY_COMMA  shift, and go to state 110
 
     $default  reduce using rule 70 (commaindex)
 
-    commaindex  go to state 112
+    commaindex  go to state 111
 
 
 State 65
 
-   15 expr: expr . operator expr
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
    30 term: MY_OPEN_PAR expr . MY_CLOSE_PAR
 
     MY_AND        shift, and go to state 70
@@ -1282,9 +1304,7 @@ State 65
     MY_LE         shift, and go to state 80
     MY_G          shift, and go to state 81
     MY_GE         shift, and go to state 82
-    MY_CLOSE_PAR  shift, and go to state 113
-
-    operator  go to state 84
+    MY_CLOSE_PAR  shift, and go to state 112
 
 
 State 66
@@ -1292,7 +1312,7 @@ State 66
    45 primary: MY_OPEN_PAR funcdef . MY_CLOSE_PAR
    57 call: MY_OPEN_PAR funcdef . MY_CLOSE_PAR MY_OPEN_PAR elist MY_CLOSE_PAR
 
-    MY_CLOSE_PAR  shift, and go to state 114
+    MY_CLOSE_PAR  shift, and go to state 113
 
 
 State 67
@@ -1311,122 +1331,67 @@ State 68
 
 State 69
 
-    2 stmts: stmt stmts .
+    3 stmts: stmt $@1 . stmts
 
-    $default  reduce using rule 2 (stmts)
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_IF          shift, and go to state 4
+    MY_FOR         shift, and go to state 5
+    MY_WHILE       shift, and go to state 6
+    MY_CONTINUE    shift, and go to state 7
+    MY_BREAK       shift, and go to state 8
+    MY_RETURN      shift, and go to state 9
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_FUNCTION    shift, and go to state 15
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_ANG    shift, and go to state 20
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+    MY_SEMICOLON   shift, and go to state 24
+
+    $default  reduce using rule 4 (stmts)
+
+    stmts       go to state 114
+    stmt        go to state 27
+    expr        go to state 28
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    block       go to state 36
+    funcdef     go to state 37
+    const       go to state 38
+    ifstmt      go to state 39
+    whilestmt   go to state 40
+    forstmt     go to state 41
+    returnstmt  go to state 42
 
 
 State 70
 
-   28 operator: MY_AND .
+   27 expr: expr MY_AND . expr
 
-    $default  reduce using rule 28 (operator)
-
-
-State 71
-
-   29 operator: MY_OR .
-
-    $default  reduce using rule 29 (operator)
-
-
-State 72
-
-   26 operator: MY_EQUAL .
-
-    $default  reduce using rule 26 (operator)
-
-
-State 73
-
-   27 operator: MY_NEQUAL .
-
-    $default  reduce using rule 27 (operator)
-
-
-State 74
-
-   17 operator: MY_PLUS .
-
-    $default  reduce using rule 17 (operator)
-
-
-State 75
-
-   18 operator: MY_MINUS .
-
-    $default  reduce using rule 18 (operator)
-
-
-State 76
-
-   19 operator: MY_MUL .
-
-    $default  reduce using rule 19 (operator)
-
-
-State 77
-
-   20 operator: MY_DIV .
-
-    $default  reduce using rule 20 (operator)
-
-
-State 78
-
-   21 operator: MY_MOD .
-
-    $default  reduce using rule 21 (operator)
-
-
-State 79
-
-   24 operator: MY_L .
-
-    $default  reduce using rule 24 (operator)
-
-
-State 80
-
-   25 operator: MY_LE .
-
-    $default  reduce using rule 25 (operator)
-
-
-State 81
-
-   22 operator: MY_G .
-
-    $default  reduce using rule 22 (operator)
-
-
-State 82
-
-   23 operator: MY_GE .
-
-    $default  reduce using rule 23 (operator)
-
-
-State 83
-
-    4 stmt: expr MY_SEMICOLON .
-
-    $default  reduce using rule 4 (stmt)
-
-
-State 84
-
-   15 expr: expr operator . expr
-
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -1445,19 +1410,19 @@ State 84
     const       go to state 38
 
 
-State 85
+State 71
 
-   52 member: lvalue MY_OPEN_BRA . expr MY_CLOSE_BRA
+   28 expr: expr MY_OR . expr
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -1476,19 +1441,19 @@ State 85
     const       go to state 38
 
 
-State 86
+State 72
 
-   60 normcall: MY_OPEN_PAR . elist MY_CLOSE_PAR
+   25 expr: expr MY_EQUAL . expr
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -1496,89 +1461,185 @@ State 86
     MY_OPEN_PAR    shift, and go to state 22
     MY_DOT_STREAM  shift, and go to state 23
 
-    $default  reduce using rule 63 (elist)
-
-    expr        go to state 61
+    expr        go to state 117
     term        go to state 29
     assignexpr  go to state 30
     primary     go to state 31
     lvalue      go to state 32
     member      go to state 33
     call        go to state 34
-    elist       go to state 117
     objectdef   go to state 35
     const       go to state 38
 
 
-State 87
+State 73
 
-   51 member: lvalue MY_DOT_SIMPLE . MY_ID
+   26 expr: expr MY_NEQUAL . expr
 
-    MY_ID  shift, and go to state 118
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
 
-
-State 88
-
-   61 methodcall: MY_DOT_DOUBLE . MY_ID MY_OPEN_PAR elist MY_CLOSE_PAR
-
-    MY_ID  shift, and go to state 119
-
-
-State 89
-
-   35 term: lvalue $@1 . MY_INC
-
-    MY_INC  shift, and go to state 120
-
-
-State 90
-
-   38 term: lvalue $@2 . MY_DEC
-
-    MY_DEC  shift, and go to state 121
-
-
-State 91
-
-   41 assignexpr: lvalue $@3 . MY_ASSIGN expr
-
-    MY_ASSIGN  shift, and go to state 122
+    expr        go to state 118
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    const       go to state 38
 
 
-State 92
+State 74
 
-   56 call: lvalue callsuffix .
+   16 expr: expr MY_PLUS . expr
 
-    $default  reduce using rule 56 (call)
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+
+    expr        go to state 119
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    const       go to state 38
 
 
-State 93
+State 75
 
-   58 callsuffix: normcall .
+   17 expr: expr MY_MINUS . expr
 
-    $default  reduce using rule 58 (callsuffix)
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+
+    expr        go to state 120
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    const       go to state 38
 
 
-State 94
+State 76
 
-   59 callsuffix: methodcall .
+   18 expr: expr MY_MUL . expr
 
-    $default  reduce using rule 59 (callsuffix)
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+
+    expr        go to state 121
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    const       go to state 38
 
 
-State 95
+State 77
 
-   54 member: call MY_OPEN_BRA . expr MY_CLOSE_BRA
+   19 expr: expr MY_DIV . expr
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+
+    expr        go to state 122
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    const       go to state 38
+
+
+State 78
+
+   20 expr: expr MY_MOD . expr
+
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -1597,19 +1658,181 @@ State 95
     const       go to state 38
 
 
-State 96
+State 79
 
-   55 call: call MY_OPEN_PAR . elist MY_CLOSE_PAR
+   23 expr: expr MY_L . expr
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+
+    expr        go to state 124
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    const       go to state 38
+
+
+State 80
+
+   24 expr: expr MY_LE . expr
+
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+
+    expr        go to state 125
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    const       go to state 38
+
+
+State 81
+
+   21 expr: expr MY_G . expr
+
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+
+    expr        go to state 126
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    const       go to state 38
+
+
+State 82
+
+   22 expr: expr MY_GE . expr
+
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+
+    expr        go to state 127
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    const       go to state 38
+
+
+State 83
+
+    5 stmt: expr MY_SEMICOLON .
+
+    $default  reduce using rule 5 (stmt)
+
+
+State 84
+
+   52 member: lvalue MY_OPEN_BRA . expr MY_CLOSE_BRA
+
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+
+    expr        go to state 128
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    const       go to state 38
+
+
+State 85
+
+   60 normcall: MY_OPEN_PAR . elist MY_CLOSE_PAR
+
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -1626,147 +1849,80 @@ State 96
     lvalue      go to state 32
     member      go to state 33
     call        go to state 34
-    elist       go to state 124
+    elist       go to state 129
     objectdef   go to state 35
     const       go to state 38
 
 
-State 97
+State 86
 
-   53 member: call MY_DOT_SIMPLE . MY_ID
-
-    MY_ID  shift, and go to state 125
-
-
-State 98
-
-   15 expr: expr . operator expr
-   92 ifstmt: MY_IF MY_OPEN_PAR expr . MY_CLOSE_PAR stmt
-   93       | MY_IF MY_OPEN_PAR expr . MY_CLOSE_PAR stmt MY_ELSE stmt
-
-    MY_AND        shift, and go to state 70
-    MY_OR         shift, and go to state 71
-    MY_EQUAL      shift, and go to state 72
-    MY_NEQUAL     shift, and go to state 73
-    MY_PLUS       shift, and go to state 74
-    MY_MINUS      shift, and go to state 75
-    MY_MUL        shift, and go to state 76
-    MY_DIV        shift, and go to state 77
-    MY_MOD        shift, and go to state 78
-    MY_L          shift, and go to state 79
-    MY_LE         shift, and go to state 80
-    MY_G          shift, and go to state 81
-    MY_GE         shift, and go to state 82
-    MY_CLOSE_PAR  shift, and go to state 126
-
-    operator  go to state 84
-
-
-State 99
-
-   95 forstmt: MY_FOR MY_OPEN_PAR elist . MY_SEMICOLON expr MY_SEMICOLON elist MY_CLOSE_PAR stmt
-
-    MY_SEMICOLON  shift, and go to state 127
-
-
-State 100
-
-   15 expr: expr . operator expr
-   94 whilestmt: MY_WHILE MY_OPEN_PAR expr . MY_CLOSE_PAR stmt
-
-    MY_AND        shift, and go to state 70
-    MY_OR         shift, and go to state 71
-    MY_EQUAL      shift, and go to state 72
-    MY_NEQUAL     shift, and go to state 73
-    MY_PLUS       shift, and go to state 74
-    MY_MINUS      shift, and go to state 75
-    MY_MUL        shift, and go to state 76
-    MY_DIV        shift, and go to state 77
-    MY_MOD        shift, and go to state 78
-    MY_L          shift, and go to state 79
-    MY_LE         shift, and go to state 80
-    MY_G          shift, and go to state 81
-    MY_GE         shift, and go to state 82
-    MY_CLOSE_PAR  shift, and go to state 128
-
-    operator  go to state 84
-
-
-State 101
-
-   97 returnstmt: MY_RETURN expr MY_SEMICOLON .
-
-    $default  reduce using rule 97 (returnstmt)
-
-
-State 102
-
-   79 funcdef: MY_FUNCTION MY_ID $@7 . MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
-
-    MY_OPEN_PAR  shift, and go to state 129
-
-
-State 103
-
-   77 funcdef: MY_FUNCTION $@6 MY_OPEN_PAR . idlist MY_CLOSE_PAR funblock
+   51 member: lvalue MY_DOT_SIMPLE . MY_ID
 
     MY_ID  shift, and go to state 130
 
-    $default  reduce using rule 88 (idlist)
 
-    idlist  go to state 131
+State 87
 
+   61 methodcall: MY_DOT_DOUBLE . MY_ID MY_OPEN_PAR elist MY_CLOSE_PAR
 
-State 104
-
-   57 call: MY_OPEN_PAR funcdef . MY_CLOSE_PAR MY_OPEN_PAR elist MY_CLOSE_PAR
-
-    MY_CLOSE_PAR  shift, and go to state 132
+    MY_ID  shift, and go to state 131
 
 
-State 105
+State 88
 
-   73 block: MY_OPEN_ANG $@4 stmts . MY_CLOSE_ANG
+   35 term: lvalue $@2 . MY_INC
 
-    MY_CLOSE_ANG  shift, and go to state 133
-
-
-State 106
-
-   15 expr: expr . operator expr
-   71 indexedelem: MY_OPEN_ANG expr . MY_DOT_UD expr MY_CLOSE_ANG
-
-    MY_AND     shift, and go to state 70
-    MY_OR      shift, and go to state 71
-    MY_EQUAL   shift, and go to state 72
-    MY_NEQUAL  shift, and go to state 73
-    MY_PLUS    shift, and go to state 74
-    MY_MINUS   shift, and go to state 75
-    MY_MUL     shift, and go to state 76
-    MY_DIV     shift, and go to state 77
-    MY_MOD     shift, and go to state 78
-    MY_L       shift, and go to state 79
-    MY_LE      shift, and go to state 80
-    MY_G       shift, and go to state 81
-    MY_GE      shift, and go to state 82
-    MY_DOT_UD  shift, and go to state 134
-
-    operator  go to state 84
+    MY_INC  shift, and go to state 132
 
 
-State 107
+State 89
 
-   64 commaexprs: MY_COMMA . expr commaexprs
+   38 term: lvalue $@3 . MY_DEC
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_DEC  shift, and go to state 133
+
+
+State 90
+
+   41 assignexpr: lvalue $@4 . MY_ASSIGN expr
+
+    MY_ASSIGN  shift, and go to state 134
+
+
+State 91
+
+   56 call: lvalue callsuffix .
+
+    $default  reduce using rule 56 (call)
+
+
+State 92
+
+   58 callsuffix: normcall .
+
+    $default  reduce using rule 58 (callsuffix)
+
+
+State 93
+
+   59 callsuffix: methodcall .
+
+    $default  reduce using rule 59 (callsuffix)
+
+
+State 94
+
+   54 member: call MY_OPEN_BRA . expr MY_CLOSE_BRA
+
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -1785,64 +1941,176 @@ State 107
     const       go to state 38
 
 
-State 108
+State 95
 
-   62 elist: expr commaexprs .
+   55 call: call MY_OPEN_PAR . elist MY_CLOSE_PAR
 
-    $default  reduce using rule 62 (elist)
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
 
+    $default  reduce using rule 63 (elist)
 
-State 109
-
-   66 objectdef: MY_OPEN_BRA elist MY_CLOSE_BRA .
-
-    $default  reduce using rule 66 (objectdef)
-
-
-State 110
-
-   67 objectdef: MY_OPEN_BRA indexed MY_CLOSE_BRA .
-
-    $default  reduce using rule 67 (objectdef)
-
-
-State 111
-
-   69 commaindex: MY_COMMA . indexedelem commaindex
-
-    MY_OPEN_ANG  shift, and go to state 60
-
-    indexedelem  go to state 136
-
-
-State 112
-
-   68 indexed: indexedelem commaindex .
-
-    $default  reduce using rule 68 (indexed)
+    expr        go to state 61
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    elist       go to state 136
+    objectdef   go to state 35
+    const       go to state 38
 
 
-State 113
+State 96
 
-   30 term: MY_OPEN_PAR expr MY_CLOSE_PAR .
+   53 member: call MY_DOT_SIMPLE . MY_ID
 
-    $default  reduce using rule 30 (term)
-
-
-State 114
-
-   45 primary: MY_OPEN_PAR funcdef MY_CLOSE_PAR .
-   57 call: MY_OPEN_PAR funcdef MY_CLOSE_PAR . MY_OPEN_PAR elist MY_CLOSE_PAR
-
-    MY_OPEN_PAR  shift, and go to state 137
-
-    $default  reduce using rule 45 (primary)
+    MY_ID  shift, and go to state 137
 
 
-State 115
+State 97
 
-   15 expr: expr . operator expr
-   15     | expr operator expr .
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+   92 ifstmt: MY_IF MY_OPEN_PAR expr . MY_CLOSE_PAR stmt
+   93       | MY_IF MY_OPEN_PAR expr . MY_CLOSE_PAR stmt MY_ELSE stmt
+
+    MY_AND        shift, and go to state 70
+    MY_OR         shift, and go to state 71
+    MY_EQUAL      shift, and go to state 72
+    MY_NEQUAL     shift, and go to state 73
+    MY_PLUS       shift, and go to state 74
+    MY_MINUS      shift, and go to state 75
+    MY_MUL        shift, and go to state 76
+    MY_DIV        shift, and go to state 77
+    MY_MOD        shift, and go to state 78
+    MY_L          shift, and go to state 79
+    MY_LE         shift, and go to state 80
+    MY_G          shift, and go to state 81
+    MY_GE         shift, and go to state 82
+    MY_CLOSE_PAR  shift, and go to state 138
+
+
+State 98
+
+   95 forstmt: MY_FOR MY_OPEN_PAR elist . MY_SEMICOLON expr MY_SEMICOLON elist MY_CLOSE_PAR stmt
+
+    MY_SEMICOLON  shift, and go to state 139
+
+
+State 99
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+   94 whilestmt: MY_WHILE MY_OPEN_PAR expr . MY_CLOSE_PAR stmt
+
+    MY_AND        shift, and go to state 70
+    MY_OR         shift, and go to state 71
+    MY_EQUAL      shift, and go to state 72
+    MY_NEQUAL     shift, and go to state 73
+    MY_PLUS       shift, and go to state 74
+    MY_MINUS      shift, and go to state 75
+    MY_MUL        shift, and go to state 76
+    MY_DIV        shift, and go to state 77
+    MY_MOD        shift, and go to state 78
+    MY_L          shift, and go to state 79
+    MY_LE         shift, and go to state 80
+    MY_G          shift, and go to state 81
+    MY_GE         shift, and go to state 82
+    MY_CLOSE_PAR  shift, and go to state 140
+
+
+State 100
+
+   97 returnstmt: MY_RETURN expr MY_SEMICOLON .
+
+    $default  reduce using rule 97 (returnstmt)
+
+
+State 101
+
+   79 funcdef: MY_FUNCTION MY_ID $@8 . MY_OPEN_PAR idlist MY_CLOSE_PAR funblock
+
+    MY_OPEN_PAR  shift, and go to state 141
+
+
+State 102
+
+   77 funcdef: MY_FUNCTION $@7 MY_OPEN_PAR . idlist MY_CLOSE_PAR funblock
+
+    MY_ID  shift, and go to state 142
+
+    $default  reduce using rule 88 (idlist)
+
+    idlist  go to state 143
+
+
+State 103
+
+   57 call: MY_OPEN_PAR funcdef . MY_CLOSE_PAR MY_OPEN_PAR elist MY_CLOSE_PAR
+
+    MY_CLOSE_PAR  shift, and go to state 144
+
+
+State 104
+
+   73 block: MY_OPEN_ANG $@5 stmts . MY_CLOSE_ANG
+
+    MY_CLOSE_ANG  shift, and go to state 145
+
+
+State 105
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+   71 indexedelem: MY_OPEN_ANG expr . MY_DOT_UD expr MY_CLOSE_ANG
 
     MY_AND     shift, and go to state 70
     MY_OR      shift, and go to state 71
@@ -1857,28 +2125,478 @@ State 115
     MY_LE      shift, and go to state 80
     MY_G       shift, and go to state 81
     MY_GE      shift, and go to state 82
+    MY_DOT_UD  shift, and go to state 146
 
-    MY_AND     [reduce using rule 15 (expr)]
-    MY_OR      [reduce using rule 15 (expr)]
-    MY_EQUAL   [reduce using rule 15 (expr)]
-    MY_NEQUAL  [reduce using rule 15 (expr)]
-    MY_PLUS    [reduce using rule 15 (expr)]
-    MY_MINUS   [reduce using rule 15 (expr)]
-    MY_MUL     [reduce using rule 15 (expr)]
-    MY_DIV     [reduce using rule 15 (expr)]
-    MY_MOD     [reduce using rule 15 (expr)]
-    MY_L       [reduce using rule 15 (expr)]
-    MY_LE      [reduce using rule 15 (expr)]
-    MY_G       [reduce using rule 15 (expr)]
-    MY_GE      [reduce using rule 15 (expr)]
-    $default   reduce using rule 15 (expr)
 
-    operator  go to state 84
+State 106
+
+   64 commaexprs: MY_COMMA . expr commaexprs
+
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+
+    expr        go to state 147
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    const       go to state 38
+
+
+State 107
+
+   62 elist: expr commaexprs .
+
+    $default  reduce using rule 62 (elist)
+
+
+State 108
+
+   66 objectdef: MY_OPEN_BRA elist MY_CLOSE_BRA .
+
+    $default  reduce using rule 66 (objectdef)
+
+
+State 109
+
+   67 objectdef: MY_OPEN_BRA indexed MY_CLOSE_BRA .
+
+    $default  reduce using rule 67 (objectdef)
+
+
+State 110
+
+   69 commaindex: MY_COMMA . indexedelem commaindex
+
+    MY_OPEN_ANG  shift, and go to state 60
+
+    indexedelem  go to state 148
+
+
+State 111
+
+   68 indexed: indexedelem commaindex .
+
+    $default  reduce using rule 68 (indexed)
+
+
+State 112
+
+   30 term: MY_OPEN_PAR expr MY_CLOSE_PAR .
+
+    $default  reduce using rule 30 (term)
+
+
+State 113
+
+   45 primary: MY_OPEN_PAR funcdef MY_CLOSE_PAR .
+   57 call: MY_OPEN_PAR funcdef MY_CLOSE_PAR . MY_OPEN_PAR elist MY_CLOSE_PAR
+
+    MY_OPEN_PAR  shift, and go to state 149
+
+    $default  reduce using rule 45 (primary)
+
+
+State 114
+
+    3 stmts: stmt $@1 stmts .
+
+    $default  reduce using rule 3 (stmts)
+
+
+State 115
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   27     | expr MY_AND expr .
+   28     | expr . MY_OR expr
+
+    MY_EQUAL   shift, and go to state 72
+    MY_NEQUAL  shift, and go to state 73
+    MY_PLUS    shift, and go to state 74
+    MY_MINUS   shift, and go to state 75
+    MY_MUL     shift, and go to state 76
+    MY_DIV     shift, and go to state 77
+    MY_MOD     shift, and go to state 78
+    MY_L       shift, and go to state 79
+    MY_LE      shift, and go to state 80
+    MY_G       shift, and go to state 81
+    MY_GE      shift, and go to state 82
+
+    $default  reduce using rule 27 (expr)
 
 
 State 116
 
-   15 expr: expr . operator expr
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+   28     | expr MY_OR expr .
+
+    MY_EQUAL   shift, and go to state 72
+    MY_NEQUAL  shift, and go to state 73
+    MY_PLUS    shift, and go to state 74
+    MY_MINUS   shift, and go to state 75
+    MY_MUL     shift, and go to state 76
+    MY_DIV     shift, and go to state 77
+    MY_MOD     shift, and go to state 78
+    MY_L       shift, and go to state 79
+    MY_LE      shift, and go to state 80
+    MY_G       shift, and go to state 81
+    MY_GE      shift, and go to state 82
+
+    $default  reduce using rule 28 (expr)
+
+
+State 117
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   25     | expr MY_EQUAL expr .
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+
+    MY_PLUS   shift, and go to state 74
+    MY_MINUS  shift, and go to state 75
+    MY_MUL    shift, and go to state 76
+    MY_DIV    shift, and go to state 77
+    MY_MOD    shift, and go to state 78
+    MY_L      shift, and go to state 79
+    MY_LE     shift, and go to state 80
+    MY_G      shift, and go to state 81
+    MY_GE     shift, and go to state 82
+
+    MY_EQUAL   error (nonassociative)
+    MY_NEQUAL  error (nonassociative)
+
+    $default  reduce using rule 25 (expr)
+
+
+State 118
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   26     | expr MY_NEQUAL expr .
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+
+    MY_PLUS   shift, and go to state 74
+    MY_MINUS  shift, and go to state 75
+    MY_MUL    shift, and go to state 76
+    MY_DIV    shift, and go to state 77
+    MY_MOD    shift, and go to state 78
+    MY_L      shift, and go to state 79
+    MY_LE     shift, and go to state 80
+    MY_G      shift, and go to state 81
+    MY_GE     shift, and go to state 82
+
+    MY_EQUAL   error (nonassociative)
+    MY_NEQUAL  error (nonassociative)
+
+    $default  reduce using rule 26 (expr)
+
+
+State 119
+
+   16 expr: expr . MY_PLUS expr
+   16     | expr MY_PLUS expr .
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+
+    MY_MUL  shift, and go to state 76
+    MY_DIV  shift, and go to state 77
+    MY_MOD  shift, and go to state 78
+
+    $default  reduce using rule 16 (expr)
+
+
+State 120
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   17     | expr MY_MINUS expr .
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+
+    MY_MUL  shift, and go to state 76
+    MY_DIV  shift, and go to state 77
+    MY_MOD  shift, and go to state 78
+
+    $default  reduce using rule 17 (expr)
+
+
+State 121
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   18     | expr MY_MUL expr .
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+
+    $default  reduce using rule 18 (expr)
+
+
+State 122
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   19     | expr MY_DIV expr .
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+
+    $default  reduce using rule 19 (expr)
+
+
+State 123
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   20     | expr MY_MOD expr .
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+
+    $default  reduce using rule 20 (expr)
+
+
+State 124
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   23     | expr MY_L expr .
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+
+    MY_PLUS   shift, and go to state 74
+    MY_MINUS  shift, and go to state 75
+    MY_MUL    shift, and go to state 76
+    MY_DIV    shift, and go to state 77
+    MY_MOD    shift, and go to state 78
+
+    MY_L   error (nonassociative)
+    MY_LE  error (nonassociative)
+    MY_G   error (nonassociative)
+    MY_GE  error (nonassociative)
+
+    $default  reduce using rule 23 (expr)
+
+
+State 125
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   24     | expr MY_LE expr .
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+
+    MY_PLUS   shift, and go to state 74
+    MY_MINUS  shift, and go to state 75
+    MY_MUL    shift, and go to state 76
+    MY_DIV    shift, and go to state 77
+    MY_MOD    shift, and go to state 78
+
+    MY_L   error (nonassociative)
+    MY_LE  error (nonassociative)
+    MY_G   error (nonassociative)
+    MY_GE  error (nonassociative)
+
+    $default  reduce using rule 24 (expr)
+
+
+State 126
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   21     | expr MY_G expr .
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+
+    MY_PLUS   shift, and go to state 74
+    MY_MINUS  shift, and go to state 75
+    MY_MUL    shift, and go to state 76
+    MY_DIV    shift, and go to state 77
+    MY_MOD    shift, and go to state 78
+
+    MY_L   error (nonassociative)
+    MY_LE  error (nonassociative)
+    MY_G   error (nonassociative)
+    MY_GE  error (nonassociative)
+
+    $default  reduce using rule 21 (expr)
+
+
+State 127
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   22     | expr MY_GE expr .
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+
+    MY_PLUS   shift, and go to state 74
+    MY_MINUS  shift, and go to state 75
+    MY_MUL    shift, and go to state 76
+    MY_DIV    shift, and go to state 77
+    MY_MOD    shift, and go to state 78
+
+    MY_L   error (nonassociative)
+    MY_LE  error (nonassociative)
+    MY_G   error (nonassociative)
+    MY_GE  error (nonassociative)
+
+    $default  reduce using rule 22 (expr)
+
+
+State 128
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
    52 member: lvalue MY_OPEN_BRA expr . MY_CLOSE_BRA
 
     MY_AND        shift, and go to state 70
@@ -1894,59 +2612,57 @@ State 116
     MY_LE         shift, and go to state 80
     MY_G          shift, and go to state 81
     MY_GE         shift, and go to state 82
-    MY_CLOSE_BRA  shift, and go to state 138
-
-    operator  go to state 84
+    MY_CLOSE_BRA  shift, and go to state 150
 
 
-State 117
+State 129
 
    60 normcall: MY_OPEN_PAR elist . MY_CLOSE_PAR
 
-    MY_CLOSE_PAR  shift, and go to state 139
+    MY_CLOSE_PAR  shift, and go to state 151
 
 
-State 118
+State 130
 
    51 member: lvalue MY_DOT_SIMPLE MY_ID .
 
     $default  reduce using rule 51 (member)
 
 
-State 119
+State 131
 
    61 methodcall: MY_DOT_DOUBLE MY_ID . MY_OPEN_PAR elist MY_CLOSE_PAR
 
-    MY_OPEN_PAR  shift, and go to state 140
+    MY_OPEN_PAR  shift, and go to state 152
 
 
-State 120
+State 132
 
-   35 term: lvalue $@1 MY_INC .
+   35 term: lvalue $@2 MY_INC .
 
     $default  reduce using rule 35 (term)
 
 
-State 121
+State 133
 
-   38 term: lvalue $@2 MY_DEC .
+   38 term: lvalue $@3 MY_DEC .
 
     $default  reduce using rule 38 (term)
 
 
-State 122
+State 134
 
-   41 assignexpr: lvalue $@3 MY_ASSIGN . expr
+   41 assignexpr: lvalue $@4 MY_ASSIGN . expr
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -1954,7 +2670,7 @@ State 122
     MY_OPEN_PAR    shift, and go to state 22
     MY_DOT_STREAM  shift, and go to state 23
 
-    expr        go to state 141
+    expr        go to state 153
     term        go to state 29
     assignexpr  go to state 30
     primary     go to state 31
@@ -1965,9 +2681,21 @@ State 122
     const       go to state 38
 
 
-State 123
+State 135
 
-   15 expr: expr . operator expr
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
    54 member: call MY_OPEN_BRA expr . MY_CLOSE_BRA
 
     MY_AND        shift, and go to state 70
@@ -1983,46 +2711,44 @@ State 123
     MY_LE         shift, and go to state 80
     MY_G          shift, and go to state 81
     MY_GE         shift, and go to state 82
-    MY_CLOSE_BRA  shift, and go to state 142
-
-    operator  go to state 84
+    MY_CLOSE_BRA  shift, and go to state 154
 
 
-State 124
+State 136
 
    55 call: call MY_OPEN_PAR elist . MY_CLOSE_PAR
 
-    MY_CLOSE_PAR  shift, and go to state 143
+    MY_CLOSE_PAR  shift, and go to state 155
 
 
-State 125
+State 137
 
    53 member: call MY_DOT_SIMPLE MY_ID .
 
     $default  reduce using rule 53 (member)
 
 
-State 126
+State 138
 
    92 ifstmt: MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR . stmt
    93       | MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR . stmt MY_ELSE stmt
 
-    MY_STRING      shift, and go to state 1
-    MY_IF          shift, and go to state 2
-    MY_FOR         shift, and go to state 3
-    MY_WHILE       shift, and go to state 4
-    MY_CONTINUE    shift, and go to state 5
-    MY_BREAK       shift, and go to state 6
-    MY_RETURN      shift, and go to state 7
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_FUNCTION    shift, and go to state 13
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_IF          shift, and go to state 4
+    MY_FOR         shift, and go to state 5
+    MY_WHILE       shift, and go to state 6
+    MY_CONTINUE    shift, and go to state 7
+    MY_BREAK       shift, and go to state 8
+    MY_RETURN      shift, and go to state 9
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_FUNCTION    shift, and go to state 15
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -2032,7 +2758,7 @@ State 126
     MY_DOT_STREAM  shift, and go to state 23
     MY_SEMICOLON   shift, and go to state 24
 
-    stmt        go to state 144
+    stmt        go to state 156
     expr        go to state 28
     term        go to state 29
     assignexpr  go to state 30
@@ -2050,19 +2776,19 @@ State 126
     returnstmt  go to state 42
 
 
-State 127
+State 139
 
    95 forstmt: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON . expr MY_SEMICOLON elist MY_CLOSE_PAR stmt
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -2070,7 +2796,7 @@ State 127
     MY_OPEN_PAR    shift, and go to state 22
     MY_DOT_STREAM  shift, and go to state 23
 
-    expr        go to state 145
+    expr        go to state 157
     term        go to state 29
     assignexpr  go to state 30
     primary     go to state 31
@@ -2081,26 +2807,26 @@ State 127
     const       go to state 38
 
 
-State 128
+State 140
 
    94 whilestmt: MY_WHILE MY_OPEN_PAR expr MY_CLOSE_PAR . stmt
 
-    MY_STRING      shift, and go to state 1
-    MY_IF          shift, and go to state 2
-    MY_FOR         shift, and go to state 3
-    MY_WHILE       shift, and go to state 4
-    MY_CONTINUE    shift, and go to state 5
-    MY_BREAK       shift, and go to state 6
-    MY_RETURN      shift, and go to state 7
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_FUNCTION    shift, and go to state 13
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_IF          shift, and go to state 4
+    MY_FOR         shift, and go to state 5
+    MY_WHILE       shift, and go to state 6
+    MY_CONTINUE    shift, and go to state 7
+    MY_BREAK       shift, and go to state 8
+    MY_RETURN      shift, and go to state 9
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_FUNCTION    shift, and go to state 15
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -2110,7 +2836,7 @@ State 128
     MY_DOT_STREAM  shift, and go to state 23
     MY_SEMICOLON   shift, and go to state 24
 
-    stmt        go to state 146
+    stmt        go to state 158
     expr        go to state 28
     term        go to state 29
     assignexpr  go to state 30
@@ -2128,60 +2854,60 @@ State 128
     returnstmt  go to state 42
 
 
-State 129
+State 141
 
-   79 funcdef: MY_FUNCTION MY_ID $@7 MY_OPEN_PAR . idlist MY_CLOSE_PAR funblock
+   79 funcdef: MY_FUNCTION MY_ID $@8 MY_OPEN_PAR . idlist MY_CLOSE_PAR funblock
 
-    MY_ID  shift, and go to state 130
+    MY_ID  shift, and go to state 142
 
     $default  reduce using rule 88 (idlist)
 
-    idlist  go to state 147
+    idlist  go to state 159
 
 
-State 130
+State 142
 
-   87 idlist: MY_ID . $@8 idwithcommas
+   87 idlist: MY_ID . $@9 idwithcommas
 
-    $default  reduce using rule 86 ($@8)
+    $default  reduce using rule 86 ($@9)
 
-    $@8  go to state 148
-
-
-State 131
-
-   77 funcdef: MY_FUNCTION $@6 MY_OPEN_PAR idlist . MY_CLOSE_PAR funblock
-
-    MY_CLOSE_PAR  shift, and go to state 149
+    $@9  go to state 160
 
 
-State 132
+State 143
+
+   77 funcdef: MY_FUNCTION $@7 MY_OPEN_PAR idlist . MY_CLOSE_PAR funblock
+
+    MY_CLOSE_PAR  shift, and go to state 161
+
+
+State 144
 
    57 call: MY_OPEN_PAR funcdef MY_CLOSE_PAR . MY_OPEN_PAR elist MY_CLOSE_PAR
 
-    MY_OPEN_PAR  shift, and go to state 137
+    MY_OPEN_PAR  shift, and go to state 149
 
 
-State 133
+State 145
 
-   73 block: MY_OPEN_ANG $@4 stmts MY_CLOSE_ANG .
+   73 block: MY_OPEN_ANG $@5 stmts MY_CLOSE_ANG .
 
     $default  reduce using rule 73 (block)
 
 
-State 134
+State 146
 
    71 indexedelem: MY_OPEN_ANG expr MY_DOT_UD . expr MY_CLOSE_ANG
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -2189,7 +2915,7 @@ State 134
     MY_OPEN_PAR    shift, and go to state 22
     MY_DOT_STREAM  shift, and go to state 23
 
-    expr        go to state 150
+    expr        go to state 162
     term        go to state 29
     assignexpr  go to state 30
     primary     go to state 31
@@ -2200,9 +2926,21 @@ State 134
     const       go to state 38
 
 
-State 135
+State 147
 
-   15 expr: expr . operator expr
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
    64 commaexprs: MY_COMMA expr . commaexprs
 
     MY_AND     shift, and go to state 70
@@ -2218,38 +2956,37 @@ State 135
     MY_LE      shift, and go to state 80
     MY_G       shift, and go to state 81
     MY_GE      shift, and go to state 82
-    MY_COMMA   shift, and go to state 107
+    MY_COMMA   shift, and go to state 106
 
     $default  reduce using rule 65 (commaexprs)
 
-    operator    go to state 84
-    commaexprs  go to state 151
+    commaexprs  go to state 163
 
 
-State 136
+State 148
 
    69 commaindex: MY_COMMA indexedelem . commaindex
 
-    MY_COMMA  shift, and go to state 111
+    MY_COMMA  shift, and go to state 110
 
     $default  reduce using rule 70 (commaindex)
 
-    commaindex  go to state 152
+    commaindex  go to state 164
 
 
-State 137
+State 149
 
    57 call: MY_OPEN_PAR funcdef MY_CLOSE_PAR MY_OPEN_PAR . elist MY_CLOSE_PAR
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -2266,276 +3003,38 @@ State 137
     lvalue      go to state 32
     member      go to state 33
     call        go to state 34
-    elist       go to state 153
+    elist       go to state 165
     objectdef   go to state 35
     const       go to state 38
 
 
-State 138
+State 150
 
    52 member: lvalue MY_OPEN_BRA expr MY_CLOSE_BRA .
 
     $default  reduce using rule 52 (member)
 
 
-State 139
+State 151
 
    60 normcall: MY_OPEN_PAR elist MY_CLOSE_PAR .
 
     $default  reduce using rule 60 (normcall)
 
 
-State 140
+State 152
 
    61 methodcall: MY_DOT_DOUBLE MY_ID MY_OPEN_PAR . elist MY_CLOSE_PAR
 
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
-    MY_INC         shift, and go to state 17
-    MY_MINUS       shift, and go to state 18
-    MY_DEC         shift, and go to state 19
-    MY_OPEN_BRA    shift, and go to state 21
-    MY_OPEN_PAR    shift, and go to state 22
-    MY_DOT_STREAM  shift, and go to state 23
-
-    $default  reduce using rule 63 (elist)
-
-    expr        go to state 61
-    term        go to state 29
-    assignexpr  go to state 30
-    primary     go to state 31
-    lvalue      go to state 32
-    member      go to state 33
-    call        go to state 34
-    elist       go to state 154
-    objectdef   go to state 35
-    const       go to state 38
-
-
-State 141
-
-   15 expr: expr . operator expr
-   41 assignexpr: lvalue $@3 MY_ASSIGN expr .
-
-    MY_AND     shift, and go to state 70
-    MY_OR      shift, and go to state 71
-    MY_EQUAL   shift, and go to state 72
-    MY_NEQUAL  shift, and go to state 73
-    MY_PLUS    shift, and go to state 74
-    MY_MINUS   shift, and go to state 75
-    MY_MUL     shift, and go to state 76
-    MY_DIV     shift, and go to state 77
-    MY_MOD     shift, and go to state 78
-    MY_L       shift, and go to state 79
-    MY_LE      shift, and go to state 80
-    MY_G       shift, and go to state 81
-    MY_GE      shift, and go to state 82
-
-    $default  reduce using rule 41 (assignexpr)
-
-    operator  go to state 84
-
-
-State 142
-
-   54 member: call MY_OPEN_BRA expr MY_CLOSE_BRA .
-
-    $default  reduce using rule 54 (member)
-
-
-State 143
-
-   55 call: call MY_OPEN_PAR elist MY_CLOSE_PAR .
-
-    $default  reduce using rule 55 (call)
-
-
-State 144
-
-   92 ifstmt: MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt .
-   93       | MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt . MY_ELSE stmt
-
-    MY_ELSE  shift, and go to state 155
-
-    MY_ELSE   [reduce using rule 92 (ifstmt)]
-    $default  reduce using rule 92 (ifstmt)
-
-
-State 145
-
-   15 expr: expr . operator expr
-   95 forstmt: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON expr . MY_SEMICOLON elist MY_CLOSE_PAR stmt
-
-    MY_AND        shift, and go to state 70
-    MY_OR         shift, and go to state 71
-    MY_EQUAL      shift, and go to state 72
-    MY_NEQUAL     shift, and go to state 73
-    MY_PLUS       shift, and go to state 74
-    MY_MINUS      shift, and go to state 75
-    MY_MUL        shift, and go to state 76
-    MY_DIV        shift, and go to state 77
-    MY_MOD        shift, and go to state 78
-    MY_L          shift, and go to state 79
-    MY_LE         shift, and go to state 80
-    MY_G          shift, and go to state 81
-    MY_GE         shift, and go to state 82
-    MY_SEMICOLON  shift, and go to state 156
-
-    operator  go to state 84
-
-
-State 146
-
-   94 whilestmt: MY_WHILE MY_OPEN_PAR expr MY_CLOSE_PAR stmt .
-
-    $default  reduce using rule 94 (whilestmt)
-
-
-State 147
-
-   79 funcdef: MY_FUNCTION MY_ID $@7 MY_OPEN_PAR idlist . MY_CLOSE_PAR funblock
-
-    MY_CLOSE_PAR  shift, and go to state 157
-
-
-State 148
-
-   87 idlist: MY_ID $@8 . idwithcommas
-
-    MY_COMMA  shift, and go to state 158
-
-    $default  reduce using rule 91 (idwithcommas)
-
-    idwithcommas  go to state 159
-
-
-State 149
-
-   77 funcdef: MY_FUNCTION $@6 MY_OPEN_PAR idlist MY_CLOSE_PAR . funblock
-
-    MY_OPEN_ANG  shift, and go to state 160
-
-    funblock  go to state 161
-
-
-State 150
-
-   15 expr: expr . operator expr
-   71 indexedelem: MY_OPEN_ANG expr MY_DOT_UD expr . MY_CLOSE_ANG
-
-    MY_AND        shift, and go to state 70
-    MY_OR         shift, and go to state 71
-    MY_EQUAL      shift, and go to state 72
-    MY_NEQUAL     shift, and go to state 73
-    MY_PLUS       shift, and go to state 74
-    MY_MINUS      shift, and go to state 75
-    MY_MUL        shift, and go to state 76
-    MY_DIV        shift, and go to state 77
-    MY_MOD        shift, and go to state 78
-    MY_L          shift, and go to state 79
-    MY_LE         shift, and go to state 80
-    MY_G          shift, and go to state 81
-    MY_GE         shift, and go to state 82
-    MY_CLOSE_ANG  shift, and go to state 162
-
-    operator  go to state 84
-
-
-State 151
-
-   64 commaexprs: MY_COMMA expr commaexprs .
-
-    $default  reduce using rule 64 (commaexprs)
-
-
-State 152
-
-   69 commaindex: MY_COMMA indexedelem commaindex .
-
-    $default  reduce using rule 69 (commaindex)
-
-
-State 153
-
-   57 call: MY_OPEN_PAR funcdef MY_CLOSE_PAR MY_OPEN_PAR elist . MY_CLOSE_PAR
-
-    MY_CLOSE_PAR  shift, and go to state 163
-
-
-State 154
-
-   61 methodcall: MY_DOT_DOUBLE MY_ID MY_OPEN_PAR elist . MY_CLOSE_PAR
-
-    MY_CLOSE_PAR  shift, and go to state 164
-
-
-State 155
-
-   93 ifstmt: MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt MY_ELSE . stmt
-
-    MY_STRING      shift, and go to state 1
-    MY_IF          shift, and go to state 2
-    MY_FOR         shift, and go to state 3
-    MY_WHILE       shift, and go to state 4
-    MY_CONTINUE    shift, and go to state 5
-    MY_BREAK       shift, and go to state 6
-    MY_RETURN      shift, and go to state 7
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_FUNCTION    shift, and go to state 13
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
-    MY_INC         shift, and go to state 17
-    MY_MINUS       shift, and go to state 18
-    MY_DEC         shift, and go to state 19
-    MY_OPEN_ANG    shift, and go to state 20
-    MY_OPEN_BRA    shift, and go to state 21
-    MY_OPEN_PAR    shift, and go to state 22
-    MY_DOT_STREAM  shift, and go to state 23
-    MY_SEMICOLON   shift, and go to state 24
-
-    stmt        go to state 165
-    expr        go to state 28
-    term        go to state 29
-    assignexpr  go to state 30
-    primary     go to state 31
-    lvalue      go to state 32
-    member      go to state 33
-    call        go to state 34
-    objectdef   go to state 35
-    block       go to state 36
-    funcdef     go to state 37
-    const       go to state 38
-    ifstmt      go to state 39
-    whilestmt   go to state 40
-    forstmt     go to state 41
-    returnstmt  go to state 42
-
-
-State 156
-
-   95 forstmt: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON expr MY_SEMICOLON . elist MY_CLOSE_PAR stmt
-
-    MY_STRING      shift, and go to state 1
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -2557,116 +3056,213 @@ State 156
     const       go to state 38
 
 
+State 153
+
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+   41 assignexpr: lvalue $@4 MY_ASSIGN expr .
+
+    MY_AND     shift, and go to state 70
+    MY_OR      shift, and go to state 71
+    MY_EQUAL   shift, and go to state 72
+    MY_NEQUAL  shift, and go to state 73
+    MY_PLUS    shift, and go to state 74
+    MY_MINUS   shift, and go to state 75
+    MY_MUL     shift, and go to state 76
+    MY_DIV     shift, and go to state 77
+    MY_MOD     shift, and go to state 78
+    MY_L       shift, and go to state 79
+    MY_LE      shift, and go to state 80
+    MY_G       shift, and go to state 81
+    MY_GE      shift, and go to state 82
+
+    $default  reduce using rule 41 (assignexpr)
+
+
+State 154
+
+   54 member: call MY_OPEN_BRA expr MY_CLOSE_BRA .
+
+    $default  reduce using rule 54 (member)
+
+
+State 155
+
+   55 call: call MY_OPEN_PAR elist MY_CLOSE_PAR .
+
+    $default  reduce using rule 55 (call)
+
+
+State 156
+
+   92 ifstmt: MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt .
+   93       | MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt . MY_ELSE stmt
+
+    MY_ELSE  shift, and go to state 167
+
+    MY_ELSE   [reduce using rule 92 (ifstmt)]
+    $default  reduce using rule 92 (ifstmt)
+
+
 State 157
 
-   79 funcdef: MY_FUNCTION MY_ID $@7 MY_OPEN_PAR idlist MY_CLOSE_PAR . funblock
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+   95 forstmt: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON expr . MY_SEMICOLON elist MY_CLOSE_PAR stmt
 
-    MY_OPEN_ANG  shift, and go to state 160
-
-    funblock  go to state 167
+    MY_AND        shift, and go to state 70
+    MY_OR         shift, and go to state 71
+    MY_EQUAL      shift, and go to state 72
+    MY_NEQUAL     shift, and go to state 73
+    MY_PLUS       shift, and go to state 74
+    MY_MINUS      shift, and go to state 75
+    MY_MUL        shift, and go to state 76
+    MY_DIV        shift, and go to state 77
+    MY_MOD        shift, and go to state 78
+    MY_L          shift, and go to state 79
+    MY_LE         shift, and go to state 80
+    MY_G          shift, and go to state 81
+    MY_GE         shift, and go to state 82
+    MY_SEMICOLON  shift, and go to state 168
 
 
 State 158
 
-   90 idwithcommas: MY_COMMA . MY_ID $@9 idwithcommas
+   94 whilestmt: MY_WHILE MY_OPEN_PAR expr MY_CLOSE_PAR stmt .
 
-    MY_ID  shift, and go to state 168
+    $default  reduce using rule 94 (whilestmt)
 
 
 State 159
 
-   87 idlist: MY_ID $@8 idwithcommas .
+   79 funcdef: MY_FUNCTION MY_ID $@8 MY_OPEN_PAR idlist . MY_CLOSE_PAR funblock
 
-    $default  reduce using rule 87 (idlist)
+    MY_CLOSE_PAR  shift, and go to state 169
 
 
 State 160
 
-   75 funblock: MY_OPEN_ANG . $@5 stmts MY_CLOSE_ANG
+   87 idlist: MY_ID $@9 . idwithcommas
 
-    $default  reduce using rule 74 ($@5)
+    MY_COMMA  shift, and go to state 170
 
-    $@5  go to state 169
+    $default  reduce using rule 91 (idwithcommas)
+
+    idwithcommas  go to state 171
 
 
 State 161
 
-   77 funcdef: MY_FUNCTION $@6 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock .
+   77 funcdef: MY_FUNCTION $@7 MY_OPEN_PAR idlist MY_CLOSE_PAR . funblock
 
-    $default  reduce using rule 77 (funcdef)
+    MY_OPEN_ANG  shift, and go to state 172
+
+    funblock  go to state 173
 
 
 State 162
 
-   71 indexedelem: MY_OPEN_ANG expr MY_DOT_UD expr MY_CLOSE_ANG .
+   16 expr: expr . MY_PLUS expr
+   17     | expr . MY_MINUS expr
+   18     | expr . MY_MUL expr
+   19     | expr . MY_DIV expr
+   20     | expr . MY_MOD expr
+   21     | expr . MY_G expr
+   22     | expr . MY_GE expr
+   23     | expr . MY_L expr
+   24     | expr . MY_LE expr
+   25     | expr . MY_EQUAL expr
+   26     | expr . MY_NEQUAL expr
+   27     | expr . MY_AND expr
+   28     | expr . MY_OR expr
+   71 indexedelem: MY_OPEN_ANG expr MY_DOT_UD expr . MY_CLOSE_ANG
 
-    $default  reduce using rule 71 (indexedelem)
+    MY_AND        shift, and go to state 70
+    MY_OR         shift, and go to state 71
+    MY_EQUAL      shift, and go to state 72
+    MY_NEQUAL     shift, and go to state 73
+    MY_PLUS       shift, and go to state 74
+    MY_MINUS      shift, and go to state 75
+    MY_MUL        shift, and go to state 76
+    MY_DIV        shift, and go to state 77
+    MY_MOD        shift, and go to state 78
+    MY_L          shift, and go to state 79
+    MY_LE         shift, and go to state 80
+    MY_G          shift, and go to state 81
+    MY_GE         shift, and go to state 82
+    MY_CLOSE_ANG  shift, and go to state 174
 
 
 State 163
 
-   57 call: MY_OPEN_PAR funcdef MY_CLOSE_PAR MY_OPEN_PAR elist MY_CLOSE_PAR .
+   64 commaexprs: MY_COMMA expr commaexprs .
 
-    $default  reduce using rule 57 (call)
+    $default  reduce using rule 64 (commaexprs)
 
 
 State 164
 
-   61 methodcall: MY_DOT_DOUBLE MY_ID MY_OPEN_PAR elist MY_CLOSE_PAR .
+   69 commaindex: MY_COMMA indexedelem commaindex .
 
-    $default  reduce using rule 61 (methodcall)
+    $default  reduce using rule 69 (commaindex)
 
 
 State 165
 
-   93 ifstmt: MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt MY_ELSE stmt .
+   57 call: MY_OPEN_PAR funcdef MY_CLOSE_PAR MY_OPEN_PAR elist . MY_CLOSE_PAR
 
-    $default  reduce using rule 93 (ifstmt)
+    MY_CLOSE_PAR  shift, and go to state 175
 
 
 State 166
 
-   95 forstmt: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON expr MY_SEMICOLON elist . MY_CLOSE_PAR stmt
+   61 methodcall: MY_DOT_DOUBLE MY_ID MY_OPEN_PAR elist . MY_CLOSE_PAR
 
-    MY_CLOSE_PAR  shift, and go to state 170
+    MY_CLOSE_PAR  shift, and go to state 176
 
 
 State 167
 
-   79 funcdef: MY_FUNCTION MY_ID $@7 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock .
+   93 ifstmt: MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt MY_ELSE . stmt
 
-    $default  reduce using rule 79 (funcdef)
-
-
-State 168
-
-   90 idwithcommas: MY_COMMA MY_ID . $@9 idwithcommas
-
-    $default  reduce using rule 89 ($@9)
-
-    $@9  go to state 171
-
-
-State 169
-
-   75 funblock: MY_OPEN_ANG $@5 . stmts MY_CLOSE_ANG
-
-    MY_STRING      shift, and go to state 1
-    MY_IF          shift, and go to state 2
-    MY_FOR         shift, and go to state 3
-    MY_WHILE       shift, and go to state 4
-    MY_CONTINUE    shift, and go to state 5
-    MY_BREAK       shift, and go to state 6
-    MY_RETURN      shift, and go to state 7
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_FUNCTION    shift, and go to state 13
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_IF          shift, and go to state 4
+    MY_FOR         shift, and go to state 5
+    MY_WHILE       shift, and go to state 6
+    MY_CONTINUE    shift, and go to state 7
+    MY_BREAK       shift, and go to state 8
+    MY_RETURN      shift, and go to state 9
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_FUNCTION    shift, and go to state 15
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -2676,9 +3272,180 @@ State 169
     MY_DOT_STREAM  shift, and go to state 23
     MY_SEMICOLON   shift, and go to state 24
 
-    $default  reduce using rule 3 (stmts)
+    stmt        go to state 177
+    expr        go to state 28
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    objectdef   go to state 35
+    block       go to state 36
+    funcdef     go to state 37
+    const       go to state 38
+    ifstmt      go to state 39
+    whilestmt   go to state 40
+    forstmt     go to state 41
+    returnstmt  go to state 42
 
-    stmts       go to state 172
+
+State 168
+
+   95 forstmt: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON expr MY_SEMICOLON . elist MY_CLOSE_PAR stmt
+
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+
+    $default  reduce using rule 63 (elist)
+
+    expr        go to state 61
+    term        go to state 29
+    assignexpr  go to state 30
+    primary     go to state 31
+    lvalue      go to state 32
+    member      go to state 33
+    call        go to state 34
+    elist       go to state 178
+    objectdef   go to state 35
+    const       go to state 38
+
+
+State 169
+
+   79 funcdef: MY_FUNCTION MY_ID $@8 MY_OPEN_PAR idlist MY_CLOSE_PAR . funblock
+
+    MY_OPEN_ANG  shift, and go to state 172
+
+    funblock  go to state 179
+
+
+State 170
+
+   90 idwithcommas: MY_COMMA . MY_ID $@10 idwithcommas
+
+    MY_ID  shift, and go to state 180
+
+
+State 171
+
+   87 idlist: MY_ID $@9 idwithcommas .
+
+    $default  reduce using rule 87 (idlist)
+
+
+State 172
+
+   75 funblock: MY_OPEN_ANG . $@6 stmts MY_CLOSE_ANG
+
+    $default  reduce using rule 74 ($@6)
+
+    $@6  go to state 181
+
+
+State 173
+
+   77 funcdef: MY_FUNCTION $@7 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock .
+
+    $default  reduce using rule 77 (funcdef)
+
+
+State 174
+
+   71 indexedelem: MY_OPEN_ANG expr MY_DOT_UD expr MY_CLOSE_ANG .
+
+    $default  reduce using rule 71 (indexedelem)
+
+
+State 175
+
+   57 call: MY_OPEN_PAR funcdef MY_CLOSE_PAR MY_OPEN_PAR elist MY_CLOSE_PAR .
+
+    $default  reduce using rule 57 (call)
+
+
+State 176
+
+   61 methodcall: MY_DOT_DOUBLE MY_ID MY_OPEN_PAR elist MY_CLOSE_PAR .
+
+    $default  reduce using rule 61 (methodcall)
+
+
+State 177
+
+   93 ifstmt: MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt MY_ELSE stmt .
+
+    $default  reduce using rule 93 (ifstmt)
+
+
+State 178
+
+   95 forstmt: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON expr MY_SEMICOLON elist . MY_CLOSE_PAR stmt
+
+    MY_CLOSE_PAR  shift, and go to state 182
+
+
+State 179
+
+   79 funcdef: MY_FUNCTION MY_ID $@8 MY_OPEN_PAR idlist MY_CLOSE_PAR funblock .
+
+    $default  reduce using rule 79 (funcdef)
+
+
+State 180
+
+   90 idwithcommas: MY_COMMA MY_ID . $@10 idwithcommas
+
+    $default  reduce using rule 89 ($@10)
+
+    $@10  go to state 183
+
+
+State 181
+
+   75 funblock: MY_OPEN_ANG $@6 . stmts MY_CLOSE_ANG
+
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_IF          shift, and go to state 4
+    MY_FOR         shift, and go to state 5
+    MY_WHILE       shift, and go to state 6
+    MY_CONTINUE    shift, and go to state 7
+    MY_BREAK       shift, and go to state 8
+    MY_RETURN      shift, and go to state 9
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_FUNCTION    shift, and go to state 15
+    MY_ID          shift, and go to state 16
+    MY_INC         shift, and go to state 17
+    MY_MINUS       shift, and go to state 18
+    MY_DEC         shift, and go to state 19
+    MY_OPEN_ANG    shift, and go to state 20
+    MY_OPEN_BRA    shift, and go to state 21
+    MY_OPEN_PAR    shift, and go to state 22
+    MY_DOT_STREAM  shift, and go to state 23
+    MY_SEMICOLON   shift, and go to state 24
+
+    $default  reduce using rule 4 (stmts)
+
+    stmts       go to state 184
     stmt        go to state 27
     expr        go to state 28
     term        go to state 29
@@ -2697,26 +3464,26 @@ State 169
     returnstmt  go to state 42
 
 
-State 170
+State 182
 
    95 forstmt: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON expr MY_SEMICOLON elist MY_CLOSE_PAR . stmt
 
-    MY_STRING      shift, and go to state 1
-    MY_IF          shift, and go to state 2
-    MY_FOR         shift, and go to state 3
-    MY_WHILE       shift, and go to state 4
-    MY_CONTINUE    shift, and go to state 5
-    MY_BREAK       shift, and go to state 6
-    MY_RETURN      shift, and go to state 7
-    MY_NOT         shift, and go to state 8
-    MY_LOCAL       shift, and go to state 9
-    MY_NIL         shift, and go to state 10
-    MY_TRUE        shift, and go to state 11
-    MY_FALSE       shift, and go to state 12
-    MY_FUNCTION    shift, and go to state 13
-    MY_ID          shift, and go to state 14
-    MY_INTEGER     shift, and go to state 15
-    MY_REAL        shift, and go to state 16
+    MY_INTEGER     shift, and go to state 1
+    MY_REAL        shift, and go to state 2
+    MY_STRING      shift, and go to state 3
+    MY_IF          shift, and go to state 4
+    MY_FOR         shift, and go to state 5
+    MY_WHILE       shift, and go to state 6
+    MY_CONTINUE    shift, and go to state 7
+    MY_BREAK       shift, and go to state 8
+    MY_RETURN      shift, and go to state 9
+    MY_NOT         shift, and go to state 10
+    MY_LOCAL       shift, and go to state 11
+    MY_NIL         shift, and go to state 12
+    MY_TRUE        shift, and go to state 13
+    MY_FALSE       shift, and go to state 14
+    MY_FUNCTION    shift, and go to state 15
+    MY_ID          shift, and go to state 16
     MY_INC         shift, and go to state 17
     MY_MINUS       shift, and go to state 18
     MY_DEC         shift, and go to state 19
@@ -2726,7 +3493,7 @@ State 170
     MY_DOT_STREAM  shift, and go to state 23
     MY_SEMICOLON   shift, and go to state 24
 
-    stmt        go to state 173
+    stmt        go to state 185
     expr        go to state 28
     term        go to state 29
     assignexpr  go to state 30
@@ -2744,40 +3511,40 @@ State 170
     returnstmt  go to state 42
 
 
-State 171
+State 183
 
-   90 idwithcommas: MY_COMMA MY_ID $@9 . idwithcommas
+   90 idwithcommas: MY_COMMA MY_ID $@10 . idwithcommas
 
-    MY_COMMA  shift, and go to state 158
+    MY_COMMA  shift, and go to state 170
 
     $default  reduce using rule 91 (idwithcommas)
 
-    idwithcommas  go to state 174
+    idwithcommas  go to state 186
 
 
-State 172
+State 184
 
-   75 funblock: MY_OPEN_ANG $@5 stmts . MY_CLOSE_ANG
+   75 funblock: MY_OPEN_ANG $@6 stmts . MY_CLOSE_ANG
 
-    MY_CLOSE_ANG  shift, and go to state 175
+    MY_CLOSE_ANG  shift, and go to state 187
 
 
-State 173
+State 185
 
    95 forstmt: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON expr MY_SEMICOLON elist MY_CLOSE_PAR stmt .
 
     $default  reduce using rule 95 (forstmt)
 
 
-State 174
+State 186
 
-   90 idwithcommas: MY_COMMA MY_ID $@9 idwithcommas .
+   90 idwithcommas: MY_COMMA MY_ID $@10 idwithcommas .
 
     $default  reduce using rule 90 (idwithcommas)
 
 
-State 175
+State 187
 
-   75 funblock: MY_OPEN_ANG $@5 stmts MY_CLOSE_ANG .
+   75 funblock: MY_OPEN_ANG $@6 stmts MY_CLOSE_ANG .
 
     $default  reduce using rule 75 (funblock)

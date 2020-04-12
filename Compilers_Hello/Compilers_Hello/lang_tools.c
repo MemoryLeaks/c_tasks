@@ -307,6 +307,33 @@ int catholic_lookup(char* symbol) {
 	return -1; /*To -1 shmainei den brethike*/
 }
 
+/*[EPISTREFEI SCOPE] Synarthsh h opoia psaxnei se OLA ta scopes.  Alla apo to scope pou eimaste pros ta ksw
+  dhladh inside out.*/
+
+int inside_out_lookup(char* symbol, int scope) {
+	while (scope != 0) {
+		ScopeList* traverser = scopeHead[scope];
+		while (traverser != NULL) {
+			if (traverser->symbol->isActive == 1) {
+				if (traverser->symbol->varVal == NULL && (strcmp(traverser->symbol->funcVal->name, symbol) == 0)) {
+					/*Same token found in this scope*/
+					/* printf("Catholic: Brethike idio name synartisis!\n"); */
+					return scope;
+				}
+				else if (traverser->symbol->funcVal == NULL && (strcmp(traverser->symbol->varVal->name, symbol) == 0)) {
+					/*Same token found in this scope*/
+					/* printf("Catholic: Brethike idio name metablitis!\n"); */
+					return scope;
+				}
+			}
+			traverser = traverser->next;
+		}
+
+		scope--;
+	}
+
+	return -1; /*To -1 shmainei den brethike*/
+}
 
 /*Epistrefei ena SYMBOLO se sygkekrimeni SCOPE LIST */
 SymbolTableEntry* ScopeListGetSymbolAt(char* symbol, int scope) {
@@ -340,5 +367,108 @@ char* getSymbolType(int x) {
 		return "USERFUNC";
 	else
 		return "LIBFUNC";
+
+}
+
+
+expression* NewExpr(enum expr_t type, SymbolTableEntry* symbol, double numConst, char* strConst, unsigned char boolConst) {
+	expression* cell = malloc(sizeof(expression));
+	assert(cell);
+	cell->type = type;
+	cell->sym = symbol;
+	cell->index = NULL;
+	cell->next = NULL;
+	cell->numConst = numConst;
+	cell->strConst = _strdup(strConst);
+	cell->boolConst = boolConst;
+
+	return cell;
+}
+
+void emit(enum iopcode type, expression* expr1, expression* expr2, expression* expr3) {
+	printf("EMMIT: %s %s %s %s.\n", getIOpcodeName(type), getTesseractValue(expr1), getTesseractValue(expr2), getTesseractValue(expr3));
+}
+
+char* getIOpcodeName(enum iopcode type) {
+	if (type == 0)
+		return "ASSIGN";
+	else if (type == 1)
+		return "ADD";
+	else if (type == 2)
+		return "SUB";
+	else if (type == 3)
+		return "MUL";
+	if (type == 4)
+		return "DIV";
+	else if (type == 5)
+		return "MOD";
+	else if (type == 6)
+		return "UMINUS";
+	else if (type == 7)
+		return "AND";
+	if (type == 8)
+		return "OR";
+	else if (type == 9)
+		return "NOT";
+	else if (type == 10)
+		return "IF_EQ";
+	else if (type == 11)
+		return "IF_NOTEQ";
+	if (type == 12)
+		return "IF_LESSEQ";
+	else if (type == 13)
+		return "IF_GREATEREQ";
+	else if (type == 14)
+		return "IF_LESS";
+	else if (type == 15)
+		return "IF_GREATER";
+	if (type == 16)
+		return "CALL";
+	else if (type == 17)
+		return "PARAM";
+	else if (type == 18)
+		return "RET";
+	else if (type == 19)
+		return "GETRETVAL";
+	if (type == 20)
+		return "FUNCSTART";
+	else if (type == 21)
+		return "FUNCEND";
+	else if (type == 22)
+		return "TABLECREATE";
+	else if (type == 23)
+		return "TABLEGETELEM";
+	else if (type == 24)
+		return "TABLESETELEM";
+	else
+		return "MISSINGNO";
+}
+
+char* getTesseractValue(expression* expr) {
+
+	if (expr == NULL)
+		return "";
+
+	if (expr->sym != NULL && expr->sym->funcVal != NULL) {
+		return (char *) expr->sym->funcVal->name;
+	}
+	else if (expr->sym != NULL && expr->sym->varVal != NULL) {
+		return (char*) expr->sym->varVal->name;
+	}
+
+	if (expr->numConst != 0) {
+		char* buf = malloc(sizeof(char) * 20);
+		assert(buf);
+		memset(buf, '\0', 20);
+		sprintf(buf, "%f", expr->numConst);
+		return buf;
+	}
+	else if (expr->strConst != NULL) {
+		return expr->strConst;
+	}
+	else {
+		if (expr->boolConst == 'T') return "T";
+		else return "F";
+	}
 
 }

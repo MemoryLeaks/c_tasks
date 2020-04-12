@@ -1230,15 +1230,17 @@ YY_RULE_SETUP
 
 	if (warning_case == 1) {
 		printf("String contains illegal space characters and cannot be inserted!\n");
+		exit(1);
 	}
 	else if (string_format_flag == 0) {								
 		printf("Error: Illegal string! String is endless and cannot be inserted\n");
+		exit(1);
 		/* alpha_token_insert(yylineno, error_buf, "ENDLESS_STRING"); */
 	}else{									
 		char *fin_buf = malloc(i * sizeof(char) + 10);
 		fin_buf = strcpy(fin_buf, buffer);
 		fin_buf = strcat(fin_buf, "\"\0");
-		alpha_token_insert(found_in, fin_buf, "STRING");  /* LATHOS EDW */
+		/* alpha_token_insert(found_in, fin_buf, "STRING"); */
 		return MY_STRING;
 	}
 	
@@ -1246,7 +1248,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 224 "al.l"
+#line 226 "al.l"
 {
 	int nested_comments = 0;
 	int comment_format = 0;
@@ -1276,7 +1278,7 @@ YY_RULE_SETUP
 				break;
 			}
 			else if ((c == '/') && (nested > 0)) {	/* An yparxoun akoma nested anoigmena apla to meiwnw    */
-				alpha_token_insert(line_keeper[--nested], "COMMENT", "NESTED COMMENT");
+				/* alpha_token_insert(line_keeper[--nested], "COMMENT", "NESTED COMMENT"); */
 				nested_comments++;
 				continue;
 			}		
@@ -1302,14 +1304,14 @@ YY_RULE_SETUP
 		exit(1);
 	}
 	else {
-		alpha_token_insert(i, "COMMENT", "MULTILINE COMMENT");
+		/* alpha_token_insert(i, "COMMENT", "MULTILINE COMMENT"); */
 	}
 
 }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 284 "al.l"
+#line 286 "al.l"
 {
 	char c = '\0';
 	int i = yylineno;
@@ -1319,22 +1321,22 @@ YY_RULE_SETUP
 			break;
 	}
 
-	alpha_token_insert(i, "COMMENT", "ONE LINE COMMENT");
+	/* alpha_token_insert(i, "COMMENT", "ONE LINE COMMENT"); */
 }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 297 "al.l"
+#line 299 "al.l"
 {	printf("Error: Found UNDEFINED TOKEN: %s in line: %d.", yytext, yylineno);
 				exit(1);
 			}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 302 "al.l"
+#line 304 "al.l"
 ECHO;
 	YY_BREAK
-#line 1337 "al.c"
+#line 1339 "al.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2347,7 +2349,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 302 "al.l"
+#line 304 "al.l"
 
 
 /*

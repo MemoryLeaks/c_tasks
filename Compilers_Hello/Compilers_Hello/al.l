@@ -205,15 +205,17 @@ SEMICOLON		";"
 
 	if (warning_case == 1) {
 		printf("String contains illegal space characters and cannot be inserted!\n");
+		exit(1);
 	}
 	else if (string_format_flag == 0) {								
 		printf("Error: Illegal string! String is endless and cannot be inserted\n");
+		exit(1);
 		/* alpha_token_insert(yylineno, error_buf, "ENDLESS_STRING"); */
 	}else{									
 		char *fin_buf = malloc(i * sizeof(char) + 10);
 		fin_buf = strcpy(fin_buf, buffer);
 		fin_buf = strcat(fin_buf, "\"\0");
-		alpha_token_insert(found_in, fin_buf, "STRING");  /* LATHOS EDW */
+		/* alpha_token_insert(found_in, fin_buf, "STRING"); */
 		return MY_STRING;
 	}
 	
@@ -250,7 +252,7 @@ SEMICOLON		";"
 				break;
 			}
 			else if ((c == '/') && (nested > 0)) {	/* An yparxoun akoma nested anoigmena apla to meiwnw    */
-				alpha_token_insert(line_keeper[--nested], "COMMENT", "NESTED COMMENT");
+				/* alpha_token_insert(line_keeper[--nested], "COMMENT", "NESTED COMMENT"); */
 				nested_comments++;
 				continue;
 			}		
@@ -276,7 +278,7 @@ SEMICOLON		";"
 		exit(1);
 	}
 	else {
-		alpha_token_insert(i, "COMMENT", "MULTILINE COMMENT");
+		/* alpha_token_insert(i, "COMMENT", "MULTILINE COMMENT"); */
 	}
 
 }
@@ -290,7 +292,7 @@ SEMICOLON		";"
 			break;
 	}
 
-	alpha_token_insert(i, "COMMENT", "ONE LINE COMMENT");
+	/* alpha_token_insert(i, "COMMENT", "ONE LINE COMMENT"); */
 }
 
 

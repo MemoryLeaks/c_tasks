@@ -45,32 +45,32 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    MY_MULTILINE_COMMENTS = 258,
-    MY_SIMPLE_COMMENTS = 259,
+    MY_INTEGER = 258,
+    MY_REAL = 259,
     MY_STRING = 260,
-    MY_IF = 261,
-    MY_ELSE = 262,
-    MY_FOR = 263,
-    MY_WHILE = 264,
-    MY_DO = 265,
-    MY_CONTINUE = 266,
-    MY_BREAK = 267,
-    MY_RETURN = 268,
-    MY_AND = 269,
-    MY_OR = 270,
-    MY_NOT = 271,
-    MY_LOCAL = 272,
-    MY_GLOBAL = 273,
-    MY_STATIC = 274,
-    MY_NIL = 275,
-    MY_TRUE = 276,
-    MY_FALSE = 277,
-    MY_FUNCTION = 278,
-    MY_ID = 279,
-    MY_BLANK = 280,
-    MY_NL = 281,
-    MY_INTEGER = 282,
-    MY_REAL = 283,
+    MY_MULTILINE_COMMENTS = 261,
+    MY_SIMPLE_COMMENTS = 262,
+    MY_IF = 263,
+    MY_ELSE = 264,
+    MY_FOR = 265,
+    MY_WHILE = 266,
+    MY_DO = 267,
+    MY_CONTINUE = 268,
+    MY_BREAK = 269,
+    MY_RETURN = 270,
+    MY_AND = 271,
+    MY_OR = 272,
+    MY_NOT = 273,
+    MY_LOCAL = 274,
+    MY_GLOBAL = 275,
+    MY_STATIC = 276,
+    MY_NIL = 277,
+    MY_TRUE = 278,
+    MY_FALSE = 279,
+    MY_FUNCTION = 280,
+    MY_ID = 281,
+    MY_BLANK = 282,
+    MY_NL = 283,
     MY_ASSIGN = 284,
     MY_EQUAL = 285,
     MY_NEQUAL = 286,
@@ -102,32 +102,32 @@ extern int yydebug;
   };
 #endif
 /* Tokens.  */
-#define MY_MULTILINE_COMMENTS 258
-#define MY_SIMPLE_COMMENTS 259
+#define MY_INTEGER 258
+#define MY_REAL 259
 #define MY_STRING 260
-#define MY_IF 261
-#define MY_ELSE 262
-#define MY_FOR 263
-#define MY_WHILE 264
-#define MY_DO 265
-#define MY_CONTINUE 266
-#define MY_BREAK 267
-#define MY_RETURN 268
-#define MY_AND 269
-#define MY_OR 270
-#define MY_NOT 271
-#define MY_LOCAL 272
-#define MY_GLOBAL 273
-#define MY_STATIC 274
-#define MY_NIL 275
-#define MY_TRUE 276
-#define MY_FALSE 277
-#define MY_FUNCTION 278
-#define MY_ID 279
-#define MY_BLANK 280
-#define MY_NL 281
-#define MY_INTEGER 282
-#define MY_REAL 283
+#define MY_MULTILINE_COMMENTS 261
+#define MY_SIMPLE_COMMENTS 262
+#define MY_IF 263
+#define MY_ELSE 264
+#define MY_FOR 265
+#define MY_WHILE 266
+#define MY_DO 267
+#define MY_CONTINUE 268
+#define MY_BREAK 269
+#define MY_RETURN 270
+#define MY_AND 271
+#define MY_OR 272
+#define MY_NOT 273
+#define MY_LOCAL 274
+#define MY_GLOBAL 275
+#define MY_STATIC 276
+#define MY_NIL 277
+#define MY_TRUE 278
+#define MY_FALSE 279
+#define MY_FUNCTION 280
+#define MY_ID 281
+#define MY_BLANK 282
+#define MY_NL 283
 #define MY_ASSIGN 284
 #define MY_EQUAL 285
 #define MY_NEQUAL 286
@@ -162,13 +162,14 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 30 "syntax.y" /* yacc.c:1909  */
+#line 56 "syntax.y" /* yacc.c:1909  */
 
 		char *stringValue;
 		int integerValue;
 		double realValue;
+		expression *expressionValue;
 
-#line 172 "syntax.h" /* yacc.c:1909  */
+#line 173 "syntax.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

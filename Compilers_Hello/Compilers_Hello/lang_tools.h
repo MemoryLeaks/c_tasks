@@ -82,6 +82,7 @@ void printScopeLists();
 void hide(int scope);
 int scope_lookup(char *symbol, int scope);
 int catholic_lookup(char* symbol);
+int inside_out_lookup(char* symbol, int scope);
 SymbolTableEntry* ScopeListGetSymbolAt(char* symbol, int scope);
 
 
@@ -96,6 +97,71 @@ void Print(SymTable_T oSymTable);
 
 /* Helpers */
 char* getSymbolType(int x);
+
+
+/* ------------------------------------------------------------------------------------------------------------------------------------------ */
+/* ---------------------------------------------------------~  3rd Phase  ~------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------------------------------------------------------------------------ */
+
+enum iopcode {
+	assign,			add,			sub,
+	mul,			divide,			mod,
+	uminus,			and,			or,
+	not,			if_eq,			if_noteq,
+	if_lesseq,		if_greatereq,	if_less,
+	if_greater,		call,			param,
+	ret,			getretval,		funcstart,
+	funcend,		tablecreate,
+	tablegetelem,	tablesetelem
+};
+
+
+enum expr_t {
+	var_e,
+	tableitem_e,
+	programfunc_e,
+	libraryfunc_e,
+	arithexpr_e,
+	boolexpr_e,
+	assignexpr_e,
+	newtable_e,
+	constnum_e,
+	constbool_e,
+	conststring_e,
+	nil_e
+};
+
+struct expr {
+	enum expr_t	type;
+	SymbolTableEntry *sym;
+	struct expr *index;
+	double numConst;
+	char *strConst;
+	unsigned char boolConst;
+	struct expr *next;
+};
+
+struct quad {
+	enum iopcode op;
+	struct expr *result;
+	struct expr *arg1;
+	struct expr *arg2;
+	unsigned label;
+	unsigned line;
+};
+
+#define EXPAND_SIZE 1024
+#define CURR_SIZE (total * sizeof(struct quad))
+#define NEW_SIZE (EXPAND_SIZE * sizeof(quad) + CUR_SIZE)
+
+typedef struct expr expression;
+typedef struct quad tesseract;
+
+expression* NewExpr(enum expr_t type, SymbolTableEntry* symbol, double numConst, char* strConst, unsigned char boolConst);
+void emit(enum iopcode type, expression* expr1, expression* expr2, expression* expr3);
+
+char* getIOpcodeName(enum iopcode type);
+char* getTesseractValue(expression* expr);
 
 
 #endif
