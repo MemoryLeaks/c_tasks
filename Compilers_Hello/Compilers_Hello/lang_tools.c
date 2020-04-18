@@ -385,8 +385,21 @@ expression* NewExpr(enum expr_t type, SymbolTableEntry* symbol, double numConst,
 	return cell;
 }
 
-void emit(enum iopcode type, expression* expr1, expression* expr2, expression* expr3) {
-	printf("EMMIT: %s %s %s %s.\n", getIOpcodeName(type), getTesseractValue(expr1), getTesseractValue(expr2), getTesseractValue(expr3));
+
+
+
+tesseract emit(enum iopcode type, expression* expr1, expression* expr2, expression* expr3, unsigned line, unsigned offset) {
+	tesseract quady;
+	quady.arg1 = expr1;
+	quady.arg2 = expr2;
+	quady.result = expr3;
+	quady.op = type;
+	quady.line = line;
+	quady.label = offset;
+
+	printf("Emmited %u: %s %s %s %s.\n",offset, getIOpcodeName(quady.op), getExpressionValue(quady.arg1), getExpressionValue(quady.arg2), getExpressionValue(quady.result));
+
+	return quady;
 }
 
 char* getIOpcodeName(enum iopcode type) {
@@ -444,7 +457,7 @@ char* getIOpcodeName(enum iopcode type) {
 		return "MISSINGNO";
 }
 
-char* getTesseractValue(expression* expr) {
+char* getExpressionValue(expression* expr) {
 
 	if (expr == NULL)
 		return "";
@@ -466,9 +479,101 @@ char* getTesseractValue(expression* expr) {
 	else if (expr->strConst != NULL) {
 		return expr->strConst;
 	}
+	else if ( expr->type == 7) {
+		return "[...]";
+	}
 	else {
 		if (expr->boolConst == 'T') return "T";
 		else return "F";
 	}
+}
 
+expression* push_back(expression* header, expression* p) {
+	if (header == NULL) {
+		header = p;
+		header->next = NULL;
+		return header;
+	}
+
+	expression* prev = NULL;
+	expression* curr = header;
+	while (curr != NULL) {
+		prev = curr;
+		curr = curr->next;
+	}
+
+	p->next = NULL;
+	prev->next = p;
+	
+	return header;
+}
+
+expression *emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable, int scope,  int yylineno, expression *set_val, unsigned line, unsigned *offset, tesseract *qt) {
+	char currentTemp[8];
+	int temp_counter = 0;
+	SymbolTableEntry* previous_sym = NULL;
+	SymbolTableEntry* symbol = NULL;
+	expression* last_keeper = NULL;
+
+	(*offset)--;
+	assert(type == 23 || type == 24);
+
+	expression* traverser = e;
+	while (traverser != NULL) {
+
+		memset(currentTemp, '\0', 8);
+		strcpy(currentTemp, "_t");
+		char tmp[3];
+		memset(tmp, '\0', 3);
+		sprintf(tmp, "%d", temp_counter++);
+		strcat(currentTemp, tmp);
+
+		if (scope == 0 && SymTable_get(oSymTable, currentTemp) == NULL)
+			SymTable_put(oSymTable, currentTemp, 0, scope, yylineno, 1);
+		else if (scope >= 1 && SymTable_get(oSymTable, currentTemp) == NULL)
+			SymTable_put(oSymTable, currentTemp, 1, scope, yylineno, 1);
+
+		previous_sym = symbol;
+		symbol = SymTable_get(oSymTable, currentTemp);
+
+		last_keeper = NewExpr(23, symbol, 0, traverser->strConst, 'T');
+		if (previous_sym == NULL){
+			qt[*offset] = emit(23, traverser, traverser->index, last_keeper, line, (*offset)++);
+		}
+		else if (traverser->index != NULL){
+			if (type == 24 && traverser->index->index == NULL) {
+				last_keeper->type = 24;
+				last_keeper->sym = previous_sym;
+				last_keeper->strConst = traverser->index->strConst;
+				return last_keeper;
+			}
+			qt[*offset] = emit(23, NewExpr(0, previous_sym, 0, traverser->strConst, 'T'), traverser->index, last_keeper, line, (*offset)++);
+		}
+
+		traverser = traverser->index;
+
+	}
+
+	assert(last_keeper);
+	last_keeper->sym = previous_sym;
+
+	return last_keeper;
+}
+
+expression* push_index_back(expression* header, expression* p) {
+	
+	if (header == NULL) {
+		return header;
+	}
+
+	expression* prev = NULL;
+	expression* curr = header->index;
+	while (curr != NULL) {
+		prev = curr;
+		curr = curr->index;
+	}
+
+	if (prev) prev->index = p;
+
+	return header;
 }

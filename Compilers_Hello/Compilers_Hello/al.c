@@ -1241,6 +1241,7 @@ YY_RULE_SETUP
 		fin_buf = strcpy(fin_buf, buffer);
 		fin_buf = strcat(fin_buf, "\"\0");
 		/* alpha_token_insert(found_in, fin_buf, "STRING"); */
+		yylval.stringValue = _strdup(fin_buf);
 		return MY_STRING;
 	}
 	
@@ -1248,7 +1249,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 226 "al.l"
+#line 227 "al.l"
 {
 	int nested_comments = 0;
 	int comment_format = 0;
@@ -1311,7 +1312,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 286 "al.l"
+#line 287 "al.l"
 {
 	char c = '\0';
 	int i = yylineno;
@@ -1326,17 +1327,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 299 "al.l"
+#line 300 "al.l"
 {	printf("Error: Found UNDEFINED TOKEN: %s in line: %d.", yytext, yylineno);
 				exit(1);
 			}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 304 "al.l"
+#line 305 "al.l"
 ECHO;
 	YY_BREAK
-#line 1339 "al.c"
+#line 1340 "al.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2349,7 +2350,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 304 "al.l"
+#line 305 "al.l"
 
 
 /*

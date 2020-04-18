@@ -216,6 +216,7 @@ SEMICOLON		";"
 		fin_buf = strcpy(fin_buf, buffer);
 		fin_buf = strcat(fin_buf, "\"\0");
 		/* alpha_token_insert(found_in, fin_buf, "STRING"); */
+		yylval.stringValue = _strdup(fin_buf);
 		return MY_STRING;
 	}
 	

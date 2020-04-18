@@ -152,16 +152,20 @@ struct quad {
 
 #define EXPAND_SIZE 1024
 #define CURR_SIZE (total * sizeof(struct quad))
-#define NEW_SIZE (EXPAND_SIZE * sizeof(quad) + CUR_SIZE)
+#define NEW_SIZE (EXPAND_SIZE * sizeof(struct quad) + CURR_SIZE)
 
 typedef struct expr expression;
 typedef struct quad tesseract;
 
 expression* NewExpr(enum expr_t type, SymbolTableEntry* symbol, double numConst, char* strConst, unsigned char boolConst);
-void emit(enum iopcode type, expression* expr1, expression* expr2, expression* expr3);
+tesseract emit(enum iopcode type, expression* expr1, expression* expr2, expression* expr3, unsigned line, unsigned offset);
 
 char* getIOpcodeName(enum iopcode type);
-char* getTesseractValue(expression* expr);
+char* getExpressionValue(expression* expr);
 
+expression* push_back(expression* header, expression* p);
+expression* push_index_back(expression* header, expression* p);
+
+expression* emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable, int scope, int yylineno, expression* set_val, unsigned line, unsigned *offset, tesseract* qt);
 
 #endif
