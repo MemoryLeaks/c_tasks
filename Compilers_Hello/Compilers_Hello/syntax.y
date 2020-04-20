@@ -98,6 +98,9 @@
 %type <expressionValue> indexedelem
 %type <expressionValue> member
 %type <expressionValue> funcdef
+%type <expressionValue> callsuffix
+%type <expressionValue> normcall
+%type <expressionValue> call
 
 %token MY_MULTILINE_COMMENTS
 %token MY_SIMPLE_COMMENTS
@@ -276,8 +279,12 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 											printf("Error in line %d: You cannot increase left a library function (%s).\n", yylineno, yylval.stringValue);
 										messageHandler("term", "++yvalue");
 
+										tempIncreaseAndUse();
+										$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
 										$2->numConst++;
-										$$ = $2;
+										quads[total] = emit(1, NewExpr(8, NULL, 1, NULL, 'T'), $2, $$, (unsigned) yylineno, (unsigned) total++);
+										quads[total] = emit(0, $$, NULL, $2, (unsigned) yylineno, (unsigned) total++);
+										$$->numConst = $2->numConst;
 
 									}
 		| lvalue {
@@ -288,8 +295,12 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 							printf("Error in line %d: You cannot increase right a library function (%s).\n", yylineno, yylval.stringValue);
 				 } MY_INC				{
 											messageHandler("term", "lvalue++");
+											tempIncreaseAndUse();
+											$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
 											$1->numConst++;
-											$$ = $1;
+											quads[total] = emit(1, $1, NewExpr(8, NULL, 1, NULL, 'T'), $$, (unsigned) yylineno, (unsigned) total++);
+											quads[total] = emit(0, $$, NULL, $1, (unsigned) yylineno, (unsigned) total++);
+											$$->numConst = $1->numConst;
 										}
 		| MY_DEC lvalue				{ 
 										SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
@@ -298,8 +309,12 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 										else if (symbol && symbol->type == 4)
 											printf("Error in line %d: You cannot decrease left a library function (%s).\n", yylineno, yylval.stringValue);
 										
+										tempIncreaseAndUse();
+										$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
 										$2->numConst--;
-										$$ = $2;
+										quads[total] = emit(2, $2, NewExpr(8, NULL, 1, NULL, 'T'), $$, (unsigned) yylineno, (unsigned) total++);
+										quads[total] = emit(0, $$, NULL, $2, (unsigned) yylineno, (unsigned) total++);
+										$$->numConst = $2->numConst;
 										messageHandler("term", "--lvalue");	
 									}
 		| lvalue {
@@ -309,8 +324,12 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 						else if (symbol && symbol->type == 4)
 							printf("Error in line %d: You cannot decrease right a library function (%s).\n", yylineno, yylval.stringValue);
 				 } MY_DEC				{	messageHandler("term", "lvalue++");	
+											tempIncreaseAndUse();
+											$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
 											$1->numConst--;
-											$$ = $1;
+											quads[total] = emit(2, $1, NewExpr(8, NULL, 1, NULL, 'T'), $$, (unsigned) yylineno, (unsigned) total++);
+											quads[total] = emit(0, $$, NULL, $1, (unsigned) yylineno, (unsigned) total++);
+											$$->numConst = $1->numConst;
 										}
 		| primary
 				{ 
@@ -346,7 +365,7 @@ assignexpr	: lvalue {
 						}
 
 						/* Periptwsi aplis anathesis const rvalue*/
-						if (syntax_error == 0 && ($4->type == 8 || $4->type == 10)) {
+						if (syntax_error == 0 && ($4->type == 8 || $4->type == 10) && $$->index == NULL) {
 							$$ = $1;
 							$$->type = 6;
 							if ($4-> type == 8) $$->numConst = $4->numConst;
@@ -387,11 +406,22 @@ assignexpr	: lvalue {
 							quads[total] = emit(24, $$, NewExpr(1, NULL, 0, $$->strConst, 'T'), $4, (unsigned) yylineno, (unsigned) total++);
 						}
 
+						/* Periptwsi poy to rvalue einai func call */
+						if (syntax_error == 0 && $4->type == 2) {
+							quads[total] = emit(0, $4, NULL, $1, (unsigned) yylineno, (unsigned) total++);
+							$$ = $1;
+						}
 					 }
 			;
 
 primary		: lvalue		{  messageHandler("primary", "lvalue");	}
-		| call			{ messageHandler("primary", "call");		}
+		| call				{	messageHandler("primary", "call");
+								if (syntax_error == 0 && $1->type == 2) {
+									quads[total] = emit(19, NULL, NULL, $1, (unsigned) yylineno, (unsigned) total++);
+								}
+
+								$$ = $1;
+							}
 		| objectdef		{ messageHandler("primary", "objectdef");	}
 		| MY_OPEN_PAR funcdef MY_CLOSE_PAR	{ messageHandler("primary", "(funcdef)");	}
 		| const					{ messageHandler("primary", "const");		}
@@ -476,16 +506,60 @@ member		: lvalue MY_DOT_SIMPLE MY_ID
 		| call MY_OPEN_BRA expr MY_CLOSE_BRA	{ messageHandler("member", "[expr]");		}
 		;
 
-call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{ messageHandler("call", "call(elist)");	}
-		| lvalue callsuffix			{ messageHandler("call", "lvalue callsuffix");	}
-		| MY_OPEN_PAR funcdef MY_CLOSE_PAR MY_OPEN_PAR elist MY_CLOSE_PAR { messageHandler("call", "(funcdef)(elist)");	}
+call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist)");
+														quads[total] = emit(19, NULL, NULL, $1, yylineno, total++);
+														
+														expression *tmp = $3;
+														while (tmp != NULL) {
+															quads[total] = emit(17, NULL, NULL, tmp, yylineno, total++);
+															tmp = tmp->next;
+														}
+														
+														quads[total] = emit(16, NULL, NULL, $1, yylineno, total++);
+														tempIncreaseAndUse();
+														SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
+														$1->sym = symbol;
+														$$ = NewExpr(2, symbol, 0, NULL, 'F');
+													}
+		| lvalue callsuffix			{
+										messageHandler("call", "lvalue callsuffix");
+										quads[total] = emit(16, NULL, NULL, $1, yylineno, total++);
+
+										tempIncreaseAndUse();
+										SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
+										$$ = NewExpr(2, symbol, 0, NULL, 'F');
+									}
+		| MY_OPEN_PAR funcdef MY_CLOSE_PAR MY_OPEN_PAR elist MY_CLOSE_PAR 
+									{	messageHandler("call", "(funcdef)(elist)");
+										quads[total] = emit(21, NULL, NULL, $2, yylineno, total++);
+										expression *tmp = $5;
+										while (tmp != NULL) {
+											quads[total] = emit(17, NULL, NULL, tmp, yylineno, total++);
+											tmp = tmp->next;
+										}
+
+										quads[total] = emit(16, NULL, NULL, $2, yylineno, total++);
+
+										tempIncreaseAndUse();
+										SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
+										$$ = NewExpr(2, symbol, 0, NULL, 'F');
+									}
 		;
 
-callsuffix	: normcall	{ messageHandler("callsuffix", "normcall");	}
+callsuffix	: normcall	{	messageHandler("callsuffix", "normcall");	
+							$$ = $1;
+							expression *tmp = $1;
+							while (tmp != NULL) {
+								quads[total] = emit(17, NULL, NULL, tmp, yylineno, total++);
+								tmp = tmp->next;
+							}
+						}
 		| methodcall	{ messageHandler("callsuffix", "methodcall");	}
 		;
 
-normcall	: MY_OPEN_PAR elist MY_CLOSE_PAR	{ messageHandler("normcall", "(elist)");	}
+normcall	: MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("normcall", "(elist)");	
+													$$ = $2;
+												}
 		;
 
 methodcall	: MY_DOT_DOUBLE MY_ID MY_OPEN_PAR elist MY_CLOSE_PAR { messageHandler("methodcall", "..identifier(elist)");	}
@@ -495,16 +569,15 @@ elist		: expr commaexprs	{
 									messageHandler("elist", "expr comma-expressions");
 									$1->type = 1;
 									table_stack[table_stack_index] = push_back(table_stack[table_stack_index], $1);
-									printf("To do emmit in table: %s.\n", getExpressionValue($1));
+									$$ = table_stack[table_stack_index];
 								}
-		| /*empty*/		{ messageHandler("elist", "'e'");		}
+		| /*empty*/		{ messageHandler("elist", "'e'");	$$ = NULL;}
 		;
 
 commaexprs	: MY_COMMA expr commaexprs { 
 					messageHandler("comma-expressions", ", expr comma-expressions");
 					$2->type = 1;
 					table_stack[table_stack_index] = push_back(table_stack[table_stack_index], $2);
-					printf("To do emmit in table: %s.\n", getExpressionValue($2));
 			}
 		| /*empty*/		   { messageHandler("comma-expressions", "'e'");	}
 		;
@@ -620,9 +693,9 @@ const		: MY_REAL	{	messageHandler("const", "real_value");
 							else
 								$$ = NewExpr(10, NULL, 0, $1, 'T');
 						}
-		| MY_NIL	{ messageHandler("const", "nil");	}
-		| MY_TRUE	{ messageHandler("const", "true");	}
-		| MY_FALSE	{ messageHandler("const", "false");	}
+		| MY_NIL	{ messageHandler("const", "nil");	$$ = NewExpr(11, NULL, 0, NULL, 'F');}
+		| MY_TRUE	{ messageHandler("const", "true");	$$ = NewExpr(9, NULL, 0, NULL, 'T');}
+		| MY_FALSE	{ messageHandler("const", "false");	$$ = NewExpr(9, NULL, 0, NULL, 'F');}
 		;
 
 idlist		: MY_ID {
