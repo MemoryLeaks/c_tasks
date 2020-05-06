@@ -112,7 +112,7 @@ enum iopcode {
 	if_greater,		call,			param,
 	ret,			getretval,		funcstart,
 	funcend,		tablecreate,
-	tablegetelem,	tablesetelem
+	tablegetelem,	tablesetelem,	jump
 };
 
 
@@ -139,6 +139,7 @@ struct expr {
 	char *strConst;
 	unsigned char boolConst;
 	struct expr *next;
+
 };
 
 struct quad {
@@ -149,6 +150,19 @@ struct quad {
 	unsigned label;
 	unsigned line;
 };
+
+struct breakList {
+	struct quad* jump_quad;
+	struct breakList* next;
+};
+
+struct continueList {
+	struct quad* jump_quad;
+	struct continueList* next;
+};
+
+typedef struct breakList BreakList;
+typedef struct continueList ContinueList;
 
 #define EXPAND_SIZE 1024
 #define CURR_SIZE (total * sizeof(struct quad))
@@ -165,7 +179,11 @@ char* getExpressionValue(expression* expr);
 
 expression* push_back(expression* header, expression* p);
 expression* push_index_back(expression* header, expression* p);
+expression* push_List(expression* header, expression* p);
 
-expression* emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable, int scope, int yylineno, expression* set_val, unsigned line, unsigned *offset, tesseract* qt);
+expression* emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable, int scope, int yylineno, expression* set_val, unsigned line, unsigned *offset, tesseract* qt, int temp_counter);
+
+BreakList* push_BreakList(BreakList* head, tesseract* q);
+ContinueList* push_ContinueList(ContinueList* head, tesseract *q);
 
 #endif

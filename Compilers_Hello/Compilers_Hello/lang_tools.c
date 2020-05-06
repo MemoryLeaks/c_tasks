@@ -453,6 +453,8 @@ char* getIOpcodeName(enum iopcode type) {
 		return "TABLEGETELEM";
 	else if (type == 24)
 		return "TABLESETELEM";
+	else if (type == 25)
+		return "JUMP";
 	else
 		return "MISSINGNO";
 }
@@ -473,7 +475,14 @@ char* getExpressionValue(expression* expr) {
 		char* buf = malloc(sizeof(char) * 20);
 		assert(buf);
 		memset(buf, '\0', 20);
-		sprintf(buf, "%f", expr->numConst);
+
+		int tempy = (int)expr->numConst;
+
+		if (tempy == expr->numConst)
+			sprintf(buf, "%d", tempy);
+		else
+			sprintf(buf, "%f", expr->numConst);
+
 		return buf;
 	}
 	else if (expr->strConst != NULL) {
@@ -508,9 +517,8 @@ expression* push_back(expression* header, expression* p) {
 	return header;
 }
 
-expression *emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable, int scope,  int yylineno, expression *set_val, unsigned line, unsigned *offset, tesseract *qt) {
+expression *emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable, int scope,  int yylineno, expression *set_val, unsigned line, unsigned *offset, tesseract *qt, int temp_counter) {
 	char currentTemp[8];
-	int temp_counter = 0;
 	SymbolTableEntry* previous_sym = NULL;
 	SymbolTableEntry* symbol = NULL;
 	expression* last_keeper = NULL;
@@ -566,6 +574,16 @@ expression* push_index_back(expression* header, expression* p) {
 		return header;
 	}
 
+	header->type = 1;
+
+	if (header->index == NULL) {
+		p->index = NULL;
+		header->index = p;
+
+		return header;
+	}
+
+
 	expression* prev = NULL;
 	expression* curr = header->index;
 	while (curr != NULL) {
@@ -573,7 +591,61 @@ expression* push_index_back(expression* header, expression* p) {
 		curr = curr->index;
 	}
 
-	if (prev) prev->index = p;
+	if (prev)
+		prev->index = p;
 
 	return header;
+}
+
+expression* push_List(expression* header, expression* p) {
+
+	if (header == NULL) {
+		return header;
+		header = p;
+		header->next = NULL;
+	}
+	else {
+		p->next = header;
+		header = p;
+	}
+
+
+	
+	return header;
+}
+
+BreakList* push_BreakList(BreakList* head, tesseract *q) {
+	
+	BreakList* tmp = malloc(sizeof(BreakList));
+	assert(tmp);
+	tmp->jump_quad = q;
+	tmp->next = NULL;
+
+	if (head == NULL) {
+		head = tmp;
+	}
+	else {
+		tmp->next = head;
+		head = tmp;
+	}
+
+	return head;
+}
+
+ContinueList* push_ContinueList(ContinueList* head, tesseract *q) {
+
+	ContinueList* tmp = malloc(sizeof(ContinueList));
+	assert(tmp);
+	tmp->jump_quad = q;
+	tmp->next = NULL;
+
+	if (head == NULL) {
+		head = tmp;
+	}
+	else {
+		tmp->next = head;
+		head = tmp;
+	}
+
+	return head;
 }

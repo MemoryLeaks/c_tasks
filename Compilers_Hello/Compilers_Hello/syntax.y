@@ -11,22 +11,25 @@
 	int scope;
 
 	tesseract quads[1024];
-	unsigned total = 0;
+	unsigned total = 1;
 	unsigned int currQuad = 0;
 
 	char currentTemp[8];
 	int temp_counter = 0;
 
-	/* xeirourgio gia ta tables pou aforoun to initialize */
-	expression *table_stack[8]; /* h stoiba xrisimopoieitai kata th dhmiourgeia tou pinaka */
-	table_stack_index = -1;     /* autos einai o index gia tin stoiba */
-
-	table_stack_trace_index = -1;     /* autos einai o index gia tin stoiba */
-
-	/*xeirourgio gia tis synartiseis*/ 
+	/* xeirourgio gia tis synartiseis */ 
 	int func_locals_sum[72];
 	expression *function_expression[72];
 	int all_func_counter = 0;
+
+
+	/* while, for stoiba xeirourgio */
+	int loop_stack[72]; /* O arithmos twn total quads stin arxi tis loopas */
+	int loop_i = 0;
+
+	/* break, continue Lists, eksartwntai apo to loop_i */
+	BreakList *b_list[72];
+	ContinueList *c_list[72];
 
 	void tempIncreaseAndUse(){
 		memset(currentTemp, '\0', 8);
@@ -62,7 +65,6 @@
 	int function_flag = 0;
 	char funcName[8];
 	int function_counter = 0;
-
 
 %}
 
@@ -101,6 +103,13 @@
 %type <expressionValue> callsuffix
 %type <expressionValue> normcall
 %type <expressionValue> call
+%type <expressionValue> stmt
+%type <expressionValue> stmts
+%type <expressionValue> block
+%type <expressionValue> methodcall
+%type <expressionValue> whilestmt
+%type <expressionValue> forstmt
+
 
 %token MY_MULTILINE_COMMENTS
 %token MY_SIMPLE_COMMENTS
@@ -126,7 +135,7 @@
 %token  MY_FALSE
 %token  MY_FUNCTION
 
-%token  MY_ID
+%token  <stringValue> MY_ID
 %token  MY_BLANK
 %token  MY_NL
 
@@ -195,16 +204,49 @@ stmts	: stmt { temp_counter = 0; } stmts	{ messageHandler("statements", "stmt st
 		;
 
 
-stmt		: expr MY_SEMICOLON		{ messageHandler("stmt", "expr;");	}
-		| ifstmt			{ messageHandler("stmt", "ifstmt");	}
-		| whilestmt			{ messageHandler("stmt", "whilestmt");	}
-		| forstmt			{ messageHandler("stmt", "forstmt");	}
+stmt		: expr MY_SEMICOLON		{ messageHandler("stmt", "expr;");	$$ = NewExpr(0, NULL, total, NULL, 'T');}
+		| ifstmt			{ messageHandler("stmt", "ifstmt");	$$ = NewExpr(0, NULL, total, NULL, 'T');}
+		| whilestmt			{ messageHandler("stmt", "whilestmt");	$$ = NewExpr(0, NULL, total, NULL, 'T');}
+		| forstmt			{ messageHandler("stmt", "forstmt");	$$ = NewExpr(0, NULL, total, NULL, 'T');}
 		| returnstmt			{ messageHandler("stmt", "returnstmt");	}
-		| MY_BREAK MY_SEMICOLON		{ messageHandler("stmt", "break;");	}
-		| MY_CONTINUE MY_SEMICOLON	{ messageHandler("stmt", "continue;");	}
-		| block				{ messageHandler("stmt", "block");	}
+		| MY_BREAK MY_SEMICOLON	{	messageHandler("stmt", "break;");
+									if (loop_i - 1 < 0) {
+										printf("Error in line %d: Break found out of loop!\n", yylineno);
+										syntax_error = 1;
+									}
+									else {
+										/* Kanoume emit to unpatched Quad */
+										expression *break_jump = NewExpr(8, NULL, -2, NULL, 'T');
+										quads[total] = emit(25, NULL, NULL, break_jump, yylineno, total++);
+
+										$$ = break_jump;
+										//printf("What about %f ?\n", quads[total].result->numConst);
+
+										/* Mpainei mesa to Break */
+										b_list[loop_i - 1] = push_BreakList(b_list[loop_i - 1], &quads[total]);
+									}
+		}
+		| MY_CONTINUE MY_SEMICOLON	{	messageHandler("stmt", "continue;"); 
+										if (loop_i - 1 < 0) {
+											printf("Error in line %d: Continue found out of loop!\n", yylineno);
+											syntax_error = 1;
+										}
+										else {
+											/* Kanoume emit to unpatched Quad */
+											expression *cont_jump = NewExpr(8, NULL, -2, NULL, 'T');
+											quads[total] = emit(25, NULL, NULL, cont_jump, yylineno, total++);
+
+											$$ = cont_jump;
+											//printf("What about %f ?\n", quads[total].result->numConst);
+
+											/* Mpainei mesa to Continue */
+											c_list[loop_i - 1] = push_ContinueList(c_list[loop_i - 1], &quads[total]);
+										}
+		}
+		| block				{ messageHandler("stmt", "block");	$$ = $1; $$->numConst = total;}
 		| funcdef			{ messageHandler("stmt", "funcdef");
 							  quads[total] = emit(21, NULL, NULL, $1, yylineno, total++);
+							  $$ = $1;
 							}
 		| MY_SEMICOLON			{ messageHandler("stmt", ";");	}
 		;
@@ -213,45 +255,199 @@ expr	: assignexpr 		{ messageHandler("expr", "assignexpr");		}
 		| expr MY_PLUS expr	{ 
 								messageHandler("expr", "expr + expr");
 								tempIncreaseAndUse();
-								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
+								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
 								quads[total] = emit(1, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
 
 							}
 		| expr MY_MINUS expr	{ 
 									messageHandler("expr", "expr - expr");
 									tempIncreaseAndUse();
-									$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
+									$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
 									quads[total] = emit(2, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
 								}
 		| expr MY_MUL expr	{ 
 								messageHandler("expr", "expr * expr"); 
 								tempIncreaseAndUse();
-								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
+								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
 								quads[total] = emit(3, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
 							}
 		| expr MY_DIV expr	{
 								messageHandler("expr", "expr * expr"); 
 								tempIncreaseAndUse();
-								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
+								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
 								quads[total] = emit(4, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
 								messageHandler("expr", "expr / expr");
 							}
 		| expr MY_MOD expr	{ 
 								messageHandler("expr", "expr % expr");
 								tempIncreaseAndUse();
-								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
+								$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
 								quads[total] = emit(5, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
 								messageHandler("expr", "expr / expr");
 							}
-		| expr MY_G expr	{ messageHandler("expr", "expr > expr"); }
-		| expr MY_GE expr	{ messageHandler("expr", "expr >= expr"); }
-		| expr MY_L expr	{ messageHandler("expr", "expr < expr"); }
-		| expr MY_LE expr	{ messageHandler("expr", "expr <= expr"); }
-		| expr MY_EQUAL expr	{ messageHandler("expr", "expr == expr"); }
-		| expr MY_NEQUAL expr	{ messageHandler("expr", "expr != expr"); }
-		| expr MY_AND expr	{ messageHandler("expr", "expr AND expr"); }
-		| expr MY_OR expr	{ messageHandler("expr", "expr OR expr"); }
-		| term					{ messageHandler("expr", "term");	}
+		| expr MY_G expr	{	messageHandler("expr", "expr > expr"); 
+								tempIncreaseAndUse();
+								$$ = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+								
+								expression *jump_val = NewExpr(8, NULL, total + 3, NULL, 'T');
+								expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+
+								/*[T1]: If Greater paw 2 grammes katw  na to kanw T*/
+								quads[total] = emit(15, $1, $3, jump_val, (unsigned) yylineno, (unsigned) total++);
+								
+								/*[F1]: Den einai greater ara kanw ton kataxwriti FALSE */
+								quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'F'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+								
+								/*[F2]: Kai kanw Jump me tin FALSE timi*/
+								quads[total] = emit(25, NULL, NULL, jump_val2, (unsigned) yylineno, (unsigned) total++);
+
+								/*[T2]: Hrtha edw epidi ontws einai TRUE. Ara bazw ston kataxwriti TRUE */
+								quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'T'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+
+								/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
+
+								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+								expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
+
+								quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
+
+								expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
+								quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+
+								$$ = false_jump;
+							}
+		| expr MY_GE expr	{	messageHandler("expr", "expr >= expr");
+								tempIncreaseAndUse();
+								$$ = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+								
+								expression *jump_val = NewExpr(8, NULL, total + 3, NULL, 'T');
+								expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+								
+								quads[total] = emit(13, $1, $3, jump_val, (unsigned) yylineno, (unsigned) total++);	
+								quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'F'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(25, NULL, NULL, jump_val2, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'T'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+
+								/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
+
+								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+								expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
+
+								quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
+
+								expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
+								quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+
+								$$ = false_jump;
+							}
+		| expr MY_L expr	{	messageHandler("expr", "expr < expr");
+								tempIncreaseAndUse();
+								$$ = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+
+								expression *jump_val = NewExpr(8, NULL, total + 3, NULL, 'T');
+								expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+								
+								quads[total] = emit(14, $1, $3, jump_val, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'F'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(25, NULL, NULL, jump_val2, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'T'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+
+								/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
+
+								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+								expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
+
+								quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
+
+								expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
+								quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+
+								$$ = false_jump;
+							}
+		| expr MY_LE expr	{	messageHandler("expr", "expr <= expr");
+								tempIncreaseAndUse();
+								$$ = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+
+								expression *jump_val = NewExpr(8, NULL, total + 3, NULL, 'T');
+								expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+								
+								quads[total] = emit(12, $1, $3, jump_val, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'F'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(25, NULL, NULL, jump_val2, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'T'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+
+								/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
+
+								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+								expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
+
+								quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
+
+								expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
+								quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+
+								$$ = false_jump;
+							}
+		| expr MY_EQUAL expr	{ 
+									messageHandler("expr", "expr == expr");
+									tempIncreaseAndUse();
+									$$ = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+
+									expression *jump_val = NewExpr(8, NULL, total + 3, NULL, 'T');
+									expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+									
+									quads[total] = emit(10, $1, $3, jump_val, (unsigned) yylineno, (unsigned) total++);
+									quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'F'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+									quads[total] = emit(25, NULL, NULL, jump_val2, (unsigned) yylineno, (unsigned) total++);
+									quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'T'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+
+									/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
+
+									expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+									expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
+
+									quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
+
+									expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
+									quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+
+									$$ = false_jump;
+								}
+		| expr MY_NEQUAL expr	{	messageHandler("expr", "expr != expr");
+									tempIncreaseAndUse();
+									$$ = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+
+									expression *jump_val = NewExpr(8, NULL, total + 3, NULL, 'T');
+									expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+									
+									quads[total] = emit(11, $1, $3, jump_val, (unsigned) yylineno, (unsigned) total++);
+									quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'F'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+									quads[total] = emit(25, NULL, NULL, jump_val2, (unsigned) yylineno, (unsigned) total++);
+									quads[total] = emit(0, NewExpr(9, NULL, 0, NULL, 'T'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+
+									/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
+
+									expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+									expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
+
+									quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
+
+									expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
+									quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+
+									$$ = false_jump;
+								}
+		| expr MY_AND expr	{	messageHandler("expr", "expr AND expr");
+								tempIncreaseAndUse();
+								$$ = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+								quads[total] = emit(7, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
+							}
+		| expr MY_OR expr	{	messageHandler("expr", "expr OR expr"); 
+								tempIncreaseAndUse();
+								$$ = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+								quads[total] = emit(8, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
+							}
+		| term				{	messageHandler("expr", "term");}
 		;
 
 term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ = $2;}
@@ -335,11 +531,11 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 				{ 
 					messageHandler("term", "primary");
 					/* Periptwsi gia pinaka GET */
-					if ($$->index != NULL && $$->type == 0) {
-						table_stack_trace_index = -1;
+					if ($$->index != NULL && $$->type == 1) {
 						total++;
-						$$ = emit_if_table($$, 23, oSymTable, scope, yylineno, NULL, (unsigned) yylineno, &total, quads);
-					}
+						$$ = emit_if_table($$, 23, oSymTable, scope, yylineno, NULL, (unsigned) yylineno, &total, quads, temp_counter);
+					} else
+						$$ = $1;
 				}
 		;
 
@@ -359,7 +555,7 @@ assignexpr	: lvalue {
 						messageHandler("assignexpr", "lvalue = expr");
 
 						/* Periptwsi anathesis metablitis se metabliti */
-						if (syntax_error == 0 && $4->type == 0) {
+						if (syntax_error == 0 && $4->type == 0 && $1->index == NULL) {
 							$$->sym = $1->sym;
 							quads[total] = emit(0, $4, NULL, $$, (unsigned) yylineno, (unsigned) total++);
 						}
@@ -367,7 +563,6 @@ assignexpr	: lvalue {
 						/* Periptwsi aplis anathesis const rvalue*/
 						if (syntax_error == 0 && ($4->type == 8 || $4->type == 10) && $$->index == NULL) {
 							$$ = $1;
-							$$->type = 6;
 							if ($4-> type == 8) $$->numConst = $4->numConst;
 							else	$$->strConst = _strdup($4->strConst);
 
@@ -375,9 +570,8 @@ assignexpr	: lvalue {
 						}
 
 						/*Periptwsi pou to rvalue htan arithmetic*/
-						if (syntax_error == 0 && $4->type == 4) {
+						if (syntax_error == 0 && $4->type == 4 && $1->index == NULL) {
 							$$ = $1;
-							$$->type = 6;
 							/* set_result($$, $4); Edw gia tin 5h fash mallon tha thelei result */
 							quads[total] = emit(0, $4, NULL, $$, (unsigned) yylineno, (unsigned) total++);
 						}
@@ -386,23 +580,19 @@ assignexpr	: lvalue {
 						if (syntax_error == 0 && $4->type == 7) {
 							$$ = $1;
 							$$->boolConst = 'T';
-							$$->type = 7;
-							$$->next = $4->next; /* O deiktis ousiastika deixnei ston pinaka */
-							quads[total] = emit(22, $4, NULL, $$, (unsigned) yylineno, (unsigned) total++);
+							$$->index = $4->index;
+							quads[total] = emit(0, $4, NULL, $$, yylineno, total++);
 						}
-
 
 						/* Periptwsi pou to rvalue einai indexed apo table  */
 						if (syntax_error == 0 && $4->type == 23) {
-							table_stack_trace_index = -1;
 							quads[total] = emit(0, $4, NULL, $$, (unsigned) yylineno, (unsigned) total++);
 						}
 
 						/*Periptwsi poy to lvalue einai index emelent kai prepei na ginei set*/
-						if (syntax_error == 0 && $$->index != NULL) {
-							table_stack_trace_index = -1;
+						if (syntax_error == 0 && $1->type == 1 && $$->index != NULL) {
 							total++;
-							$$ = emit_if_table($$, 24, oSymTable, scope, yylineno, $4, (unsigned) yylineno, &total, quads);
+							$$ = emit_if_table($$, 24, oSymTable, scope, yylineno, $4, (unsigned) yylineno, &total, quads, temp_counter);
 							quads[total] = emit(24, $$, NewExpr(1, NULL, 0, $$->strConst, 'T'), $4, (unsigned) yylineno, (unsigned) total++);
 						}
 
@@ -411,20 +601,38 @@ assignexpr	: lvalue {
 							quads[total] = emit(0, $4, NULL, $1, (unsigned) yylineno, (unsigned) total++);
 							$$ = $1;
 						}
+
 					 }
 			;
 
-primary		: lvalue		{  messageHandler("primary", "lvalue");	}
+primary		: lvalue		{  messageHandler("primary", "lvalue");	$$ = $1;}
 		| call				{	messageHandler("primary", "call");
 								if (syntax_error == 0 && $1->type == 2) {
-									quads[total] = emit(19, NULL, NULL, $1, (unsigned) yylineno, (unsigned) total++);
+									tempIncreaseAndUse();
+									expression *ret_val = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+									quads[total] = emit(19, NULL, NULL, ret_val, (unsigned) yylineno, (unsigned) total++);
+									$$ = ret_val;
+								}else
+									$$ = $1;
+							}
+		| objectdef			{	messageHandler("primary", "objectdef");
+								quads[total] = emit(22, NULL, NULL, $1, (unsigned) yylineno, (unsigned) total++);
+								expression *tmp = $1->index;
+								while (tmp != NULL) {
+									if (tmp->index == NULL)
+										quads[total] = emit(24, $1, tmp, NewExpr(8, NULL, 0, 0, 'F'), yylineno, total++);
+									else
+										quads[total] = emit(24, $1, tmp, tmp->index, yylineno, total++);
+									tmp = tmp->next;
 								}
-
 								$$ = $1;
 							}
-		| objectdef		{ messageHandler("primary", "objectdef");	}
-		| MY_OPEN_PAR funcdef MY_CLOSE_PAR	{ messageHandler("primary", "(funcdef)");	}
-		| const					{ messageHandler("primary", "const");		}
+		| MY_OPEN_PAR funcdef MY_CLOSE_PAR	{
+												messageHandler("primary", "(funcdef)");
+												quads[total] = emit(21, NULL, NULL, $2, yylineno, total++);
+												$$ = $2;
+											}
+		| const					{ messageHandler("primary", "const");	$$ = $1;}
 		;
 
 lvalue		: MY_ID	{	
@@ -469,45 +677,48 @@ lvalue		: MY_ID	{
 										SymTable_put(oSymTable, yylval.stringValue, 1, scope, yylineno, 1);
 								}
 
+								$$ = NewExpr(0, SymTable_get(oSymTable, yylval.stringValue), 0, NULL, 'F');
 								messageHandler("lvalue", "local_identifier"); 
 							}
 		| MY_DOT_STREAM MY_ID	{
 									if (scope_lookup(yylval.stringValue, 0) == 0) {
 										printf("Error in line %d: Not found global symbol with name [%s].\n", yylineno, yylval.stringValue);
 									}
+
+									$$ = NewExpr(0, SymTable_get(oSymTable, yylval.stringValue), 0, NULL, 'F');
 									messageHandler("lvalue", ":: identifier");
 								}
-		| member		{ messageHandler("lvalue", "member");		}
+		| member		{	messageHandler("lvalue", "member");	
+							$$ = $1;
+						}
 		;
 
 member		: lvalue MY_DOT_SIMPLE MY_ID		
 			  {		messageHandler("member", "lvalue.identifier");
-					if (table_stack_trace_index == -1) {
-						$$ = NewExpr(0, $1->sym, 0, NULL, 'T');
-						$$->index = NewExpr(1, NULL, 0, yylval.stringValue, 'T');
-						table_stack_trace_index++;
-					}
-					else if (table_stack_trace_index == 0) {
+					if ($1->type == 0)
+						$$ = push_index_back($1, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+					else if ($1->type == 1)
 						$$ = push_index_back($$, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
-					}
 			  }
 		| lvalue MY_OPEN_BRA expr MY_CLOSE_BRA  
-		  { messageHandler("member", "lvalue[expr]");
-			if (table_stack_trace_index == -1) {
-				$$ = NewExpr(0, $1->sym, 0, NULL, 'T');
-				$$->index = NewExpr(1, NULL, 0, yylval.stringValue, 'T');
-				table_stack_trace_index++;
-			}
-			else if (table_stack_trace_index == 0) {
-				$$ = push_index_back($$, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
-			}
-		  }
-		| call MY_DOT_SIMPLE MY_ID		{ messageHandler("member", "call.identifier");	}
-		| call MY_OPEN_BRA expr MY_CLOSE_BRA	{ messageHandler("member", "[expr]");		}
+			  {		messageHandler("member", "lvalue[expr]");
+					if ($1->type == 0)
+						$$ = push_index_back($1, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+					else if ($1->type == 1)
+						$$ = push_index_back($$, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+			  }
+		| call MY_DOT_SIMPLE MY_ID		
+			  {		messageHandler("member", "call.identifier");							}
+		| call MY_OPEN_BRA expr MY_CLOSE_BRA	{	messageHandler("member", "[expr]");		}
 		;
 
 call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist)");
-														quads[total] = emit(19, NULL, NULL, $1, yylineno, total++);
+
+														tempIncreaseAndUse();
+														SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
+														expression *retval_keeper = NewExpr(2, symbol, 0, NULL, 'T');
+
+														quads[total] = emit(19, NULL, NULL, retval_keeper, yylineno, total++);
 														
 														expression *tmp = $3;
 														while (tmp != NULL) {
@@ -515,19 +726,42 @@ call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist
 															tmp = tmp->next;
 														}
 														
-														quads[total] = emit(16, NULL, NULL, $1, yylineno, total++);
-														tempIncreaseAndUse();
-														SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
-														$1->sym = symbol;
-														$$ = NewExpr(2, symbol, 0, NULL, 'F');
+														quads[total] = emit(16, NULL, NULL, retval_keeper, yylineno, total++);
+
+														$$ = retval_keeper;
 													}
 		| lvalue callsuffix			{
 										messageHandler("call", "lvalue callsuffix");
-										quads[total] = emit(16, NULL, NULL, $1, yylineno, total++);
 
-										tempIncreaseAndUse();
-										SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
-										$$ = NewExpr(2, symbol, 0, NULL, 'F');
+										if ($2 && $2->type == 1) {
+											tempIncreaseAndUse();
+											SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
+											
+											quads[total] = emit(23, $1, $2, NewExpr(2, symbol, 0, NULL, 'T'), yylineno, total++);
+											expression *tmp = $2; 
+											tmp->sym = $1->sym; /* Edw settarw to symbolo tou prwtou stoixeiou stin elist na einai to onoma to table object */
+
+											while (tmp != NULL) {
+												quads[total] = emit(17, NULL, NULL, tmp, yylineno, total++);
+												tmp = tmp->next;
+											}
+
+											quads[total] = emit(16, NULL, NULL, NewExpr(2, symbol, 0, NULL, 'T'), yylineno, total++);
+										} else if ($2 && $2->type != 1){
+											expression *tmp = $2;
+											while (tmp != NULL) {
+												quads[total] = emit(17, NULL, NULL, tmp, yylineno, total++);
+												tmp = tmp->next;
+											}
+
+											quads[total] = emit(16, NULL, NULL, $1, yylineno, total++);
+										} else {
+											quads[total] = emit(16, NULL, NULL, $1, yylineno, total++);
+										}
+
+										$$ = $1;
+										$$->type = 2;
+
 									}
 		| MY_OPEN_PAR funcdef MY_CLOSE_PAR MY_OPEN_PAR elist MY_CLOSE_PAR 
 									{	messageHandler("call", "(funcdef)(elist)");
@@ -546,72 +780,68 @@ call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist
 									}
 		;
 
-callsuffix	: normcall	{	messageHandler("callsuffix", "normcall");	
-							$$ = $1;
-							expression *tmp = $1;
-							while (tmp != NULL) {
-								quads[total] = emit(17, NULL, NULL, tmp, yylineno, total++);
-								tmp = tmp->next;
-							}
-						}
-		| methodcall	{ messageHandler("callsuffix", "methodcall");	}
+callsuffix	: normcall	{	messageHandler("callsuffix", "normcall");	 $$ = $1; }
+		|	methodcall	{	messageHandler("callsuffix", "methodcall"); $$ = $1;  }
 		;
 
-normcall	: MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("normcall", "(elist)");	
-													$$ = $2;
+normcall	: MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("normcall", "(elist)");	$$ = $2; }
+		;
+
+methodcall	: MY_DOT_DOUBLE MY_ID MY_OPEN_PAR elist MY_CLOSE_PAR 
+												{
+													messageHandler("methodcall", "..identifier(elist)");
+													expression *key_expr = NewExpr(1, NULL, 0, $2, 'T');
+													key_expr->next = $4;
+													$$ = key_expr;
 												}
-		;
-
-methodcall	: MY_DOT_DOUBLE MY_ID MY_OPEN_PAR elist MY_CLOSE_PAR { messageHandler("methodcall", "..identifier(elist)");	}
 		;
 
 elist		: expr commaexprs	{
 									messageHandler("elist", "expr comma-expressions");
-									$1->type = 1;
-									table_stack[table_stack_index] = push_back(table_stack[table_stack_index], $1);
-									$$ = table_stack[table_stack_index];
+									$$ = push_back($2, $1);
 								}
 		| /*empty*/		{ messageHandler("elist", "'e'");	$$ = NULL;}
 		;
 
 commaexprs	: MY_COMMA expr commaexprs { 
 					messageHandler("comma-expressions", ", expr comma-expressions");
-					$2->type = 1;
-					table_stack[table_stack_index] = push_back(table_stack[table_stack_index], $2);
-			}
-		| /*empty*/		   { messageHandler("comma-expressions", "'e'");	}
+					$$ = push_back($3, $2);
+		}
+		| /*empty*/		   { messageHandler("comma-expressions", "'e'");	$$ = NULL;}
 		;
 
-objectdef	: MY_OPEN_BRA {table_stack_index++;} elist MY_CLOSE_BRA	
+objectdef	: MY_OPEN_BRA elist MY_CLOSE_BRA	
 			  {
 					messageHandler("objectdef", "[elist]");
-					$$ = NewExpr(7, NULL, 0, NULL, 'F');
-					$$->next = table_stack[table_stack_index];
-					table_stack[table_stack_index--] = NULL;
+					tempIncreaseAndUse();
+					$$ = NewExpr(7, SymTable_get(oSymTable, currentTemp), 0, NULL, 'F');
+					$$->index = $2;
 			  }
-		| MY_OPEN_BRA {table_stack_index++;} indexed MY_CLOSE_BRA	
+		| MY_OPEN_BRA indexed MY_CLOSE_BRA	
 			{	
 				messageHandler("objectdef", "[indexed]");
-				$$ = NewExpr(7, NULL, 0, NULL, 'F');
-				$$->next = table_stack[table_stack_index];
-				table_stack[table_stack_index--] = NULL;
+				tempIncreaseAndUse();
+				$$ = NewExpr(7, SymTable_get(oSymTable, currentTemp), 0, NULL, 'F');
+				$$->index = $2;
 			}
 		;
 
-indexed		: indexedelem commaindex	{ messageHandler("indexed", "indexedelem commaindex");		}
+indexed		: indexedelem commaindex	{	messageHandler("indexed", "indexedelem commaindex");	
+											$$ = push_back($2, $1);
+										}
 		;
 
-commaindex	: MY_COMMA indexedelem commaindex	{ messageHandler("commaindex", ", indexedelem commaindex");		}
-		| /*empty*/				{ messageHandler("commaindex", "'e'");		}
+commaindex	: MY_COMMA indexedelem commaindex	{ messageHandler("commaindex", ", indexedelem commaindex");
+												  $$ = push_back($3, $2);
+		}
+		| /*empty*/				{	messageHandler("commaindex", "'e'");	$$ = NULL;}
 		;
 
 indexedelem	: MY_OPEN_ANG expr MY_DOT_UD expr MY_CLOSE_ANG		
 			 {
 				messageHandler("indexedelem", "{expr:expr}");
-				$2->type = 1;
-				table_stack[table_stack_index] = push_back(table_stack[table_stack_index], $2);
 				$2->index = $4;
-				printf("To do emmit in table {%s : %s}.\n", getExpressionValue($2), getExpressionValue($4));
+				$$ = $2;
 			 }
 		;
 
@@ -727,15 +957,85 @@ idwithcommas	: MY_COMMA MY_ID {
 				| /*empty*/			{ messageHandler("idwithcommas", "'e'");		}
 				;
 
-ifstmt          : MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt		{ messageHandler("ifstmt", "if (expr) stmt");	}
-				| MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt MY_ELSE stmt { messageHandler("ifstmt", "if (expr) stmt else stmt");	}
+ifstmt          : MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt	{	messageHandler("ifstmt", "if (expr) stmt");
+																
+																/* Update */
+																$3->numConst = total;
+																
+															}
+				| MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt MY_ELSE {
+																expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');
+																quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+																currQuad = total;
+															} 
+															stmt { 
+																messageHandler("ifstmt", "if (expr) stmt else stmt");
+																/* Update to jump pou pigainei sto else */
+																$3->numConst = $5->numConst + 1;
+
+																/* Update to jump pou bgainei apo to if kai diapernaei to else */
+																quads[currQuad].result->numConst = total;
+															}
 				;
 
-whilestmt	: MY_WHILE MY_OPEN_PAR expr MY_CLOSE_PAR stmt		{ messageHandler("whilestmt", "while (exrpr) stmt");	}
+whilestmt	: MY_WHILE {loop_stack[loop_i++] = total;} MY_OPEN_PAR expr MY_CLOSE_PAR stmt { 
+				messageHandler("whilestmt", "while (exrpr) stmt");	
+				
+				/* Update */
+				$4->numConst = total + 1;
+
+				/* Update ta Breaks */
+				for (BreakList *tmp = b_list[loop_i - 1]; tmp != NULL; tmp = tmp->next) {
+					printf("Updating break!\n");
+					tmp->jump_quad->result->numConst = total + 1;
+				}
+
+				/* Update ta Continues */
+				for (ContinueList *tmp = c_list[loop_i - 1]; tmp != NULL; tmp = tmp->next) {
+					printf("Updating continue!\n");
+					tmp->jump_quad->result->numConst = loop_stack[loop_i - 1];
+				}
+
+				/* Clearing Break List */
+				b_list[loop_i - 1] = NULL;
+
+				/* Clearing Continue List */
+				c_list[loop_i - 1] = NULL;
+
+				/* Last Jump to loop beginner offset */
+				$$ = NewExpr(0, NULL, loop_stack[--loop_i], NULL, 'T');
+				quads[total] = emit(25, NULL, NULL, $$, yylineno, total++);
+			 }
 		;
 
-forstmt		: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON expr MY_SEMICOLON elist MY_CLOSE_PAR stmt 
-			{ messageHandler("forstmt", "for (elist expr; expr; elist) stmt");	}
+forstmt		: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON {loop_stack[loop_i++]= total;} expr MY_SEMICOLON elist MY_CLOSE_PAR stmt 
+			{	messageHandler("forstmt", "for (elist expr; expr; elist) stmt");
+				/* Update */
+				$6->numConst = total + 1;
+
+				/* Update ta Breaks */
+				for (BreakList *tmp = b_list[loop_i - 1]; tmp != NULL; tmp = tmp->next) {
+					printf("Updating break!\n");
+					tmp->jump_quad->result->numConst = total + 1;
+				}
+
+				/* Update ta Continues */
+				for (ContinueList *tmp = c_list[loop_i - 1]; tmp != NULL; tmp = tmp->next) {
+					printf("Updating continue!\n");
+					tmp->jump_quad->result->numConst = loop_stack[loop_i - 1];
+				}
+
+				/* Clearing Break List */
+				b_list[loop_i - 1] = NULL;
+
+				/* Clearing Continue List */
+				c_list[loop_i - 1] = NULL;
+
+
+				/* Last Jump to loop beginner offset */
+				$$ = NewExpr(0, NULL, loop_stack[--loop_i], NULL, 'T');
+				quads[total] = emit(25, NULL, NULL, $$, yylineno, total++);
+			}
 		;
 
 returnstmt	: MY_RETURN MY_SEMICOLON	{ messageHandler("returnstmt", "return;");		}
@@ -768,13 +1068,11 @@ void messageHandler(const char *state1, const char *state2) {
 
 int main(int argc, char** argv) {
 
-	for (int i = 0; i < 8; i++) {
-		table_stack[i] = NULL;
-	}
-
 	for (int i = 0; i < 72; i++) {
 		func_locals_sum[i] = 0;
 		function_expression[i] = NULL;
+		b_list[i] = NULL;
+		c_list[i] = NULL;
 	}
 
 	oSymTable = SymTable_new();
