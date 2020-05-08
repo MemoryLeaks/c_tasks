@@ -563,10 +563,20 @@ assignexpr	: lvalue {
 						/* Periptwsi aplis anathesis const rvalue*/
 						if (syntax_error == 0 && ($4->type == 8 || $4->type == 10) && $$->index == NULL) {
 							$$ = $1;
-							if ($4-> type == 8) $$->numConst = $4->numConst;
-							else	$$->strConst = _strdup($4->strConst);
+							if ($4->type == 8) {
+								$$->numConst = $4->numConst;
+							}
+							else	{
+								$$->strConst = _strdup($4->strConst);
+							}
 
-							quads[total] = emit(0, $4, NULL, $$, (unsigned) yylineno, (unsigned) total++);
+							/* Periptwsi ekxwrisis apo jump */
+							/* 1. To number tou unpdated almatos prepei na eiani -1. 2. Epibebaiwsi mesw tou teleutaiou Quad */
+							if ($4->numConst == -1 && quads[total].result->numConst == -1) {
+								quads[total].result->numConst  = total; /* erxomai apo boolean ekfrasi kai den eimai se if */
+								quads[total] = emit(0, NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
+							} else
+								quads[total] = emit(0, $4, NULL, $$, (unsigned) yylineno, (unsigned) total++);
 						}
 
 						/*Periptwsi pou to rvalue htan arithmetic*/
@@ -708,8 +718,41 @@ member		: lvalue MY_DOT_SIMPLE MY_ID
 						$$ = push_index_back($$, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
 			  }
 		| call MY_DOT_SIMPLE MY_ID		
-			  {		messageHandler("member", "call.identifier");							}
-		| call MY_OPEN_BRA expr MY_CLOSE_BRA	{	messageHandler("member", "[expr]");		}
+			  {		messageHandler("member", "call.identifier");
+					if ($1->type == 0)
+						$$ = push_index_back($1, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+					else if ($1->type == 1)
+						$$ = push_index_back($$, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+
+					tempIncreaseAndUse();
+					SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
+					expression *retval_keeper = NewExpr(2, symbol, 0, NULL, 'T');
+
+					quads[total] = emit(19, NULL, NULL, retval_keeper, yylineno, total++);
+
+					tempIncreaseAndUse();
+					symbol = SymTable_get(oSymTable, currentTemp);
+					expression *getter = NewExpr(1, symbol, 0, NULL, 'T');
+					quads[total] = emit(23, retval_keeper, NewExpr(1, NULL, 0, yylval.stringValue, 'T'), getter, yylineno, total++);
+			  }
+		| call MY_OPEN_BRA expr MY_CLOSE_BRA	
+				{	messageHandler("member", "[expr]");
+					if ($1->type == 0)
+						$$ = push_index_back($1, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+					else if ($1->type == 1)
+						$$ = push_index_back($$, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+
+					tempIncreaseAndUse();
+					SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
+					expression *retval_keeper = NewExpr(2, symbol, 0, NULL, 'T');
+
+					quads[total] = emit(19, NULL, NULL, retval_keeper, yylineno, total++);
+
+					tempIncreaseAndUse();
+					symbol = SymTable_get(oSymTable, currentTemp);
+					expression *getter = NewExpr(1, symbol, 0, NULL, 'T');
+					quads[total] = emit(23, retval_keeper, NewExpr(1, NULL, 0, yylval.stringValue, 'T'), getter, yylineno, total++);
+		}
 		;
 
 call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist)");
@@ -733,6 +776,12 @@ call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist
 		| lvalue callsuffix			{
 										messageHandler("call", "lvalue callsuffix");
 
+										/* Periptwsi pou to lvalue htan member */
+										// printf("Hello indexed element:%s with type %d.\n", $1->sym->varVal->name, $1->type);
+										if ($1->index != NULL) {
+											$1 = emit_if_table($1, 23, oSymTable, scope, yylineno, NULL, yylineno, &total, quads, temp_counter);
+										}
+
 										if ($2 && $2->type == 1) {
 											tempIncreaseAndUse();
 											SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
@@ -747,6 +796,7 @@ call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist
 											}
 
 											quads[total] = emit(16, NULL, NULL, NewExpr(2, symbol, 0, NULL, 'T'), yylineno, total++);
+
 										} else if ($2 && $2->type != 1){
 											expression *tmp = $2;
 											while (tmp != NULL) {
@@ -759,7 +809,9 @@ call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist
 											quads[total] = emit(16, NULL, NULL, $1, yylineno, total++);
 										}
 
+
 										$$ = $1;
+
 										$$->type = 2;
 
 									}
