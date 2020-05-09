@@ -493,6 +493,7 @@ char* getExpressionValue(expression* expr) {
 	}
 	else {
 		if (expr->boolConst == 'T') return "T";
+		else if (expr->type == 8)  return "0";
 		else return "F";
 	}
 }

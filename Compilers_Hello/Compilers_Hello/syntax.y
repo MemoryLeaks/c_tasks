@@ -109,6 +109,8 @@
 %type <expressionValue> methodcall
 %type <expressionValue> whilestmt
 %type <expressionValue> forstmt
+%type <expressionValue> ifinside
+%type <expressionValue> forinside
 
 
 %token MY_MULTILINE_COMMENTS
@@ -199,7 +201,7 @@
 program		: stmts	{ messageHandler("program", "statements");	}
 		;
 
-stmts	: stmt { temp_counter = 0; } stmts	{ messageHandler("statements", "stmt statements");	}
+stmts	: stmt { if (function_flag == 0) temp_counter = 0; } stmts	{ messageHandler("statements", "stmt statements");	}
 		| /*empty*/		{ messageHandler("statements", "'e'");	}
 		;
 
@@ -243,7 +245,7 @@ stmt		: expr MY_SEMICOLON		{ messageHandler("stmt", "expr;");	$$ = NewExpr(0, NU
 											c_list[loop_i - 1] = push_ContinueList(c_list[loop_i - 1], &quads[total]);
 										}
 		}
-		| block				{ messageHandler("stmt", "block");	$$ = $1; $$->numConst = total;}
+		| block				{ messageHandler("stmt", "block");	$$ = $1;}
 		| funcdef			{ messageHandler("stmt", "funcdef");
 							  quads[total] = emit(21, NULL, NULL, $1, yylineno, total++);
 							  $$ = $1;
@@ -306,15 +308,6 @@ expr	: assignexpr 		{ messageHandler("expr", "assignexpr");		}
 
 								/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
 
-								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
-								expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
-
-								quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
-
-								expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
-								quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
-
-								$$ = false_jump;
 							}
 		| expr MY_GE expr	{	messageHandler("expr", "expr >= expr");
 								tempIncreaseAndUse();
@@ -330,15 +323,6 @@ expr	: assignexpr 		{ messageHandler("expr", "assignexpr");		}
 
 								/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
 
-								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
-								expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
-
-								quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
-
-								expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
-								quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
-
-								$$ = false_jump;
 							}
 		| expr MY_L expr	{	messageHandler("expr", "expr < expr");
 								tempIncreaseAndUse();
@@ -354,15 +338,6 @@ expr	: assignexpr 		{ messageHandler("expr", "assignexpr");		}
 
 								/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
 
-								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
-								expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
-
-								quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
-
-								expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
-								quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
-
-								$$ = false_jump;
 							}
 		| expr MY_LE expr	{	messageHandler("expr", "expr <= expr");
 								tempIncreaseAndUse();
@@ -378,15 +353,6 @@ expr	: assignexpr 		{ messageHandler("expr", "assignexpr");		}
 
 								/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
 
-								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
-								expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
-
-								quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
-
-								expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
-								quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
-
-								$$ = false_jump;
 							}
 		| expr MY_EQUAL expr	{ 
 									messageHandler("expr", "expr == expr");
@@ -403,15 +369,6 @@ expr	: assignexpr 		{ messageHandler("expr", "assignexpr");		}
 
 									/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
 
-									expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
-									expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
-
-									quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
-
-									expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
-									quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
-
-									$$ = false_jump;
 								}
 		| expr MY_NEQUAL expr	{	messageHandler("expr", "expr != expr");
 									tempIncreaseAndUse();
@@ -427,15 +384,6 @@ expr	: assignexpr 		{ messageHandler("expr", "assignexpr");		}
 
 									/*Kai tha paw sto IF me ton kataxwriti o opoios exei kai timi. Stin if ginetai mono to patch */
 
-									expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
-									expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
-
-									quads[total] = emit(10, $$, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
-
-									expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
-									quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
-
-									$$ = false_jump;
 								}
 		| expr MY_AND expr	{	messageHandler("expr", "expr AND expr");
 								tempIncreaseAndUse();
@@ -457,14 +405,18 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 													else
 														$2->boolConst = 'T';
 
-													$$ = $2;
+													/* $2->numConst = 0 - $2->numConst; */ 
+
+													tempIncreaseAndUse();
+													$$ = NewExpr($2->type, SymTable_get(oSymTable, currentTemp), $2->numConst,  $2->strConst, $2->boolConst);
+													quads[total] = emit(6, $2, NULL, $$, (unsigned) yylineno, (unsigned) total++);
 												}
 		| MY_NOT expr				{	messageHandler("term", "not expr");
 										if ($2->boolConst == 'T')
 											$2->boolConst = 'F';
 										else
 											$2->boolConst = 'T';
-
+										quads[total] = emit(9, NULL, NULL, $2, (unsigned) yylineno, (unsigned) total++);
 										$$ = $2;
 									}
 		| MY_INC lvalue				{
@@ -1009,13 +961,27 @@ idwithcommas	: MY_COMMA MY_ID {
 				| /*empty*/			{ messageHandler("idwithcommas", "'e'");		}
 				;
 
-ifstmt          : MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt	{	messageHandler("ifstmt", "if (expr) stmt");
-																
+ifinside	:	MY_OPEN_PAR expr MY_CLOSE_PAR {
+					
+				expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+				expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
+
+				quads[total] = emit(10, $2, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
+
+				expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
+				quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+
+				$$ = false_jump;
+			}
+			;
+
+
+ifstmt          : MY_IF ifinside stmt	{						
+																messageHandler("ifstmt", "if (expr) stmt");
 																/* Update */
-																$3->numConst = total;
-																
+																$2->numConst = total;
 															}
-				| MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt MY_ELSE {
+				| MY_IF ifinside stmt MY_ELSE {
 																expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');
 																quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
 																currQuad = total;
@@ -1023,18 +989,18 @@ ifstmt          : MY_IF MY_OPEN_PAR expr MY_CLOSE_PAR stmt	{	messageHandler("ifs
 															stmt { 
 																messageHandler("ifstmt", "if (expr) stmt else stmt");
 																/* Update to jump pou pigainei sto else */
-																$3->numConst = $5->numConst + 1;
+																$2->numConst = $3->numConst + 1;
 
 																/* Update to jump pou bgainei apo to if kai diapernaei to else */
 																quads[currQuad].result->numConst = total;
 															}
 				;
 
-whilestmt	: MY_WHILE {loop_stack[loop_i++] = total;} MY_OPEN_PAR expr MY_CLOSE_PAR stmt { 
+whilestmt	: MY_WHILE {loop_stack[loop_i++] = total;} ifinside stmt { 
 				messageHandler("whilestmt", "while (exrpr) stmt");	
-				
+
 				/* Update */
-				$4->numConst = total + 1;
+				$3->numConst = total + 1;
 
 				/* Update ta Breaks */
 				for (BreakList *tmp = b_list[loop_i - 1]; tmp != NULL; tmp = tmp->next) {
@@ -1060,7 +1026,20 @@ whilestmt	: MY_WHILE {loop_stack[loop_i++] = total;} MY_OPEN_PAR expr MY_CLOSE_P
 			 }
 		;
 
-forstmt		: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON {loop_stack[loop_i++]= total;} expr MY_SEMICOLON elist MY_CLOSE_PAR stmt 
+forinside	:	expr {
+					expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+					expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
+
+					quads[total] = emit(10, $1, true_val, true_jump, yylineno, total++);	/* H TRUE periptwsi ok*/
+
+					expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');				/*H FALSE tha ginei patch stin ifstmt*/
+					quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+
+					$$ = false_jump;
+			}
+			;		 
+
+forstmt		: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON {loop_stack[loop_i++]= total;} forinside MY_SEMICOLON elist MY_CLOSE_PAR stmt 
 			{	messageHandler("forstmt", "for (elist expr; expr; elist) stmt");
 				/* Update */
 				$6->numConst = total + 1;
@@ -1141,7 +1120,9 @@ int main(int argc, char** argv) {
 	yyparse();
 
 	printScopeLists();
-	printQuads();
+
+	if (syntax_error == 0)
+		printQuads();
 
 	return 0;
 }
