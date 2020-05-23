@@ -397,7 +397,7 @@ tesseract emit(enum iopcode type, expression* expr1, expression* expr2, expressi
 	quady.line = line;
 	quady.label = offset;
 
-	printf("Emmited %u: %s %s %s %s.\n",offset, getIOpcodeName(quady.op), getExpressionValue(quady.arg1), getExpressionValue(quady.arg2), getExpressionValue(quady.result));
+	//printf("Emmited %u: %s %s %s %s.\n",offset, getIOpcodeName(quady.op), getExpressionValue(quady.arg1), getExpressionValue(quady.arg2), getExpressionValue(quady.result));
 
 	return quady;
 }
@@ -440,7 +440,7 @@ char* getIOpcodeName(enum iopcode type) {
 	else if (type == 17)
 		return "PARAM";
 	else if (type == 18)
-		return "RET";
+		return "RETURN";
 	else if (type == 19)
 		return "GETRETVAL";
 	if (type == 20)
@@ -492,9 +492,10 @@ char* getExpressionValue(expression* expr) {
 		return "[...]";
 	}
 	else {
-		if (expr->boolConst == 'T') return "T";
+		if (expr->boolConst == 'T') return "TRUE";
 		else if (expr->type == 8)  return "0";
-		else return "F";
+		else if (expr->type == 11) return "nill";
+		else return "FALSE";
 	}
 }
 
@@ -518,7 +519,7 @@ expression* push_back(expression* header, expression* p) {
 	return header;
 }
 
-expression *emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable, int scope,  int yylineno, expression *set_val, unsigned line, unsigned *offset, tesseract *qt, int temp_counter) {
+expression *emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable, int scope,  int yylineno, expression *set_val, unsigned line, unsigned *offset, tesseract *qt, int *temp_counter) {
 	char currentTemp[8];
 	SymbolTableEntry* previous_sym = NULL;
 	SymbolTableEntry* symbol = NULL;
@@ -534,7 +535,7 @@ expression *emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable
 		strcpy(currentTemp, "_t");
 		char tmp[3];
 		memset(tmp, '\0', 3);
-		sprintf(tmp, "%d", temp_counter++);
+		sprintf(tmp, "%d", (*temp_counter)++);
 		strcat(currentTemp, tmp);
 
 		if (scope == 0 && SymTable_get(oSymTable, currentTemp) == NULL)
@@ -545,14 +546,15 @@ expression *emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable
 		previous_sym = symbol;
 		symbol = SymTable_get(oSymTable, currentTemp);
 
-		last_keeper = NewExpr(23, symbol, 0, traverser->strConst, 'T');
+		last_keeper = NewExpr(1, symbol, 0, traverser->strConst, 'T');
 		if (previous_sym == NULL){
 			qt[*offset] = emit(23, traverser, traverser->index, last_keeper, line, (*offset)++);
 		}
 		else if (traverser->index != NULL){
 			if (type == 24 && traverser->index->index == NULL) {
-				last_keeper->type = 24;
+				last_keeper->type = 1;
 				last_keeper->sym = previous_sym;
+				last_keeper->numConst = traverser->index->numConst;
 				last_keeper->strConst = traverser->index->strConst;
 				return last_keeper;
 			}
@@ -598,22 +600,6 @@ expression* push_index_back(expression* header, expression* p) {
 	return header;
 }
 
-expression* push_List(expression* header, expression* p) {
-
-	if (header == NULL) {
-		return header;
-		header = p;
-		header->next = NULL;
-	}
-	else {
-		p->next = header;
-		header = p;
-	}
-
-
-	
-	return header;
-}
 
 BreakList* push_BreakList(BreakList* head, tesseract *q) {
 	

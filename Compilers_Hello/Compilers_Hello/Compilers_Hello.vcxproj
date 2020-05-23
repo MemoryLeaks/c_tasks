@@ -40,11 +40,13 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="avm_tools.h" />
     <ClInclude Include="lang_tools.h" />
     <ClInclude Include="syntax.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="al.c" />
+    <ClCompile Include="avm_tools.c" />
     <ClCompile Include="lang_tools.c" />
     <ClCompile Include="syntax.c" />
   </ItemGroup>
@@ -67,6 +69,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="syntax.output" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Debug\assembly.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

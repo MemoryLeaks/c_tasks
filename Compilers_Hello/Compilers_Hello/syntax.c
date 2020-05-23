@@ -65,6 +65,7 @@
 #line 1 "syntax.y" /* yacc.c:339  */
 
 	#include "lang_tools.h"
+	#include "avm_tools.h"
 
 	extern int yylineno;
 	extern char *yyval;
@@ -85,7 +86,6 @@
 	/* xeirourgio gia tis synartiseis */ 
 	int func_locals_sum[72];
 	expression *function_expression[72];
-	int all_func_counter = 0;
 
 
 	/* while, for stoiba xeirourgio */
@@ -590,17 +590,17 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   201,   201,   204,   204,   205,   209,   210,   211,   212,
-     213,   214,   231,   248,   249,   253,   256,   257,   264,   270,
-     276,   283,   290,   312,   327,   342,   357,   373,   388,   393,
-     398,   401,   402,   414,   422,   438,   438,   453,   468,   468,
-     482,   494,   494,   570,   571,   580,   592,   597,   600,   630,
-     645,   653,   658,   665,   672,   690,   710,   728,   770,   787,
-     788,   791,   794,   803,   807,   810,   814,   817,   824,   833,
-     838,   841,   844,   852,   852,   859,   859,   867,   867,   887,
-     887,   911,   917,   923,   930,   931,   932,   935,   935,   946,
-     949,   949,   961,   964,   979,   984,   984,   999,   999,  1029,
-    1042,  1042,  1072,  1073
+       0,   202,   202,   205,   205,   206,   210,   211,   212,   213,
+     214,   215,   232,   249,   250,   254,   257,   258,   265,   271,
+     277,   284,   291,   313,   328,   343,   358,   374,   389,   410,
+     429,   432,   433,   445,   468,   487,   487,   505,   522,   522,
+     539,   551,   551,   634,   635,   644,   656,   661,   664,   694,
+     710,   719,   725,   732,   739,   758,   778,   796,   846,   863,
+     864,   867,   870,   879,   883,   886,   890,   893,   900,   909,
+     914,   917,   920,   928,   928,   935,   935,   943,   943,   974,
+     974,  1011,  1017,  1023,  1030,  1031,  1032,  1035,  1035,  1047,
+    1050,  1050,  1064,  1067,  1082,  1087,  1087,  1105,  1105,  1135,
+    1148,  1148,  1178,  1195
 };
 #endif
 
@@ -1580,61 +1580,61 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 201 "syntax.y" /* yacc.c:1646  */
+#line 202 "syntax.y" /* yacc.c:1646  */
     { messageHandler("program", "statements");	}
 #line 1586 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 204 "syntax.y" /* yacc.c:1646  */
+#line 205 "syntax.y" /* yacc.c:1646  */
     { if (function_flag == 0) temp_counter = 0; }
 #line 1592 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 204 "syntax.y" /* yacc.c:1646  */
+#line 205 "syntax.y" /* yacc.c:1646  */
     { messageHandler("statements", "stmt statements");	}
 #line 1598 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 205 "syntax.y" /* yacc.c:1646  */
+#line 206 "syntax.y" /* yacc.c:1646  */
     { messageHandler("statements", "'e'");	}
 #line 1604 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 209 "syntax.y" /* yacc.c:1646  */
+#line 210 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "expr;");	(yyval.expressionValue) = NewExpr(0, NULL, total, NULL, 'T');}
 #line 1610 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 210 "syntax.y" /* yacc.c:1646  */
+#line 211 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "ifstmt");	(yyval.expressionValue) = NewExpr(0, NULL, total, NULL, 'T');}
 #line 1616 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 211 "syntax.y" /* yacc.c:1646  */
+#line 212 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "whilestmt");	(yyval.expressionValue) = NewExpr(0, NULL, total, NULL, 'T');}
 #line 1622 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 212 "syntax.y" /* yacc.c:1646  */
+#line 213 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "forstmt");	(yyval.expressionValue) = NewExpr(0, NULL, total, NULL, 'T');}
 #line 1628 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 213 "syntax.y" /* yacc.c:1646  */
+#line 214 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "returnstmt");	}
 #line 1634 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 214 "syntax.y" /* yacc.c:1646  */
+#line 215 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("stmt", "break;");
 									if (loop_i - 1 < 0) {
 										printf("Error in line %d: Break found out of loop!\n", yylineno);
@@ -1656,7 +1656,7 @@ yyreduce:
     break;
 
   case 12:
-#line 231 "syntax.y" /* yacc.c:1646  */
+#line 232 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("stmt", "continue;"); 
 										if (loop_i - 1 < 0) {
 											printf("Error in line %d: Continue found out of loop!\n", yylineno);
@@ -1678,13 +1678,13 @@ yyreduce:
     break;
 
   case 13:
-#line 248 "syntax.y" /* yacc.c:1646  */
+#line 249 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "block");	(yyval.expressionValue) = (yyvsp[0].expressionValue);}
 #line 1684 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 249 "syntax.y" /* yacc.c:1646  */
+#line 250 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", "funcdef");
 							  quads[total] = emit(21, NULL, NULL, (yyvsp[0].expressionValue), yylineno, total++);
 							  (yyval.expressionValue) = (yyvsp[0].expressionValue);
@@ -1693,19 +1693,19 @@ yyreduce:
     break;
 
   case 15:
-#line 253 "syntax.y" /* yacc.c:1646  */
+#line 254 "syntax.y" /* yacc.c:1646  */
     { messageHandler("stmt", ";");	}
 #line 1699 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 256 "syntax.y" /* yacc.c:1646  */
-    { messageHandler("expr", "assignexpr");		}
+#line 257 "syntax.y" /* yacc.c:1646  */
+    { messageHandler("expr", "assignexpr");	}
 #line 1705 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 257 "syntax.y" /* yacc.c:1646  */
+#line 258 "syntax.y" /* yacc.c:1646  */
     { 
 								messageHandler("expr", "expr + expr");
 								tempIncreaseAndUse();
@@ -1717,7 +1717,7 @@ yyreduce:
     break;
 
   case 18:
-#line 264 "syntax.y" /* yacc.c:1646  */
+#line 265 "syntax.y" /* yacc.c:1646  */
     { 
 									messageHandler("expr", "expr - expr");
 									tempIncreaseAndUse();
@@ -1728,7 +1728,7 @@ yyreduce:
     break;
 
   case 19:
-#line 270 "syntax.y" /* yacc.c:1646  */
+#line 271 "syntax.y" /* yacc.c:1646  */
     { 
 								messageHandler("expr", "expr * expr"); 
 								tempIncreaseAndUse();
@@ -1739,7 +1739,7 @@ yyreduce:
     break;
 
   case 20:
-#line 276 "syntax.y" /* yacc.c:1646  */
+#line 277 "syntax.y" /* yacc.c:1646  */
     {
 								messageHandler("expr", "expr * expr"); 
 								tempIncreaseAndUse();
@@ -1751,7 +1751,7 @@ yyreduce:
     break;
 
   case 21:
-#line 283 "syntax.y" /* yacc.c:1646  */
+#line 284 "syntax.y" /* yacc.c:1646  */
     { 
 								messageHandler("expr", "expr % expr");
 								tempIncreaseAndUse();
@@ -1763,7 +1763,7 @@ yyreduce:
     break;
 
   case 22:
-#line 290 "syntax.y" /* yacc.c:1646  */
+#line 291 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("expr", "expr > expr"); 
 								tempIncreaseAndUse();
 								(yyval.expressionValue) = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
@@ -1790,7 +1790,7 @@ yyreduce:
     break;
 
   case 23:
-#line 312 "syntax.y" /* yacc.c:1646  */
+#line 313 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("expr", "expr >= expr");
 								tempIncreaseAndUse();
 								(yyval.expressionValue) = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
@@ -1810,7 +1810,7 @@ yyreduce:
     break;
 
   case 24:
-#line 327 "syntax.y" /* yacc.c:1646  */
+#line 328 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("expr", "expr < expr");
 								tempIncreaseAndUse();
 								(yyval.expressionValue) = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
@@ -1830,7 +1830,7 @@ yyreduce:
     break;
 
   case 25:
-#line 342 "syntax.y" /* yacc.c:1646  */
+#line 343 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("expr", "expr <= expr");
 								tempIncreaseAndUse();
 								(yyval.expressionValue) = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
@@ -1850,7 +1850,7 @@ yyreduce:
     break;
 
   case 26:
-#line 357 "syntax.y" /* yacc.c:1646  */
+#line 358 "syntax.y" /* yacc.c:1646  */
     { 
 									messageHandler("expr", "expr == expr");
 									tempIncreaseAndUse();
@@ -1871,7 +1871,7 @@ yyreduce:
     break;
 
   case 27:
-#line 373 "syntax.y" /* yacc.c:1646  */
+#line 374 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("expr", "expr != expr");
 									tempIncreaseAndUse();
 									(yyval.expressionValue) = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
@@ -1891,39 +1891,69 @@ yyreduce:
     break;
 
   case 28:
-#line 388 "syntax.y" /* yacc.c:1646  */
+#line 389 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("expr", "expr AND expr");
 								tempIncreaseAndUse();
-								(yyval.expressionValue) = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
-								quads[total] = emit(7, (yyvsp[-2].expressionValue), (yyvsp[0].expressionValue), (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
-							}
-#line 1901 "syntax.c" /* yacc.c:1646  */
-    break;
+								
+								/* Epembasi */ 
+								SymbolTableEntry *result = SymTable_get(oSymTable, currentTemp);
+								expression *jump_val = NewExpr(8, NULL, total + 4, NULL, 'T');
+								expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+								expression *jump_val3 = NewExpr(8, NULL, total + 5, NULL, 'T');
+								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+								expression *false_val = NewExpr(9, NULL, 0, NULL, 'F');
+								(yyval.expressionValue) = NewExpr(5, result, 0, NULL, 'T');
 
-  case 29:
-#line 393 "syntax.y" /* yacc.c:1646  */
-    {	messageHandler("expr", "expr OR expr"); 
-								tempIncreaseAndUse();
-								(yyval.expressionValue) = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
-								quads[total] = emit(8, (yyvsp[-2].expressionValue), (yyvsp[0].expressionValue), (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
-							}
-#line 1911 "syntax.c" /* yacc.c:1646  */
-    break;
 
-  case 30:
-#line 398 "syntax.y" /* yacc.c:1646  */
-    {	messageHandler("expr", "term");}
+								//quads[total] = emit(7, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(10, (yyvsp[-2].expressionValue), false_val, jump_val, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(10, (yyvsp[0].expressionValue), false_val, jump_val2, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, true_val, NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(25, NULL, NULL, jump_val3, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, false_val, NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
+
+							}
 #line 1917 "syntax.c" /* yacc.c:1646  */
     break;
 
+  case 29:
+#line 410 "syntax.y" /* yacc.c:1646  */
+    {	messageHandler("expr", "expr OR expr"); 
+								tempIncreaseAndUse();
+								/* Epembasi */ 
+								SymbolTableEntry *result = SymTable_get(oSymTable, currentTemp);
+								expression *jump_val = NewExpr(8, NULL, total + 4, NULL, 'T');
+								expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+								expression *jump_val3 = NewExpr(8, NULL, total + 5, NULL, 'T');
+								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+								expression *false_val = NewExpr(9, NULL, 0, NULL, 'F');
+								(yyval.expressionValue) = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+								
+								
+								//quads[total] = emit(8, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(10, (yyvsp[-2].expressionValue), true_val, jump_val, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(10, (yyvsp[0].expressionValue), true_val, jump_val2, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, false_val, NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(25, NULL, NULL, jump_val3, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, true_val, NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
+							}
+#line 1941 "syntax.c" /* yacc.c:1646  */
+    break;
+
+  case 30:
+#line 429 "syntax.y" /* yacc.c:1646  */
+    {	messageHandler("expr", "term"); }
+#line 1947 "syntax.c" /* yacc.c:1646  */
+    break;
+
   case 31:
-#line 401 "syntax.y" /* yacc.c:1646  */
+#line 432 "syntax.y" /* yacc.c:1646  */
     { messageHandler("term", "(expr)");  (yyval.expressionValue) = (yyvsp[-1].expressionValue);}
-#line 1923 "syntax.c" /* yacc.c:1646  */
+#line 1953 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 402 "syntax.y" /* yacc.c:1646  */
+#line 433 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("term", "-expr");	
 													if ((yyvsp[0].expressionValue)->boolConst == 'T')
 														(yyvsp[0].expressionValue)->boolConst = 'F';
@@ -1936,30 +1966,48 @@ yyreduce:
 													(yyval.expressionValue) = NewExpr((yyvsp[0].expressionValue)->type, SymTable_get(oSymTable, currentTemp), (yyvsp[0].expressionValue)->numConst,  (yyvsp[0].expressionValue)->strConst, (yyvsp[0].expressionValue)->boolConst);
 													quads[total] = emit(6, (yyvsp[0].expressionValue), NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
 												}
-#line 1940 "syntax.c" /* yacc.c:1646  */
+#line 1970 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 414 "syntax.y" /* yacc.c:1646  */
+#line 445 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("term", "not expr");
 										if ((yyvsp[0].expressionValue)->boolConst == 'T')
 											(yyvsp[0].expressionValue)->boolConst = 'F';
 										else
 											(yyvsp[0].expressionValue)->boolConst = 'T';
-										quads[total] = emit(9, NULL, NULL, (yyvsp[0].expressionValue), (unsigned) yylineno, (unsigned) total++);
-										(yyval.expressionValue) = (yyvsp[0].expressionValue);
+
+										tempIncreaseAndUse();
+										/* Epembasi */ 
+										SymbolTableEntry *result = SymTable_get(oSymTable, currentTemp);
+										expression *jump_val = NewExpr(8, NULL, total + 3, NULL, 'T');
+										expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+
+										expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+										expression *false_val = NewExpr(9, NULL, 0, NULL, 'F');
+
+
+										(yyval.expressionValue) = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+										//quads[total] = emit(9, $2, NULL, $$, (unsigned) yylineno, (unsigned) total++);
+										quads[total] = emit(10, (yyvsp[0].expressionValue), false_val, jump_val, (unsigned) yylineno, (unsigned) total++);
+										quads[total] = emit(0, false_val, NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
+										quads[total] = emit(25, NULL, NULL, jump_val2, (unsigned) yylineno, (unsigned) total++);
+										quads[total] = emit(0, true_val, NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
 									}
-#line 1953 "syntax.c" /* yacc.c:1646  */
+#line 1998 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 422 "syntax.y" /* yacc.c:1646  */
+#line 468 "syntax.y" /* yacc.c:1646  */
     {
 										SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
-										if (symbol && symbol->type == 3)
+										if (symbol && symbol->type == 3) {
 											printf("Error in line %d: You cannot increase left a user defined function (%s).\n", yylineno, yylval.stringValue);
-										else if (symbol && symbol->type == 4)
+											syntax_error = 1;
+										} else if (symbol && symbol->type == 4) {
 											printf("Error in line %d: You cannot increase left a library function (%s).\n", yylineno, yylval.stringValue);
+											syntax_error = 1;
+										}
 										messageHandler("term", "++yvalue");
 
 										tempIncreaseAndUse();
@@ -1970,23 +2018,26 @@ yyreduce:
 										(yyval.expressionValue)->numConst = (yyvsp[0].expressionValue)->numConst;
 
 									}
-#line 1974 "syntax.c" /* yacc.c:1646  */
+#line 2022 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 438 "syntax.y" /* yacc.c:1646  */
+#line 487 "syntax.y" /* yacc.c:1646  */
     {
 						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
-						if (symbol && symbol->type == 3)
+						if (symbol && symbol->type == 3) {
+							syntax_error = 1;
 							printf("Error in line %d: You cannot increase right a user defined function (%s).\n", yylineno, yylval.stringValue);
-						else if (symbol && symbol->type == 4)
+						} else if (symbol && symbol->type == 4) {
 							printf("Error in line %d: You cannot increase right a library function (%s).\n", yylineno, yylval.stringValue);
+							syntax_error = 1;
+						}
 				 }
-#line 1986 "syntax.c" /* yacc.c:1646  */
+#line 2037 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 444 "syntax.y" /* yacc.c:1646  */
+#line 496 "syntax.y" /* yacc.c:1646  */
     {
 											messageHandler("term", "lvalue++");
 											tempIncreaseAndUse();
@@ -1996,18 +2047,20 @@ yyreduce:
 											quads[total] = emit(0, (yyval.expressionValue), NULL, (yyvsp[-2].expressionValue), (unsigned) yylineno, (unsigned) total++);
 											(yyval.expressionValue)->numConst = (yyvsp[-2].expressionValue)->numConst;
 										}
-#line 2000 "syntax.c" /* yacc.c:1646  */
+#line 2051 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 453 "syntax.y" /* yacc.c:1646  */
+#line 505 "syntax.y" /* yacc.c:1646  */
     { 
 										SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
-										if (symbol && symbol->type == 3)
+										if (symbol && symbol->type == 3) {
+											syntax_error = 1;
 											printf("Error in line %d: You cannot decrease left a user defined function (%s).\n", yylineno, yylval.stringValue);
-										else if (symbol && symbol->type == 4)
+										} else if (symbol && symbol->type == 4) {
+											syntax_error = 1;
 											printf("Error in line %d: You cannot decrease left a library function (%s).\n", yylineno, yylval.stringValue);
-										
+										}
 										tempIncreaseAndUse();
 										(yyval.expressionValue) = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
 										(yyvsp[0].expressionValue)->numConst--;
@@ -2016,23 +2069,26 @@ yyreduce:
 										(yyval.expressionValue)->numConst = (yyvsp[0].expressionValue)->numConst;
 										messageHandler("term", "--lvalue");	
 									}
-#line 2020 "syntax.c" /* yacc.c:1646  */
+#line 2073 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 468 "syntax.y" /* yacc.c:1646  */
+#line 522 "syntax.y" /* yacc.c:1646  */
     {
 						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
-						if (symbol && symbol->type == 3)
+						if (symbol && symbol->type == 3) {
+							syntax_error = 1;
 							printf("Error in line %d: You cannot decrease right a user defined function (%s).\n", yylineno, yylval.stringValue);
-						else if (symbol && symbol->type == 4)
+						} else if (symbol && symbol->type == 4) {
 							printf("Error in line %d: You cannot decrease right a library function (%s).\n", yylineno, yylval.stringValue);
+							syntax_error = 1;
+						}
 				 }
-#line 2032 "syntax.c" /* yacc.c:1646  */
+#line 2088 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 474 "syntax.y" /* yacc.c:1646  */
+#line 531 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("term", "lvalue++");	
 											tempIncreaseAndUse();
 											(yyval.expressionValue) = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
@@ -2041,28 +2097,28 @@ yyreduce:
 											quads[total] = emit(0, (yyval.expressionValue), NULL, (yyvsp[-2].expressionValue), (unsigned) yylineno, (unsigned) total++);
 											(yyval.expressionValue)->numConst = (yyvsp[-2].expressionValue)->numConst;
 										}
-#line 2045 "syntax.c" /* yacc.c:1646  */
+#line 2101 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 483 "syntax.y" /* yacc.c:1646  */
+#line 540 "syntax.y" /* yacc.c:1646  */
     { 
 					messageHandler("term", "primary");
 					/* Periptwsi gia pinaka GET */
 					if ((yyval.expressionValue)->index != NULL && (yyval.expressionValue)->type == 1) {
 						total++;
-						(yyval.expressionValue) = emit_if_table((yyval.expressionValue), 23, oSymTable, scope, yylineno, NULL, (unsigned) yylineno, &total, quads, temp_counter);
+						(yyval.expressionValue) = emit_if_table((yyval.expressionValue), 23, oSymTable, scope, yylineno, NULL, (unsigned) yylineno, &total, quads, &temp_counter);
 					} else
 						(yyval.expressionValue) = (yyvsp[0].expressionValue);
 				}
-#line 2059 "syntax.c" /* yacc.c:1646  */
+#line 2115 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 494 "syntax.y" /* yacc.c:1646  */
+#line 551 "syntax.y" /* yacc.c:1646  */
     {
 						/* printf("Checking if [%s] is a library function or function\n", yylval.stringValue); */
-						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+						SymbolTableEntry* symbol = (yyvsp[0].expressionValue)->sym;
 						if (symbol && symbol->type == 3) { 
 							syntax_error = 1;
 							printf("Error in line %d: You cannot use a user defined function in assignment expresion.\n", yylineno);
@@ -2072,11 +2128,11 @@ yyreduce:
 							printf("Error in line %d: You cannot use a library function in assignment expresion.\n", yylineno);
 						}
 					 }
-#line 2076 "syntax.c" /* yacc.c:1646  */
+#line 2132 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 506 "syntax.y" /* yacc.c:1646  */
+#line 563 "syntax.y" /* yacc.c:1646  */
     { 
 						messageHandler("assignexpr", "lvalue = expr");
 
@@ -2096,15 +2152,16 @@ yyreduce:
 								(yyval.expressionValue)->strConst = _strdup((yyvsp[0].expressionValue)->strConst);
 							}
 
-							/* Periptwsi ekxwrisis apo jump */
-							/* 1. To number tou unpdated almatos prepei na eiani -1. 2. Epibebaiwsi mesw tou teleutaiou Quad */
-							if ((yyvsp[0].expressionValue)->numConst == -1 && quads[total].result->numConst == -1) {
-								quads[total].result->numConst  = total; /* erxomai apo boolean ekfrasi kai den eimai se if */
-								quads[total] = emit(0, NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T'), NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
-							} else
-								quads[total] = emit(0, (yyvsp[0].expressionValue), NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
+							quads[total] = emit(0, (yyvsp[0].expressionValue), NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
 						}
 
+						/* Periptwsi aplis anathesis const boolean */
+						if (syntax_error == 0 && (yyvsp[0].expressionValue)->type == 9 && (yyval.expressionValue)->index == NULL)
+						{
+							(yyval.expressionValue) = (yyvsp[-3].expressionValue);
+							(yyval.expressionValue)->boolConst = (yyvsp[0].expressionValue)->boolConst;
+							quads[total] = emit(0, (yyvsp[0].expressionValue), NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
+						}
 						/*Periptwsi pou to rvalue htan arithmetic*/
 						if (syntax_error == 0 && (yyvsp[0].expressionValue)->type == 4 && (yyvsp[-3].expressionValue)->index == NULL) {
 							(yyval.expressionValue) = (yyvsp[-3].expressionValue);
@@ -2121,15 +2178,15 @@ yyreduce:
 						}
 
 						/* Periptwsi pou to rvalue einai indexed apo table  */
-						if (syntax_error == 0 && (yyvsp[0].expressionValue)->type == 23) {
+						if (syntax_error == 0 && (yyvsp[0].expressionValue)->type == 1) {
 							quads[total] = emit(0, (yyvsp[0].expressionValue), NULL, (yyval.expressionValue), (unsigned) yylineno, (unsigned) total++);
 						}
 
 						/*Periptwsi poy to lvalue einai index emelent kai prepei na ginei set*/
 						if (syntax_error == 0 && (yyvsp[-3].expressionValue)->type == 1 && (yyval.expressionValue)->index != NULL) {
 							total++;
-							(yyval.expressionValue) = emit_if_table((yyval.expressionValue), 24, oSymTable, scope, yylineno, (yyvsp[0].expressionValue), (unsigned) yylineno, &total, quads, temp_counter);
-							quads[total] = emit(24, (yyval.expressionValue), NewExpr(1, NULL, 0, (yyval.expressionValue)->strConst, 'T'), (yyvsp[0].expressionValue), (unsigned) yylineno, (unsigned) total++);
+							(yyval.expressionValue) = emit_if_table((yyval.expressionValue), 24, oSymTable, scope, yylineno, (yyvsp[0].expressionValue), (unsigned) yylineno, &total, quads, &temp_counter);
+							quads[total] = emit(24, (yyval.expressionValue), NewExpr(1, NULL, (yyval.expressionValue)->numConst, (yyval.expressionValue)->strConst, 'T'), (yyvsp[0].expressionValue), (unsigned) yylineno, (unsigned) total++);
 						}
 
 						/* Periptwsi poy to rvalue einai func call */
@@ -2138,18 +2195,24 @@ yyreduce:
 							(yyval.expressionValue) = (yyvsp[-3].expressionValue);
 						}
 
+						/* Periptwsi poy to rvalue einai boolean expression */
+						if (syntax_error == 0 && (yyvsp[0].expressionValue)->type == 5) {
+							quads[total] = emit(0, (yyvsp[0].expressionValue), NULL, (yyvsp[-3].expressionValue), (unsigned) yylineno, (unsigned) total++);
+							(yyval.expressionValue) = (yyvsp[-3].expressionValue);
+						}
+
 					 }
-#line 2143 "syntax.c" /* yacc.c:1646  */
+#line 2206 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 570 "syntax.y" /* yacc.c:1646  */
+#line 634 "syntax.y" /* yacc.c:1646  */
     {  messageHandler("primary", "lvalue");	(yyval.expressionValue) = (yyvsp[0].expressionValue);}
-#line 2149 "syntax.c" /* yacc.c:1646  */
+#line 2212 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 571 "syntax.y" /* yacc.c:1646  */
+#line 635 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("primary", "call");
 								if (syntax_error == 0 && (yyvsp[0].expressionValue)->type == 2) {
 									tempIncreaseAndUse();
@@ -2159,16 +2222,16 @@ yyreduce:
 								}else
 									(yyval.expressionValue) = (yyvsp[0].expressionValue);
 							}
-#line 2163 "syntax.c" /* yacc.c:1646  */
+#line 2226 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 580 "syntax.y" /* yacc.c:1646  */
+#line 644 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("primary", "objectdef");
 								quads[total] = emit(22, NULL, NULL, (yyvsp[0].expressionValue), (unsigned) yylineno, (unsigned) total++);
 								expression *tmp = (yyvsp[0].expressionValue)->index;
 								while (tmp != NULL) {
-									if (tmp->index == NULL)
+									if (tmp->index == NULL || tmp->type == 7)
 										quads[total] = emit(24, (yyvsp[0].expressionValue), tmp, NewExpr(8, NULL, 0, 0, 'F'), yylineno, total++);
 									else
 										quads[total] = emit(24, (yyvsp[0].expressionValue), tmp, tmp->index, yylineno, total++);
@@ -2176,27 +2239,27 @@ yyreduce:
 								}
 								(yyval.expressionValue) = (yyvsp[0].expressionValue);
 							}
-#line 2180 "syntax.c" /* yacc.c:1646  */
+#line 2243 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 592 "syntax.y" /* yacc.c:1646  */
+#line 656 "syntax.y" /* yacc.c:1646  */
     {
 												messageHandler("primary", "(funcdef)");
 												quads[total] = emit(21, NULL, NULL, (yyvsp[-1].expressionValue), yylineno, total++);
 												(yyval.expressionValue) = (yyvsp[-1].expressionValue);
 											}
-#line 2190 "syntax.c" /* yacc.c:1646  */
+#line 2253 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 597 "syntax.y" /* yacc.c:1646  */
+#line 661 "syntax.y" /* yacc.c:1646  */
     { messageHandler("primary", "const");	(yyval.expressionValue) = (yyvsp[0].expressionValue);}
-#line 2196 "syntax.c" /* yacc.c:1646  */
+#line 2259 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 600 "syntax.y" /* yacc.c:1646  */
+#line 664 "syntax.y" /* yacc.c:1646  */
     {	
 						/*Mpainei mesa otan eimaste global scope kai den yparxei hdh*/
 						if (scope_lookup(yylval.stringValue, scope) == 0 && scope == 0) {
@@ -2227,74 +2290,77 @@ yyreduce:
 
 						messageHandler("lvalue", "identifier"); 
 					}
-#line 2231 "syntax.c" /* yacc.c:1646  */
+#line 2294 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 630 "syntax.y" /* yacc.c:1646  */
+#line 694 "syntax.y" /* yacc.c:1646  */
     { 
 								/* Periptwsh pou briskomaste sto Global Scope */
 								if (scope_lookup(yylval.stringValue, scope) == 0 && scope == 0) {
 									SymTable_put(oSymTable, yylval.stringValue, 0, scope, yylineno, 1);
 								} else if (scope_lookup(yylval.stringValue, scope) == 0 && scope != 0) {
 									SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
-									if (symbol && symbol->type == 4)
+									if (symbol && symbol->type == 4) {
 										printf("Error in line %d: You cannot use a library function name as a local variable.\n", yylineno);
-									else
+										syntax_error = 1;
+									} else
 										SymTable_put(oSymTable, yylval.stringValue, 1, scope, yylineno, 1);
 								}
 
 								(yyval.expressionValue) = NewExpr(0, SymTable_get(oSymTable, yylval.stringValue), 0, NULL, 'F');
 								messageHandler("lvalue", "local_identifier"); 
 							}
-#line 2251 "syntax.c" /* yacc.c:1646  */
+#line 2315 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 645 "syntax.y" /* yacc.c:1646  */
+#line 710 "syntax.y" /* yacc.c:1646  */
     {
 									if (scope_lookup(yylval.stringValue, 0) == 0) {
+										syntax_error = 1;
 										printf("Error in line %d: Not found global symbol with name [%s].\n", yylineno, yylval.stringValue);
 									}
 
 									(yyval.expressionValue) = NewExpr(0, SymTable_get(oSymTable, yylval.stringValue), 0, NULL, 'F');
 									messageHandler("lvalue", ":: identifier");
 								}
-#line 2264 "syntax.c" /* yacc.c:1646  */
+#line 2329 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 653 "syntax.y" /* yacc.c:1646  */
-    {	messageHandler("lvalue", "member");	
+#line 719 "syntax.y" /* yacc.c:1646  */
+    {	messageHandler("lvalue", "member");
 							(yyval.expressionValue) = (yyvsp[0].expressionValue);
+							expression *temp = (yyvsp[0].expressionValue);
 						}
-#line 2272 "syntax.c" /* yacc.c:1646  */
+#line 2338 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 659 "syntax.y" /* yacc.c:1646  */
+#line 726 "syntax.y" /* yacc.c:1646  */
     {		messageHandler("member", "lvalue.identifier");
 					if ((yyvsp[-2].expressionValue)->type == 0)
 						(yyval.expressionValue) = push_index_back((yyvsp[-2].expressionValue), NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
 					else if ((yyvsp[-2].expressionValue)->type == 1)
 						(yyval.expressionValue) = push_index_back((yyval.expressionValue), NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
 			  }
-#line 2283 "syntax.c" /* yacc.c:1646  */
+#line 2349 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 666 "syntax.y" /* yacc.c:1646  */
+#line 733 "syntax.y" /* yacc.c:1646  */
     {		messageHandler("member", "lvalue[expr]");
 					if ((yyvsp[-3].expressionValue)->type == 0)
-						(yyval.expressionValue) = push_index_back((yyvsp[-3].expressionValue), NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+						(yyval.expressionValue) = push_index_back((yyvsp[-3].expressionValue), (yyvsp[-1].expressionValue));
 					else if ((yyvsp[-3].expressionValue)->type == 1)
-						(yyval.expressionValue) = push_index_back((yyval.expressionValue), NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+						(yyval.expressionValue) = push_index_back((yyval.expressionValue), (yyvsp[-1].expressionValue));
 			  }
-#line 2294 "syntax.c" /* yacc.c:1646  */
+#line 2360 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 673 "syntax.y" /* yacc.c:1646  */
+#line 740 "syntax.y" /* yacc.c:1646  */
     {		messageHandler("member", "call.identifier");
 					if ((yyvsp[-2].expressionValue)->type == 0)
 						(yyval.expressionValue) = push_index_back((yyvsp[-2].expressionValue), NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
@@ -2311,17 +2377,18 @@ yyreduce:
 					symbol = SymTable_get(oSymTable, currentTemp);
 					expression *getter = NewExpr(1, symbol, 0, NULL, 'T');
 					quads[total] = emit(23, retval_keeper, NewExpr(1, NULL, 0, yylval.stringValue, 'T'), getter, yylineno, total++);
+					(yyvsp[-2].expressionValue)->sym = symbol;
 			  }
-#line 2316 "syntax.c" /* yacc.c:1646  */
+#line 2383 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 691 "syntax.y" /* yacc.c:1646  */
+#line 759 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("member", "[expr]");
 					if ((yyvsp[-3].expressionValue)->type == 0)
-						(yyval.expressionValue) = push_index_back((yyvsp[-3].expressionValue), NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+						(yyval.expressionValue) = push_index_back((yyvsp[-3].expressionValue), (yyvsp[-1].expressionValue));
 					else if ((yyvsp[-3].expressionValue)->type == 1)
-						(yyval.expressionValue) = push_index_back((yyval.expressionValue), NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+						(yyval.expressionValue) = push_index_back((yyval.expressionValue), (yyvsp[-1].expressionValue));
 
 					tempIncreaseAndUse();
 					SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
@@ -2332,13 +2399,13 @@ yyreduce:
 					tempIncreaseAndUse();
 					symbol = SymTable_get(oSymTable, currentTemp);
 					expression *getter = NewExpr(1, symbol, 0, NULL, 'T');
-					quads[total] = emit(23, retval_keeper, NewExpr(1, NULL, 0, yylval.stringValue, 'T'), getter, yylineno, total++);
+					quads[total] = emit(23, retval_keeper, (yyvsp[-1].expressionValue), getter, yylineno, total++);
 		}
-#line 2338 "syntax.c" /* yacc.c:1646  */
+#line 2405 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 710 "syntax.y" /* yacc.c:1646  */
+#line 778 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("call", "call(elist)");
 
 														tempIncreaseAndUse();
@@ -2357,18 +2424,18 @@ yyreduce:
 
 														(yyval.expressionValue) = retval_keeper;
 													}
-#line 2361 "syntax.c" /* yacc.c:1646  */
+#line 2428 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 728 "syntax.y" /* yacc.c:1646  */
+#line 796 "syntax.y" /* yacc.c:1646  */
     {
 										messageHandler("call", "lvalue callsuffix");
 
 										/* Periptwsi pou to lvalue htan member */
 										// printf("Hello indexed element:%s with type %d.\n", $1->sym->varVal->name, $1->type);
 										if ((yyvsp[-1].expressionValue)->index != NULL) {
-											(yyvsp[-1].expressionValue) = emit_if_table((yyvsp[-1].expressionValue), 23, oSymTable, scope, yylineno, NULL, yylineno, &total, quads, temp_counter);
+											(yyvsp[-1].expressionValue) = emit_if_table((yyvsp[-1].expressionValue), 23, oSymTable, scope, yylineno, NULL, yylineno, &total, quads, &temp_counter);
 										}
 
 										if ((yyvsp[0].expressionValue) && (yyvsp[0].expressionValue)->type == 1) {
@@ -2400,15 +2467,23 @@ yyreduce:
 
 
 										(yyval.expressionValue) = (yyvsp[-1].expressionValue);
-
-										(yyval.expressionValue)->type = 2;
+										
+										/*Prepei na doume ama yparxei h synartisi kai an yparxei na thesoume sto expression to katalilo sym */
+										if ((yyvsp[-1].expressionValue)->sym && (yyvsp[-1].expressionValue)->sym->type == 4)
+											(yyval.expressionValue)->type = 3;
+										else if ((yyvsp[-1].expressionValue)->sym && (yyvsp[-1].expressionValue)->sym->type == 3)
+											(yyval.expressionValue)->type = 2;
+										else {
+											printf("Error in line %d: Symbol %s called but it's not a function!\n", yylineno, (yyvsp[-1].expressionValue)->sym->varVal->name);
+											syntax_error = 1;
+										}
 
 									}
-#line 2408 "syntax.c" /* yacc.c:1646  */
+#line 2483 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 771 "syntax.y" /* yacc.c:1646  */
+#line 847 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("call", "(funcdef)(elist)");
 										quads[total] = emit(21, NULL, NULL, (yyvsp[-4].expressionValue), yylineno, total++);
 										expression *tmp = (yyvsp[-1].expressionValue);
@@ -2423,155 +2498,155 @@ yyreduce:
 										SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
 										(yyval.expressionValue) = NewExpr(2, symbol, 0, NULL, 'F');
 									}
-#line 2427 "syntax.c" /* yacc.c:1646  */
+#line 2502 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 787 "syntax.y" /* yacc.c:1646  */
+#line 863 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("callsuffix", "normcall");	 (yyval.expressionValue) = (yyvsp[0].expressionValue); }
-#line 2433 "syntax.c" /* yacc.c:1646  */
+#line 2508 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 788 "syntax.y" /* yacc.c:1646  */
+#line 864 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("callsuffix", "methodcall"); (yyval.expressionValue) = (yyvsp[0].expressionValue);  }
-#line 2439 "syntax.c" /* yacc.c:1646  */
+#line 2514 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 791 "syntax.y" /* yacc.c:1646  */
+#line 867 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("normcall", "(elist)");	(yyval.expressionValue) = (yyvsp[-1].expressionValue); }
-#line 2445 "syntax.c" /* yacc.c:1646  */
+#line 2520 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 795 "syntax.y" /* yacc.c:1646  */
+#line 871 "syntax.y" /* yacc.c:1646  */
     {
 													messageHandler("methodcall", "..identifier(elist)");
 													expression *key_expr = NewExpr(1, NULL, 0, (yyvsp[-3].stringValue), 'T');
 													key_expr->next = (yyvsp[-1].expressionValue);
 													(yyval.expressionValue) = key_expr;
 												}
-#line 2456 "syntax.c" /* yacc.c:1646  */
+#line 2531 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 803 "syntax.y" /* yacc.c:1646  */
+#line 879 "syntax.y" /* yacc.c:1646  */
     {
 									messageHandler("elist", "expr comma-expressions");
 									(yyval.expressionValue) = push_back((yyvsp[0].expressionValue), (yyvsp[-1].expressionValue));
 								}
-#line 2465 "syntax.c" /* yacc.c:1646  */
+#line 2540 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 807 "syntax.y" /* yacc.c:1646  */
+#line 883 "syntax.y" /* yacc.c:1646  */
     { messageHandler("elist", "'e'");	(yyval.expressionValue) = NULL;}
-#line 2471 "syntax.c" /* yacc.c:1646  */
+#line 2546 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 810 "syntax.y" /* yacc.c:1646  */
+#line 886 "syntax.y" /* yacc.c:1646  */
     { 
 					messageHandler("comma-expressions", ", expr comma-expressions");
 					(yyval.expressionValue) = push_back((yyvsp[0].expressionValue), (yyvsp[-1].expressionValue));
 		}
-#line 2480 "syntax.c" /* yacc.c:1646  */
+#line 2555 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 814 "syntax.y" /* yacc.c:1646  */
+#line 890 "syntax.y" /* yacc.c:1646  */
     { messageHandler("comma-expressions", "'e'");	(yyval.expressionValue) = NULL;}
-#line 2486 "syntax.c" /* yacc.c:1646  */
+#line 2561 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 818 "syntax.y" /* yacc.c:1646  */
+#line 894 "syntax.y" /* yacc.c:1646  */
     {
 					messageHandler("objectdef", "[elist]");
 					tempIncreaseAndUse();
 					(yyval.expressionValue) = NewExpr(7, SymTable_get(oSymTable, currentTemp), 0, NULL, 'F');
 					(yyval.expressionValue)->index = (yyvsp[-1].expressionValue);
 			  }
-#line 2497 "syntax.c" /* yacc.c:1646  */
+#line 2572 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 825 "syntax.y" /* yacc.c:1646  */
+#line 901 "syntax.y" /* yacc.c:1646  */
     {	
 				messageHandler("objectdef", "[indexed]");
 				tempIncreaseAndUse();
 				(yyval.expressionValue) = NewExpr(7, SymTable_get(oSymTable, currentTemp), 0, NULL, 'F');
 				(yyval.expressionValue)->index = (yyvsp[-1].expressionValue);
 			}
-#line 2508 "syntax.c" /* yacc.c:1646  */
+#line 2583 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 833 "syntax.y" /* yacc.c:1646  */
+#line 909 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("indexed", "indexedelem commaindex");	
 											(yyval.expressionValue) = push_back((yyvsp[0].expressionValue), (yyvsp[-1].expressionValue));
 										}
-#line 2516 "syntax.c" /* yacc.c:1646  */
+#line 2591 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 838 "syntax.y" /* yacc.c:1646  */
+#line 914 "syntax.y" /* yacc.c:1646  */
     { messageHandler("commaindex", ", indexedelem commaindex");
 												  (yyval.expressionValue) = push_back((yyvsp[0].expressionValue), (yyvsp[-1].expressionValue));
 		}
-#line 2524 "syntax.c" /* yacc.c:1646  */
+#line 2599 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 841 "syntax.y" /* yacc.c:1646  */
+#line 917 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("commaindex", "'e'");	(yyval.expressionValue) = NULL;}
-#line 2530 "syntax.c" /* yacc.c:1646  */
+#line 2605 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 845 "syntax.y" /* yacc.c:1646  */
+#line 921 "syntax.y" /* yacc.c:1646  */
     {
 				messageHandler("indexedelem", "{expr:expr}");
 				(yyvsp[-3].expressionValue)->index = (yyvsp[-1].expressionValue);
 				(yyval.expressionValue) = (yyvsp[-3].expressionValue);
 			 }
-#line 2540 "syntax.c" /* yacc.c:1646  */
+#line 2615 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 852 "syntax.y" /* yacc.c:1646  */
+#line 928 "syntax.y" /* yacc.c:1646  */
     {++scope; if (function_flag == 1) function_flag = 0;}
-#line 2546 "syntax.c" /* yacc.c:1646  */
+#line 2621 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 853 "syntax.y" /* yacc.c:1646  */
+#line 929 "syntax.y" /* yacc.c:1646  */
     {
 				hide(scope--); 
 				messageHandler("block", "{stmts}"); 
 			}
-#line 2555 "syntax.c" /* yacc.c:1646  */
+#line 2630 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 859 "syntax.y" /* yacc.c:1646  */
+#line 935 "syntax.y" /* yacc.c:1646  */
     {func_locals_sum[scope] = 0; ++scope; function_flag = 1;}
-#line 2561 "syntax.c" /* yacc.c:1646  */
+#line 2636 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 860 "syntax.y" /* yacc.c:1646  */
+#line 936 "syntax.y" /* yacc.c:1646  */
     {
 				hide(scope--); 
 				function_flag = 0;
 				messageHandler("funblock", "{stmts}"); 
 			}
-#line 2571 "syntax.c" /* yacc.c:1646  */
+#line 2646 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 867 "syntax.y" /* yacc.c:1646  */
+#line 943 "syntax.y" /* yacc.c:1646  */
     {		/* Dhmiourgeia anonymous function */
 								char tmp[3];
 								memset(tmp, '\0', 3);
@@ -2582,79 +2657,103 @@ yyreduce:
 								SymTable_put(oSymTable, funcName, 3, scope, yylineno, 1);
 
 								SymbolTableEntry* symbol = SymTable_get(oSymTable, funcName);
-								function_expression[scope] = NewExpr(2, symbol, 666 + all_func_counter, NULL, 'T');
+								function_expression[scope] = NewExpr(2, symbol, total, NULL, 'T');
+
+								/*Edw ftiaxnw to unupdated jump */
+								function_expression[scope]->next = NewExpr(0, NULL, -1, NULL, 'T');
+								quads[total] = emit(25, NULL, NULL, function_expression[scope]->next, yylineno, total++);
 								quads[total] = emit(20, NULL, NULL, function_expression[scope], yylineno, total++);
-								all_func_counter++;
 						  }
-#line 2590 "syntax.c" /* yacc.c:1646  */
+#line 2668 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 882 "syntax.y" /* yacc.c:1646  */
+#line 961 "syntax.y" /* yacc.c:1646  */
     {		messageHandler("funcdef", "function (idlist) funblock");
-								function_expression[scope] += func_locals_sum[scope];
+
 								(yyval.expressionValue) = function_expression[scope];
+								function_expression[scope]->next->numConst = total + 1;
+								expression *traverser = function_expression[scope]->next->next;
+								while (traverser != NULL) {
+									traverser->numConst = total;
+									traverser = traverser->next;
+								}
+
+								(yyval.expressionValue)->next = NULL;
 								/*Prepei na parei to symbolo tis anonymous function. Na synipologizontai ta locals. Pou tha kratiountai?*/
 						  }
-#line 2600 "syntax.c" /* yacc.c:1646  */
+#line 2686 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 887 "syntax.y" /* yacc.c:1646  */
+#line 974 "syntax.y" /* yacc.c:1646  */
     {
 								/* Kanoume tous antistoixous elegxous gia errors kai edw */
 								/* printf("Checking if FUNCTION [%s] is allowed.\n", yylval.stringValue); */
 								SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
 
-								if (scope_lookup(yylval.stringValue, scope) == 1)
+								if (scope_lookup(yylval.stringValue, scope) == 1) {
+									syntax_error = 1;
 									printf("Error in line %d: Redefinition of function symbol [%s].\n", yylineno, yylval.stringValue);
-								else if (symbol && symbol->type == 4)
+								} else if (symbol && symbol->type == 4) {
 									printf("Error in line %d: User and Library Function name collision [%s].\n", yylineno, yylval.stringValue);
-								else
+									syntax_error = 1;
+								}else
 									SymTable_put(oSymTable, yylval.stringValue, 3, scope, yylineno, 1);
 								
 								symbol = SymTable_get(oSymTable, yylval.stringValue);
-								function_expression[scope] = NewExpr(2, symbol, 666 + all_func_counter, NULL, 'T');
+
+								function_expression[scope] = NewExpr(2, symbol, total, NULL, 'T');
+
+								/*Edw ftiaxnw to unupdated jump */
+								function_expression[scope]->next = NewExpr(0, NULL, -1, NULL, 'T');
+								quads[total] = emit(25, NULL, NULL, function_expression[scope]->next, yylineno, total++);
 								quads[total] = emit(20, NULL, NULL, function_expression[scope], yylineno, total++);
-								all_func_counter++;
 
 							}
-#line 2623 "syntax.c" /* yacc.c:1646  */
+#line 2715 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 905 "syntax.y" /* yacc.c:1646  */
+#line 998 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("funcdef", "function identifier (idlist) funblock");
-														function_expression[scope] += func_locals_sum[scope];
 														(yyval.expressionValue) = function_expression[scope];
+														function_expression[scope]->next->numConst = total + 1;
+														expression *traverser = function_expression[scope]->next->next;
+														while (traverser != NULL) {
+															traverser->numConst = total;
+															traverser = traverser->next;
+														}
+
+														(yyval.expressionValue)->next = NULL;
 												   }
-#line 2632 "syntax.c" /* yacc.c:1646  */
+#line 2731 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 911 "syntax.y" /* yacc.c:1646  */
+#line 1011 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("const", "real_value");
 							if ((yyvsp[0].realValue) == 0)
 								(yyval.expressionValue) = NewExpr(8, NULL, (yyvsp[0].realValue), NULL, 'F');
 							else
 								(yyval.expressionValue) = NewExpr(8, NULL, (yyvsp[0].realValue), NULL, 'T');
 						}
-#line 2643 "syntax.c" /* yacc.c:1646  */
+#line 2742 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 917 "syntax.y" /* yacc.c:1646  */
+#line 1017 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("const", "integer_value");
 							if ((yyvsp[0].integerValue) == 0)
 								(yyval.expressionValue) = NewExpr(8, NULL, (yyvsp[0].integerValue), NULL, 'F');
 							else
 								(yyval.expressionValue) = NewExpr(8, NULL, (yyvsp[0].integerValue), NULL, 'T');
 						}
-#line 2654 "syntax.c" /* yacc.c:1646  */
+#line 2753 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 923 "syntax.y" /* yacc.c:1646  */
+#line 1023 "syntax.y" /* yacc.c:1646  */
     { 
 							messageHandler("const", "string");
 							if (strcmp( (yyvsp[0].stringValue), "") == 0)
@@ -2662,84 +2761,87 @@ yyreduce:
 							else
 								(yyval.expressionValue) = NewExpr(10, NULL, 0, (yyvsp[0].stringValue), 'T');
 						}
-#line 2666 "syntax.c" /* yacc.c:1646  */
+#line 2765 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 930 "syntax.y" /* yacc.c:1646  */
+#line 1030 "syntax.y" /* yacc.c:1646  */
     { messageHandler("const", "nil");	(yyval.expressionValue) = NewExpr(11, NULL, 0, NULL, 'F');}
-#line 2672 "syntax.c" /* yacc.c:1646  */
+#line 2771 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 931 "syntax.y" /* yacc.c:1646  */
+#line 1031 "syntax.y" /* yacc.c:1646  */
     { messageHandler("const", "true");	(yyval.expressionValue) = NewExpr(9, NULL, 0, NULL, 'T');}
-#line 2678 "syntax.c" /* yacc.c:1646  */
+#line 2777 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 932 "syntax.y" /* yacc.c:1646  */
+#line 1032 "syntax.y" /* yacc.c:1646  */
     { messageHandler("const", "false");	(yyval.expressionValue) = NewExpr(9, NULL, 0, NULL, 'F');}
-#line 2684 "syntax.c" /* yacc.c:1646  */
+#line 2783 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 935 "syntax.y" /* yacc.c:1646  */
+#line 1035 "syntax.y" /* yacc.c:1646  */
     {
 						/* Theloume na anevasoume to scope apo twra. Giati tha anhkoun sto body ths synarthshs */
 						/* To prwto mpainei panta ektos ama einai library */
 						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
 						if (symbol && symbol->type == 4) {
+							syntax_error = 1;
 							printf("Error in line %d: Formal Argument name collision with Library function [%s].\n", yylineno, yylval.stringValue);
 						} else {
 							SymTable_put(oSymTable, yylval.stringValue, 2, scope + 1, yylineno, 1);
 						}
 					}
-#line 2699 "syntax.c" /* yacc.c:1646  */
+#line 2799 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 945 "syntax.y" /* yacc.c:1646  */
+#line 1046 "syntax.y" /* yacc.c:1646  */
     { messageHandler("idlist", "identifier idwithcommas");	}
-#line 2705 "syntax.c" /* yacc.c:1646  */
+#line 2805 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 946 "syntax.y" /* yacc.c:1646  */
+#line 1047 "syntax.y" /* yacc.c:1646  */
     { messageHandler("idlist", "'e'");		}
-#line 2711 "syntax.c" /* yacc.c:1646  */
+#line 2811 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 949 "syntax.y" /* yacc.c:1646  */
+#line 1050 "syntax.y" /* yacc.c:1646  */
     {
 									/* To idio kai edw alla tsekaroume kai gia idio name sto scope */
 									SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
 									if (symbol && symbol->type == 4) {
+										syntax_error = 1;
 										printf("Error in line %d: Formal Argument name collision with Library function [%s].\n", yylineno, yylval.stringValue);
 									} else if (scope_lookup(yylval.stringValue, scope + 1) == 1) {
+										syntax_error = 1;
 										printf("Error in line %d: Formal Argument redefinition [%s].\n", yylineno, yylval.stringValue);
 									} else {
 										SymTable_put(oSymTable, yylval.stringValue, 2, scope + 1, yylineno, 1);
 									}
 								 }
-#line 2727 "syntax.c" /* yacc.c:1646  */
+#line 2829 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 960 "syntax.y" /* yacc.c:1646  */
+#line 1063 "syntax.y" /* yacc.c:1646  */
     { messageHandler("idwithcommas", ", identifier idwithcommas");		}
-#line 2733 "syntax.c" /* yacc.c:1646  */
+#line 2835 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 961 "syntax.y" /* yacc.c:1646  */
+#line 1064 "syntax.y" /* yacc.c:1646  */
     { messageHandler("idwithcommas", "'e'");		}
-#line 2739 "syntax.c" /* yacc.c:1646  */
+#line 2841 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 964 "syntax.y" /* yacc.c:1646  */
+#line 1067 "syntax.y" /* yacc.c:1646  */
     {
 					
 				expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
@@ -2752,50 +2854,53 @@ yyreduce:
 
 				(yyval.expressionValue) = false_jump;
 			}
-#line 2756 "syntax.c" /* yacc.c:1646  */
+#line 2858 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 979 "syntax.y" /* yacc.c:1646  */
+#line 1082 "syntax.y" /* yacc.c:1646  */
     {						
 																messageHandler("ifstmt", "if (expr) stmt");
 																/* Update */
 																(yyvsp[-1].expressionValue)->numConst = total;
 															}
-#line 2766 "syntax.c" /* yacc.c:1646  */
+#line 2868 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 984 "syntax.y" /* yacc.c:1646  */
+#line 1087 "syntax.y" /* yacc.c:1646  */
     {
-																expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');
+																expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T'); 
+																if (quads[currQuad].op == 25)
+																	quads[currQuad].result->numConst = total;
+
 																quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
 																currQuad = total;
 															}
-#line 2776 "syntax.c" /* yacc.c:1646  */
+#line 2881 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 989 "syntax.y" /* yacc.c:1646  */
-    { 
+#line 1095 "syntax.y" /* yacc.c:1646  */
+    {
 																messageHandler("ifstmt", "if (expr) stmt else stmt");
 																/* Update to jump pou pigainei sto else */
-																(yyvsp[-4].expressionValue)->numConst = (yyvsp[-3].expressionValue)->numConst + 1;
+																(yyvsp[-4].expressionValue)->numConst = currQuad;
 
 																/* Update to jump pou bgainei apo to if kai diapernaei to else */
 																quads[currQuad].result->numConst = total;
 															}
-#line 2789 "syntax.c" /* yacc.c:1646  */
+#line 2894 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 999 "syntax.y" /* yacc.c:1646  */
+#line 1105 "syntax.y" /* yacc.c:1646  */
     {loop_stack[loop_i++] = total;}
-#line 2795 "syntax.c" /* yacc.c:1646  */
+#line 2900 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 999 "syntax.y" /* yacc.c:1646  */
+#line 1105 "syntax.y" /* yacc.c:1646  */
     { 
 				messageHandler("whilestmt", "while (exrpr) stmt");	
 
@@ -2824,11 +2929,11 @@ yyreduce:
 				(yyval.expressionValue) = NewExpr(0, NULL, loop_stack[--loop_i], NULL, 'T');
 				quads[total] = emit(25, NULL, NULL, (yyval.expressionValue), yylineno, total++);
 			 }
-#line 2828 "syntax.c" /* yacc.c:1646  */
+#line 2933 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 1029 "syntax.y" /* yacc.c:1646  */
+#line 1135 "syntax.y" /* yacc.c:1646  */
     {
 					expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
 					expression *true_jump = NewExpr(8, NULL, total + 2, NULL, 'T');
@@ -2840,17 +2945,17 @@ yyreduce:
 
 					(yyval.expressionValue) = false_jump;
 			}
-#line 2844 "syntax.c" /* yacc.c:1646  */
+#line 2949 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 1042 "syntax.y" /* yacc.c:1646  */
+#line 1148 "syntax.y" /* yacc.c:1646  */
     {loop_stack[loop_i++]= total;}
-#line 2850 "syntax.c" /* yacc.c:1646  */
+#line 2955 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 1043 "syntax.y" /* yacc.c:1646  */
+#line 1149 "syntax.y" /* yacc.c:1646  */
     {	messageHandler("forstmt", "for (elist expr; expr; elist) stmt");
 				/* Update */
 				(yyvsp[-4].expressionValue)->numConst = total + 1;
@@ -2878,23 +2983,55 @@ yyreduce:
 				(yyval.expressionValue) = NewExpr(0, NULL, loop_stack[--loop_i], NULL, 'T');
 				quads[total] = emit(25, NULL, NULL, (yyval.expressionValue), yylineno, total++);
 			}
-#line 2882 "syntax.c" /* yacc.c:1646  */
+#line 2987 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 102:
-#line 1072 "syntax.y" /* yacc.c:1646  */
-    { messageHandler("returnstmt", "return;");		}
-#line 2888 "syntax.c" /* yacc.c:1646  */
+#line 1178 "syntax.y" /* yacc.c:1646  */
+    {	messageHandler("returnstmt", "return;");
+											//if (function_flag == 0) {
+											//	syntax_error = 1;
+											//	printf("Error in line: %d. Return out of function!\n", yylineno);
+											//}
+
+											/* Dhmiourgia incompleted Jump */
+											expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');
+											assert(function_expression[scope - 1]->next);
+
+											/* Push sthn lista twn return tis function */
+											function_expression[scope - 1]->next = push_back(function_expression[scope - 1]->next, false_jump);
+											(yyval.expressionValue) = NewExpr(11, NULL, 0, NULL, 'F');
+											
+											quads[total] = emit(18, NULL, NULL, (yyval.expressionValue), yylineno, total++);
+											quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+										}
+#line 3009 "syntax.c" /* yacc.c:1646  */
     break;
 
   case 103:
-#line 1073 "syntax.y" /* yacc.c:1646  */
-    { messageHandler("returnstmt", "return expr;");		}
-#line 2894 "syntax.c" /* yacc.c:1646  */
+#line 1195 "syntax.y" /* yacc.c:1646  */
+    {	messageHandler("returnstmt", "return expr;");
+											//if (function_flag == 0) {
+											//	syntax_error = 1;
+											//	printf("Error in line: %d. Return out of function!\n", yylineno);
+											//}
+
+											/* Dhmiourgia incompleted Jump */
+											expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');
+											assert(function_expression[scope - 1]->next);
+
+											/* Push sthn lista twn return tis function */
+											function_expression[scope - 1]->next = push_back(function_expression[scope - 1]->next, false_jump);
+											(yyval.expressionValue) = (yyvsp[-1].expressionValue);
+											
+											quads[total] = emit(18, NULL, NULL, (yyval.expressionValue), yylineno, total++);
+											quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+										}
+#line 3031 "syntax.c" /* yacc.c:1646  */
     break;
 
 
-#line 2898 "syntax.c" /* yacc.c:1646  */
+#line 3035 "syntax.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3122,7 +3259,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1075 "syntax.y" /* yacc.c:1906  */
+#line 1213 "syntax.y" /* yacc.c:1906  */
 
 
 int yyerror (char *yaccProvidedMessage)
@@ -3172,8 +3309,11 @@ int main(int argc, char** argv) {
 
 	printScopeLists();
 
-	if (syntax_error == 0)
-		printQuads();
+	if (syntax_error == 0) {
+		//printQuads();
+		transform(quads);
+		final_code();
+	}
 
 	return 0;
 }

@@ -1,0 +1,4 @@
+1:	jeq 1 true 3
+2:	jump   5
+3:	assign 1  x
+4:	jump   1

@@ -47,7 +47,7 @@ typedef struct Variable {
 
 typedef struct Function {
 	const char* name;  
-	//List of arguments  
+	//List of arguments
 	unsigned int scope;  
 	unsigned int line; 
 } Function;
@@ -106,8 +106,8 @@ char* getSymbolType(int x);
 enum iopcode {
 	assign,			add,			sub,
 	mul,			divide,			mod,
-	uminus,			and,			or,
-	not,			if_eq,			if_noteq,
+	uminus,			iand,			ior,
+	inot,			if_eq,			if_noteq,
 	if_lesseq,		if_greatereq,	if_less,
 	if_greater,		call,			param,
 	ret,			getretval,		funcstart,
@@ -139,7 +139,6 @@ struct expr {
 	char *strConst;
 	unsigned char boolConst;
 	struct expr *next;
-
 };
 
 struct quad {
@@ -179,9 +178,9 @@ char* getExpressionValue(expression* expr);
 
 expression* push_back(expression* header, expression* p);
 expression* push_index_back(expression* header, expression* p);
-expression* push_List(expression* header, expression* p);
 
-expression* emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable, int scope, int yylineno, expression* set_val, unsigned line, unsigned *offset, tesseract* qt, int temp_counter);
+
+expression* emit_if_table(expression* e, enum iopcode type, SymTable_T oSymTable, int scope, int yylineno, expression* set_val, unsigned line, unsigned *offset, tesseract* qt, int *temp_counter);
 
 BreakList* push_BreakList(BreakList* head, tesseract* q);
 ContinueList* push_ContinueList(ContinueList* head, tesseract *q);

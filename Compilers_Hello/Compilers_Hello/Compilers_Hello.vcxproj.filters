@@ -27,6 +27,9 @@
     <ClInclude Include="syntax.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="avm_tools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lang_tools.c">
@@ -37,6 +40,9 @@
     </ClCompile>
     <ClCompile Include="syntax.c">
       <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="avm_tools.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -51,5 +57,10 @@
     <None Include="syntax.output">
       <Filter>Generated Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Debug\assembly.txt">
+      <Filter>Generated Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

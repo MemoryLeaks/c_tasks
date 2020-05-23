@@ -1,5 +1,6 @@
 %{
 	#include "lang_tools.h"
+	#include "avm_tools.h"
 
 	extern int yylineno;
 	extern char *yyval;
@@ -20,7 +21,6 @@
 	/* xeirourgio gia tis synartiseis */ 
 	int func_locals_sum[72];
 	expression *function_expression[72];
-	int all_func_counter = 0;
 
 
 	/* while, for stoiba xeirourgio */
@@ -111,6 +111,7 @@
 %type <expressionValue> forstmt
 %type <expressionValue> ifinside
 %type <expressionValue> forinside
+%type <expressionValue> returnstmt
 
 
 %token MY_MULTILINE_COMMENTS
@@ -253,7 +254,7 @@ stmt		: expr MY_SEMICOLON		{ messageHandler("stmt", "expr;");	$$ = NewExpr(0, NU
 		| MY_SEMICOLON			{ messageHandler("stmt", ";");	}
 		;
 
-expr	: assignexpr 		{ messageHandler("expr", "assignexpr");		}
+expr	: assignexpr 		{ messageHandler("expr", "assignexpr");	}
 		| expr MY_PLUS expr	{ 
 								messageHandler("expr", "expr + expr");
 								tempIncreaseAndUse();
@@ -387,15 +388,45 @@ expr	: assignexpr 		{ messageHandler("expr", "assignexpr");		}
 								}
 		| expr MY_AND expr	{	messageHandler("expr", "expr AND expr");
 								tempIncreaseAndUse();
-								$$ = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
-								quads[total] = emit(7, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
+								
+								/* Epembasi */ 
+								SymbolTableEntry *result = SymTable_get(oSymTable, currentTemp);
+								expression *jump_val = NewExpr(8, NULL, total + 4, NULL, 'T');
+								expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+								expression *jump_val3 = NewExpr(8, NULL, total + 5, NULL, 'T');
+								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+								expression *false_val = NewExpr(9, NULL, 0, NULL, 'F');
+								$$ = NewExpr(5, result, 0, NULL, 'T');
+
+
+								//quads[total] = emit(7, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(10, $1, false_val, jump_val, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(10, $3, false_val, jump_val2, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, true_val, NULL, $$, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(25, NULL, NULL, jump_val3, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, false_val, NULL, $$, (unsigned) yylineno, (unsigned) total++);
+
 							}
 		| expr MY_OR expr	{	messageHandler("expr", "expr OR expr"); 
 								tempIncreaseAndUse();
+								/* Epembasi */ 
+								SymbolTableEntry *result = SymTable_get(oSymTable, currentTemp);
+								expression *jump_val = NewExpr(8, NULL, total + 4, NULL, 'T');
+								expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+								expression *jump_val3 = NewExpr(8, NULL, total + 5, NULL, 'T');
+								expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+								expression *false_val = NewExpr(9, NULL, 0, NULL, 'F');
 								$$ = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
-								quads[total] = emit(8, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
+								
+								
+								//quads[total] = emit(8, $1, $3, $$, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(10, $1, true_val, jump_val, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(10, $3, true_val, jump_val2, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, false_val, NULL, $$, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(25, NULL, NULL, jump_val3, (unsigned) yylineno, (unsigned) total++);
+								quads[total] = emit(0, true_val, NULL, $$, (unsigned) yylineno, (unsigned) total++);
 							}
-		| term				{	messageHandler("expr", "term");}
+		| term				{	messageHandler("expr", "term"); }
 		;
 
 term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ = $2;}
@@ -416,15 +447,33 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 											$2->boolConst = 'F';
 										else
 											$2->boolConst = 'T';
-										quads[total] = emit(9, NULL, NULL, $2, (unsigned) yylineno, (unsigned) total++);
-										$$ = $2;
+
+										tempIncreaseAndUse();
+										/* Epembasi */ 
+										SymbolTableEntry *result = SymTable_get(oSymTable, currentTemp);
+										expression *jump_val = NewExpr(8, NULL, total + 3, NULL, 'T');
+										expression *jump_val2 = NewExpr(8, NULL, total + 4, NULL, 'T');
+
+										expression *true_val = NewExpr(9, NULL, 0, NULL, 'T');
+										expression *false_val = NewExpr(9, NULL, 0, NULL, 'F');
+
+
+										$$ = NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
+										//quads[total] = emit(9, $2, NULL, $$, (unsigned) yylineno, (unsigned) total++);
+										quads[total] = emit(10, $2, false_val, jump_val, (unsigned) yylineno, (unsigned) total++);
+										quads[total] = emit(0, false_val, NULL, $$, (unsigned) yylineno, (unsigned) total++);
+										quads[total] = emit(25, NULL, NULL, jump_val2, (unsigned) yylineno, (unsigned) total++);
+										quads[total] = emit(0, true_val, NULL, $$, (unsigned) yylineno, (unsigned) total++);
 									}
 		| MY_INC lvalue				{
 										SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
-										if (symbol && symbol->type == 3)
+										if (symbol && symbol->type == 3) {
 											printf("Error in line %d: You cannot increase left a user defined function (%s).\n", yylineno, yylval.stringValue);
-										else if (symbol && symbol->type == 4)
+											syntax_error = 1;
+										} else if (symbol && symbol->type == 4) {
 											printf("Error in line %d: You cannot increase left a library function (%s).\n", yylineno, yylval.stringValue);
+											syntax_error = 1;
+										}
 										messageHandler("term", "++yvalue");
 
 										tempIncreaseAndUse();
@@ -437,10 +486,13 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 									}
 		| lvalue {
 						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
-						if (symbol && symbol->type == 3)
+						if (symbol && symbol->type == 3) {
+							syntax_error = 1;
 							printf("Error in line %d: You cannot increase right a user defined function (%s).\n", yylineno, yylval.stringValue);
-						else if (symbol && symbol->type == 4)
+						} else if (symbol && symbol->type == 4) {
 							printf("Error in line %d: You cannot increase right a library function (%s).\n", yylineno, yylval.stringValue);
+							syntax_error = 1;
+						}
 				 } MY_INC				{
 											messageHandler("term", "lvalue++");
 											tempIncreaseAndUse();
@@ -452,11 +504,13 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 										}
 		| MY_DEC lvalue				{ 
 										SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
-										if (symbol && symbol->type == 3)
+										if (symbol && symbol->type == 3) {
+											syntax_error = 1;
 											printf("Error in line %d: You cannot decrease left a user defined function (%s).\n", yylineno, yylval.stringValue);
-										else if (symbol && symbol->type == 4)
+										} else if (symbol && symbol->type == 4) {
+											syntax_error = 1;
 											printf("Error in line %d: You cannot decrease left a library function (%s).\n", yylineno, yylval.stringValue);
-										
+										}
 										tempIncreaseAndUse();
 										$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
 										$2->numConst--;
@@ -467,10 +521,13 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 									}
 		| lvalue {
 						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
-						if (symbol && symbol->type == 3)
+						if (symbol && symbol->type == 3) {
+							syntax_error = 1;
 							printf("Error in line %d: You cannot decrease right a user defined function (%s).\n", yylineno, yylval.stringValue);
-						else if (symbol && symbol->type == 4)
+						} else if (symbol && symbol->type == 4) {
 							printf("Error in line %d: You cannot decrease right a library function (%s).\n", yylineno, yylval.stringValue);
+							syntax_error = 1;
+						}
 				 } MY_DEC				{	messageHandler("term", "lvalue++");	
 											tempIncreaseAndUse();
 											$$ = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 0);
@@ -485,7 +542,7 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 					/* Periptwsi gia pinaka GET */
 					if ($$->index != NULL && $$->type == 1) {
 						total++;
-						$$ = emit_if_table($$, 23, oSymTable, scope, yylineno, NULL, (unsigned) yylineno, &total, quads, temp_counter);
+						$$ = emit_if_table($$, 23, oSymTable, scope, yylineno, NULL, (unsigned) yylineno, &total, quads, &temp_counter);
 					} else
 						$$ = $1;
 				}
@@ -493,7 +550,7 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 
 assignexpr	: lvalue {
 						/* printf("Checking if [%s] is a library function or function\n", yylval.stringValue); */
-						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+						SymbolTableEntry* symbol = $1->sym;
 						if (symbol && symbol->type == 3) { 
 							syntax_error = 1;
 							printf("Error in line %d: You cannot use a user defined function in assignment expresion.\n", yylineno);
@@ -522,15 +579,16 @@ assignexpr	: lvalue {
 								$$->strConst = _strdup($4->strConst);
 							}
 
-							/* Periptwsi ekxwrisis apo jump */
-							/* 1. To number tou unpdated almatos prepei na eiani -1. 2. Epibebaiwsi mesw tou teleutaiou Quad */
-							if ($4->numConst == -1 && quads[total].result->numConst == -1) {
-								quads[total].result->numConst  = total; /* erxomai apo boolean ekfrasi kai den eimai se if */
-								quads[total] = emit(0, NewExpr(5, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T'), NULL, $$, (unsigned) yylineno, (unsigned) total++);
-							} else
-								quads[total] = emit(0, $4, NULL, $$, (unsigned) yylineno, (unsigned) total++);
+							quads[total] = emit(0, $4, NULL, $$, (unsigned) yylineno, (unsigned) total++);
 						}
 
+						/* Periptwsi aplis anathesis const boolean */
+						if (syntax_error == 0 && $4->type == 9 && $$->index == NULL)
+						{
+							$$ = $1;
+							$$->boolConst = $4->boolConst;
+							quads[total] = emit(0, $4, NULL, $$, (unsigned) yylineno, (unsigned) total++);
+						}
 						/*Periptwsi pou to rvalue htan arithmetic*/
 						if (syntax_error == 0 && $4->type == 4 && $1->index == NULL) {
 							$$ = $1;
@@ -547,19 +605,25 @@ assignexpr	: lvalue {
 						}
 
 						/* Periptwsi pou to rvalue einai indexed apo table  */
-						if (syntax_error == 0 && $4->type == 23) {
+						if (syntax_error == 0 && $4->type == 1) {
 							quads[total] = emit(0, $4, NULL, $$, (unsigned) yylineno, (unsigned) total++);
 						}
 
 						/*Periptwsi poy to lvalue einai index emelent kai prepei na ginei set*/
 						if (syntax_error == 0 && $1->type == 1 && $$->index != NULL) {
 							total++;
-							$$ = emit_if_table($$, 24, oSymTable, scope, yylineno, $4, (unsigned) yylineno, &total, quads, temp_counter);
-							quads[total] = emit(24, $$, NewExpr(1, NULL, 0, $$->strConst, 'T'), $4, (unsigned) yylineno, (unsigned) total++);
+							$$ = emit_if_table($$, 24, oSymTable, scope, yylineno, $4, (unsigned) yylineno, &total, quads, &temp_counter);
+							quads[total] = emit(24, $$, NewExpr(1, NULL, $$->numConst, $$->strConst, 'T'), $4, (unsigned) yylineno, (unsigned) total++);
 						}
 
 						/* Periptwsi poy to rvalue einai func call */
 						if (syntax_error == 0 && $4->type == 2) {
+							quads[total] = emit(0, $4, NULL, $1, (unsigned) yylineno, (unsigned) total++);
+							$$ = $1;
+						}
+
+						/* Periptwsi poy to rvalue einai boolean expression */
+						if (syntax_error == 0 && $4->type == 5) {
 							quads[total] = emit(0, $4, NULL, $1, (unsigned) yylineno, (unsigned) total++);
 							$$ = $1;
 						}
@@ -581,7 +645,7 @@ primary		: lvalue		{  messageHandler("primary", "lvalue");	$$ = $1;}
 								quads[total] = emit(22, NULL, NULL, $1, (unsigned) yylineno, (unsigned) total++);
 								expression *tmp = $1->index;
 								while (tmp != NULL) {
-									if (tmp->index == NULL)
+									if (tmp->index == NULL || tmp->type == 7)
 										quads[total] = emit(24, $1, tmp, NewExpr(8, NULL, 0, 0, 'F'), yylineno, total++);
 									else
 										quads[total] = emit(24, $1, tmp, tmp->index, yylineno, total++);
@@ -633,9 +697,10 @@ lvalue		: MY_ID	{
 									SymTable_put(oSymTable, yylval.stringValue, 0, scope, yylineno, 1);
 								} else if (scope_lookup(yylval.stringValue, scope) == 0 && scope != 0) {
 									SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
-									if (symbol && symbol->type == 4)
+									if (symbol && symbol->type == 4) {
 										printf("Error in line %d: You cannot use a library function name as a local variable.\n", yylineno);
-									else
+										syntax_error = 1;
+									} else
 										SymTable_put(oSymTable, yylval.stringValue, 1, scope, yylineno, 1);
 								}
 
@@ -644,14 +709,16 @@ lvalue		: MY_ID	{
 							}
 		| MY_DOT_STREAM MY_ID	{
 									if (scope_lookup(yylval.stringValue, 0) == 0) {
+										syntax_error = 1;
 										printf("Error in line %d: Not found global symbol with name [%s].\n", yylineno, yylval.stringValue);
 									}
 
 									$$ = NewExpr(0, SymTable_get(oSymTable, yylval.stringValue), 0, NULL, 'F');
 									messageHandler("lvalue", ":: identifier");
 								}
-		| member		{	messageHandler("lvalue", "member");	
+		| member		{	messageHandler("lvalue", "member");
 							$$ = $1;
+							expression *temp = $1;
 						}
 		;
 
@@ -665,9 +732,9 @@ member		: lvalue MY_DOT_SIMPLE MY_ID
 		| lvalue MY_OPEN_BRA expr MY_CLOSE_BRA  
 			  {		messageHandler("member", "lvalue[expr]");
 					if ($1->type == 0)
-						$$ = push_index_back($1, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+						$$ = push_index_back($1, $3);
 					else if ($1->type == 1)
-						$$ = push_index_back($$, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+						$$ = push_index_back($$, $3);
 			  }
 		| call MY_DOT_SIMPLE MY_ID		
 			  {		messageHandler("member", "call.identifier");
@@ -686,13 +753,14 @@ member		: lvalue MY_DOT_SIMPLE MY_ID
 					symbol = SymTable_get(oSymTable, currentTemp);
 					expression *getter = NewExpr(1, symbol, 0, NULL, 'T');
 					quads[total] = emit(23, retval_keeper, NewExpr(1, NULL, 0, yylval.stringValue, 'T'), getter, yylineno, total++);
+					$1->sym = symbol;
 			  }
-		| call MY_OPEN_BRA expr MY_CLOSE_BRA	
+		| call MY_OPEN_BRA expr MY_CLOSE_BRA
 				{	messageHandler("member", "[expr]");
 					if ($1->type == 0)
-						$$ = push_index_back($1, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+						$$ = push_index_back($1, $3);
 					else if ($1->type == 1)
-						$$ = push_index_back($$, NewExpr(1, NULL, 0, yylval.stringValue, 'T'));
+						$$ = push_index_back($$, $3);
 
 					tempIncreaseAndUse();
 					SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
@@ -703,7 +771,7 @@ member		: lvalue MY_DOT_SIMPLE MY_ID
 					tempIncreaseAndUse();
 					symbol = SymTable_get(oSymTable, currentTemp);
 					expression *getter = NewExpr(1, symbol, 0, NULL, 'T');
-					quads[total] = emit(23, retval_keeper, NewExpr(1, NULL, 0, yylval.stringValue, 'T'), getter, yylineno, total++);
+					quads[total] = emit(23, retval_keeper, $3, getter, yylineno, total++);
 		}
 		;
 
@@ -731,7 +799,7 @@ call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist
 										/* Periptwsi pou to lvalue htan member */
 										// printf("Hello indexed element:%s with type %d.\n", $1->sym->varVal->name, $1->type);
 										if ($1->index != NULL) {
-											$1 = emit_if_table($1, 23, oSymTable, scope, yylineno, NULL, yylineno, &total, quads, temp_counter);
+											$1 = emit_if_table($1, 23, oSymTable, scope, yylineno, NULL, yylineno, &total, quads, &temp_counter);
 										}
 
 										if ($2 && $2->type == 1) {
@@ -763,8 +831,16 @@ call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist
 
 
 										$$ = $1;
-
-										$$->type = 2;
+										
+										/*Prepei na doume ama yparxei h synartisi kai an yparxei na thesoume sto expression to katalilo sym */
+										if ($1->sym && $1->sym->type == 4)
+											$$->type = 3;
+										else if ($1->sym && $1->sym->type == 3)
+											$$->type = 2;
+										else {
+											printf("Error in line %d: Symbol %s called but it's not a function!\n", yylineno, $1->sym->varVal->name);
+											syntax_error = 1;
+										}
 
 									}
 		| MY_OPEN_PAR funcdef MY_CLOSE_PAR MY_OPEN_PAR elist MY_CLOSE_PAR 
@@ -874,14 +950,25 @@ funcdef		: MY_FUNCTION {		/* Dhmiourgeia anonymous function */
 								SymTable_put(oSymTable, funcName, 3, scope, yylineno, 1);
 
 								SymbolTableEntry* symbol = SymTable_get(oSymTable, funcName);
-								function_expression[scope] = NewExpr(2, symbol, 666 + all_func_counter, NULL, 'T');
+								function_expression[scope] = NewExpr(2, symbol, total, NULL, 'T');
+
+								/*Edw ftiaxnw to unupdated jump */
+								function_expression[scope]->next = NewExpr(0, NULL, -1, NULL, 'T');
+								quads[total] = emit(25, NULL, NULL, function_expression[scope]->next, yylineno, total++);
 								quads[total] = emit(20, NULL, NULL, function_expression[scope], yylineno, total++);
-								all_func_counter++;
 						  } 
 			  MY_OPEN_PAR idlist MY_CLOSE_PAR funblock   
 						  {		messageHandler("funcdef", "function (idlist) funblock");
-								function_expression[scope] += func_locals_sum[scope];
+
 								$$ = function_expression[scope];
+								function_expression[scope]->next->numConst = total + 1;
+								expression *traverser = function_expression[scope]->next->next;
+								while (traverser != NULL) {
+									traverser->numConst = total;
+									traverser = traverser->next;
+								}
+
+								$$->next = NULL;
 								/*Prepei na parei to symbolo tis anonymous function. Na synipologizontai ta locals. Pou tha kratiountai?*/
 						  }
 		| MY_FUNCTION MY_ID {
@@ -889,22 +976,35 @@ funcdef		: MY_FUNCTION {		/* Dhmiourgeia anonymous function */
 								/* printf("Checking if FUNCTION [%s] is allowed.\n", yylval.stringValue); */
 								SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
 
-								if (scope_lookup(yylval.stringValue, scope) == 1)
+								if (scope_lookup(yylval.stringValue, scope) == 1) {
+									syntax_error = 1;
 									printf("Error in line %d: Redefinition of function symbol [%s].\n", yylineno, yylval.stringValue);
-								else if (symbol && symbol->type == 4)
+								} else if (symbol && symbol->type == 4) {
 									printf("Error in line %d: User and Library Function name collision [%s].\n", yylineno, yylval.stringValue);
-								else
+									syntax_error = 1;
+								}else
 									SymTable_put(oSymTable, yylval.stringValue, 3, scope, yylineno, 1);
 								
 								symbol = SymTable_get(oSymTable, yylval.stringValue);
-								function_expression[scope] = NewExpr(2, symbol, 666 + all_func_counter, NULL, 'T');
+
+								function_expression[scope] = NewExpr(2, symbol, total, NULL, 'T');
+
+								/*Edw ftiaxnw to unupdated jump */
+								function_expression[scope]->next = NewExpr(0, NULL, -1, NULL, 'T');
+								quads[total] = emit(25, NULL, NULL, function_expression[scope]->next, yylineno, total++);
 								quads[total] = emit(20, NULL, NULL, function_expression[scope], yylineno, total++);
-								all_func_counter++;
 
 							}
 		  MY_OPEN_PAR idlist MY_CLOSE_PAR funblock {	messageHandler("funcdef", "function identifier (idlist) funblock");
-														function_expression[scope] += func_locals_sum[scope];
 														$$ = function_expression[scope];
+														function_expression[scope]->next->numConst = total + 1;
+														expression *traverser = function_expression[scope]->next->next;
+														while (traverser != NULL) {
+															traverser->numConst = total;
+															traverser = traverser->next;
+														}
+
+														$$->next = NULL;
 												   }
 		;
 
@@ -937,6 +1037,7 @@ idlist		: MY_ID {
 						/* To prwto mpainei panta ektos ama einai library */
 						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
 						if (symbol && symbol->type == 4) {
+							syntax_error = 1;
 							printf("Error in line %d: Formal Argument name collision with Library function [%s].\n", yylineno, yylval.stringValue);
 						} else {
 							SymTable_put(oSymTable, yylval.stringValue, 2, scope + 1, yylineno, 1);
@@ -950,8 +1051,10 @@ idwithcommas	: MY_COMMA MY_ID {
 									/* To idio kai edw alla tsekaroume kai gia idio name sto scope */
 									SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
 									if (symbol && symbol->type == 4) {
+										syntax_error = 1;
 										printf("Error in line %d: Formal Argument name collision with Library function [%s].\n", yylineno, yylval.stringValue);
 									} else if (scope_lookup(yylval.stringValue, scope + 1) == 1) {
+										syntax_error = 1;
 										printf("Error in line %d: Formal Argument redefinition [%s].\n", yylineno, yylval.stringValue);
 									} else {
 										SymTable_put(oSymTable, yylval.stringValue, 2, scope + 1, yylineno, 1);
@@ -982,14 +1085,17 @@ ifstmt          : MY_IF ifinside stmt	{
 																$2->numConst = total;
 															}
 				| MY_IF ifinside stmt MY_ELSE {
-																expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');
+																expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T'); 
+																if (quads[currQuad].op == 25)
+																	quads[currQuad].result->numConst = total;
+
 																quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
 																currQuad = total;
 															} 
-															stmt { 
+															stmt {
 																messageHandler("ifstmt", "if (expr) stmt else stmt");
 																/* Update to jump pou pigainei sto else */
-																$2->numConst = $3->numConst + 1;
+																$2->numConst = currQuad;
 
 																/* Update to jump pou bgainei apo to if kai diapernaei to else */
 																quads[currQuad].result->numConst = total;
@@ -1069,8 +1175,40 @@ forstmt		: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON {loop_stack[loop_i++]= total;} 
 			}
 		;
 
-returnstmt	: MY_RETURN MY_SEMICOLON	{ messageHandler("returnstmt", "return;");		}
-		| MY_RETURN expr MY_SEMICOLON	{ messageHandler("returnstmt", "return expr;");		}
+returnstmt	: MY_RETURN MY_SEMICOLON	{	messageHandler("returnstmt", "return;");
+											//if (function_flag == 0) {
+											//	syntax_error = 1;
+											//	printf("Error in line: %d. Return out of function!\n", yylineno);
+											//}
+
+											/* Dhmiourgia incompleted Jump */
+											expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');
+											assert(function_expression[scope - 1]->next);
+
+											/* Push sthn lista twn return tis function */
+											function_expression[scope - 1]->next = push_back(function_expression[scope - 1]->next, false_jump);
+											$$ = NewExpr(11, NULL, 0, NULL, 'F');
+											
+											quads[total] = emit(18, NULL, NULL, $$, yylineno, total++);
+											quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+										}
+		| MY_RETURN expr MY_SEMICOLON	{	messageHandler("returnstmt", "return expr;");
+											//if (function_flag == 0) {
+											//	syntax_error = 1;
+											//	printf("Error in line: %d. Return out of function!\n", yylineno);
+											//}
+
+											/* Dhmiourgia incompleted Jump */
+											expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');
+											assert(function_expression[scope - 1]->next);
+
+											/* Push sthn lista twn return tis function */
+											function_expression[scope - 1]->next = push_back(function_expression[scope - 1]->next, false_jump);
+											$$ = $2;
+											
+											quads[total] = emit(18, NULL, NULL, $$, yylineno, total++);
+											quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
+										}
 		;
 %%
 
@@ -1121,8 +1259,11 @@ int main(int argc, char** argv) {
 
 	printScopeLists();
 
-	if (syntax_error == 0)
-		printQuads();
+	if (syntax_error == 0) {
+		//printQuads();
+		transform(quads);
+		final_code();
+	}
 
 	return 0;
 }
