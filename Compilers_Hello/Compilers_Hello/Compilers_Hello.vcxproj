@@ -70,9 +70,6 @@
   <ItemGroup>
     <None Include="syntax.output" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\Debug\assembly.txt" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{BD5737A2-766A-4569-A551-2459355D91A5}</ProjectGuid>

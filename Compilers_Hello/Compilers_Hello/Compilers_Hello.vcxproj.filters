@@ -58,9 +58,4 @@
       <Filter>Generated Files</Filter>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\Debug\assembly.txt">
-      <Filter>Generated Files</Filter>
-    </Text>
-  </ItemGroup>
 </Project>

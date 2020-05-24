@@ -233,7 +233,10 @@ const char* getValue(vmarg arg) {
 		else  return "true";
 	}
 	else if (arg.type == 7) {
-		return usr_fnc_table[arg.val]->funcVal->name;
+		if (usr_fnc_table[arg.val]->funcVal)
+			return usr_fnc_table[arg.val]->funcVal->name;
+		else
+			return usr_var_table[arg.val]->varVal->name;
 	}
 	else if (arg.type == 8) {
 		return lib_fnc_table[arg.val];

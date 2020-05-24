@@ -40,11 +40,9 @@
 		sprintf(tmp, "%d", temp_counter++);
 
 		strcat(currentTemp, tmp);
-
-		if (scope == 0 && SymTable_get(oSymTable, currentTemp) == NULL)
+		
+		if(SymTable_get(oSymTable, currentTemp) == NULL)
 			SymTable_put(oSymTable, currentTemp, 0, scope, yylineno, 1);
-		else if (scope >= 1 && SymTable_get(oSymTable, currentTemp) == NULL)
-			SymTable_put(oSymTable, currentTemp, 1, scope, yylineno, 1);
 	}
 
 	void printQuads() {
@@ -466,7 +464,7 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 										quads[total] = emit(0, true_val, NULL, $$, (unsigned) yylineno, (unsigned) total++);
 									}
 		| MY_INC lvalue				{
-										SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+										SymbolTableEntry* symbol = $2->sym;
 										if (symbol && symbol->type == 3) {
 											printf("Error in line %d: You cannot increase left a user defined function (%s).\n", yylineno, yylval.stringValue);
 											syntax_error = 1;
@@ -485,7 +483,7 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 
 									}
 		| lvalue {
-						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+						SymbolTableEntry* symbol = $1->sym;
 						if (symbol && symbol->type == 3) {
 							syntax_error = 1;
 							printf("Error in line %d: You cannot increase right a user defined function (%s).\n", yylineno, yylval.stringValue);
@@ -503,7 +501,7 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 											$$->numConst = $1->numConst;
 										}
 		| MY_DEC lvalue				{ 
-										SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+										SymbolTableEntry* symbol = $2->sym;
 										if (symbol && symbol->type == 3) {
 											syntax_error = 1;
 											printf("Error in line %d: You cannot decrease left a user defined function (%s).\n", yylineno, yylval.stringValue);
@@ -520,7 +518,7 @@ term		: MY_OPEN_PAR expr MY_CLOSE_PAR		{ messageHandler("term", "(expr)");  $$ =
 										messageHandler("term", "--lvalue");	
 									}
 		| lvalue {
-						SymbolTableEntry* symbol = SymTable_get(oSymTable, yylval.stringValue);
+						SymbolTableEntry* symbol = $1->sym;
 						if (symbol && symbol->type == 3) {
 							syntax_error = 1;
 							printf("Error in line %d: You cannot decrease right a user defined function (%s).\n", yylineno, yylval.stringValue);
@@ -633,7 +631,7 @@ assignexpr	: lvalue {
 
 primary		: lvalue		{  messageHandler("primary", "lvalue");	$$ = $1;}
 		| call				{	messageHandler("primary", "call");
-								if (syntax_error == 0 && $1->type == 2) {
+								if (syntax_error == 0 && $1->type == 2 || $1->type == 3) {
 									tempIncreaseAndUse();
 									expression *ret_val = NewExpr(4, SymTable_get(oSymTable, currentTemp), 0, NULL, 'T');
 									quads[total] = emit(19, NULL, NULL, ret_val, (unsigned) yylineno, (unsigned) total++);
@@ -802,20 +800,31 @@ call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist
 											$1 = emit_if_table($1, 23, oSymTable, scope, yylineno, NULL, yylineno, &total, quads, &temp_counter);
 										}
 
-										if ($2 && $2->type == 1) {
-											tempIncreaseAndUse();
-											SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
-											
-											quads[total] = emit(23, $1, $2, NewExpr(2, symbol, 0, NULL, 'T'), yylineno, total++);
-											expression *tmp = $2; 
-											tmp->sym = $1->sym; /* Edw settarw to symbolo tou prwtou stoixeiou stin elist na einai to onoma to table object */
 
+
+										if ($2 && $2->type == 1 && $2->sym->type != 3) {
+											expression *tmp = $2;
 											while (tmp != NULL) {
 												quads[total] = emit(17, NULL, NULL, tmp, yylineno, total++);
 												tmp = tmp->next;
 											}
 
-											quads[total] = emit(16, NULL, NULL, NewExpr(2, symbol, 0, NULL, 'T'), yylineno, total++);
+											quads[total] = emit(16, NULL, NULL, $1, yylineno, total++);
+										}
+										else if ($2 && $2->type == 1 && $2->sym->type == 3) {
+											tempIncreaseAndUse();
+											SymbolTableEntry* symbol = SymTable_get(oSymTable, currentTemp);
+											expression *last_keeper = NewExpr(2, symbol, 0, NULL, 'T');
+											quads[total] = emit(23, $1, $2, last_keeper, yylineno, total++);
+											expression *tmp = $2; 
+											tmp->sym = $1->sym; /* Edw settarw to symbolo tou prwtou stoixeiou stin elist na einai to onoma to table object */
+											tmp->type = 2;
+											while (tmp != NULL) {
+												quads[total] = emit(17, NULL, NULL, tmp, yylineno, total++);
+												tmp = tmp->next;
+											}
+											$1 = last_keeper;
+											quads[total] = emit(16, NULL, NULL, last_keeper, yylineno, total++);
 
 										} else if ($2 && $2->type != 1){
 											expression *tmp = $2;
@@ -829,17 +838,19 @@ call		: call MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("call", "call(elist
 											quads[total] = emit(16, NULL, NULL, $1, yylineno, total++);
 										}
 
-
-										$$ = $1;
-										
 										/*Prepei na doume ama yparxei h synartisi kai an yparxei na thesoume sto expression to katalilo sym */
-										if ($1->sym && $1->sym->type == 4)
-											$$->type = 3;
-										else if ($1->sym && $1->sym->type == 3)
+										$$ = $1;
+
+										/* Periptwsi normal klisis */
+										if ($$->sym && $$->sym->varVal && SymTable_get(oSymTable, $$->sym->varVal->name)) {
 											$$->type = 2;
-										else {
-											printf("Error in line %d: Symbol %s called but it's not a function!\n", yylineno, $1->sym->varVal->name);
-											syntax_error = 1;
+										} else if ($$->sym && $$->sym->funcVal && SymTable_get(oSymTable, $$->sym->funcVal->name)) {
+											/* Periptwsi lib */
+											if (SymTable_get(oSymTable, $$->sym->funcVal->name)->type == 4)
+												$$->type = 3;
+											/* Periptwsi user function */
+											else
+												$$->type = 2;
 										}
 
 									}
@@ -869,8 +880,13 @@ normcall	: MY_OPEN_PAR elist MY_CLOSE_PAR	{	messageHandler("normcall", "(elist)"
 
 methodcall	: MY_DOT_DOUBLE MY_ID MY_OPEN_PAR elist MY_CLOSE_PAR 
 												{
+													SymbolTableEntry *symbol = SymTable_get(oSymTable, $2);
+													if (symbol == NULL) {
+														SymTable_put(oSymTable, $2, 3, scope, yylineno, 1);
+														symbol = SymTable_get(oSymTable, $2);
+													}
 													messageHandler("methodcall", "..identifier(elist)");
-													expression *key_expr = NewExpr(1, NULL, 0, $2, 'T');
+													expression *key_expr = NewExpr(1, symbol, 0, NULL, 'T');
 													key_expr->next = $4;
 													$$ = key_expr;
 												}
@@ -1176,34 +1192,32 @@ forstmt		: MY_FOR MY_OPEN_PAR elist MY_SEMICOLON {loop_stack[loop_i++]= total;} 
 		;
 
 returnstmt	: MY_RETURN MY_SEMICOLON	{	messageHandler("returnstmt", "return;");
-											//if (function_flag == 0) {
-											//	syntax_error = 1;
-											//	printf("Error in line: %d. Return out of function!\n", yylineno);
-											//}
 
 											/* Dhmiourgia incompleted Jump */
 											expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');
 											assert(function_expression[scope - 1]->next);
 
 											/* Push sthn lista twn return tis function */
-											function_expression[scope - 1]->next = push_back(function_expression[scope - 1]->next, false_jump);
+											if (function_expression[scope - 1] == NULL)
+												function_expression[scope - 2]->next = push_back(function_expression[scope - 2]->next, false_jump);
+											else
+												function_expression[scope - 1]->next = push_back(function_expression[scope - 1]->next, false_jump);
+
 											$$ = NewExpr(11, NULL, 0, NULL, 'F');
 											
 											quads[total] = emit(18, NULL, NULL, $$, yylineno, total++);
 											quads[total] = emit(25, NULL, NULL, false_jump, yylineno, total++);
 										}
 		| MY_RETURN expr MY_SEMICOLON	{	messageHandler("returnstmt", "return expr;");
-											//if (function_flag == 0) {
-											//	syntax_error = 1;
-											//	printf("Error in line: %d. Return out of function!\n", yylineno);
-											//}
 
 											/* Dhmiourgia incompleted Jump */
 											expression *false_jump = NewExpr(8, NULL, -1, NULL, 'T');
-											assert(function_expression[scope - 1]->next);
 
 											/* Push sthn lista twn return tis function */
-											function_expression[scope - 1]->next = push_back(function_expression[scope - 1]->next, false_jump);
+											if (function_expression[scope - 1] == NULL)
+												function_expression[scope - 2]->next = push_back(function_expression[scope - 2]->next, false_jump);
+											else
+												function_expression[scope - 1]->next = push_back(function_expression[scope - 1]->next, false_jump);
 											$$ = $2;
 											
 											quads[total] = emit(18, NULL, NULL, $$, yylineno, total++);

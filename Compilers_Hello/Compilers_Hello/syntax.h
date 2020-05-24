@@ -162,7 +162,7 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 78 "syntax.y" /* yacc.c:1909  */
+#line 76 "syntax.y" /* yacc.c:1909  */
 
 		char *stringValue;
 		int integerValue;

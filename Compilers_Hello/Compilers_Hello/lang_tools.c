@@ -311,18 +311,19 @@ int catholic_lookup(char* symbol) {
   dhladh inside out.*/
 
 int inside_out_lookup(char* symbol, int scope) {
-	while (scope != 0) {
+	while (scope >= 0) {
+		//printf("Searching for: %s in scope %d\n", symbol, scope);
 		ScopeList* traverser = scopeHead[scope];
 		while (traverser != NULL) {
 			if (traverser->symbol->isActive == 1) {
 				if (traverser->symbol->varVal == NULL && (strcmp(traverser->symbol->funcVal->name, symbol) == 0)) {
 					/*Same token found in this scope*/
-					/* printf("Catholic: Brethike idio name synartisis!\n"); */
+					//printf("Catholic: Brethike idio name synartisis!\n");
 					return scope;
 				}
 				else if (traverser->symbol->funcVal == NULL && (strcmp(traverser->symbol->varVal->name, symbol) == 0)) {
 					/*Same token found in this scope*/
-					/* printf("Catholic: Brethike idio name metablitis!\n"); */
+					//printf("Catholic: Brethike idio name metablitis!\n");
 					return scope;
 				}
 			}
@@ -397,7 +398,7 @@ tesseract emit(enum iopcode type, expression* expr1, expression* expr2, expressi
 	quady.line = line;
 	quady.label = offset;
 
-	//printf("Emmited %u: %s %s %s %s.\n",offset, getIOpcodeName(quady.op), getExpressionValue(quady.arg1), getExpressionValue(quady.arg2), getExpressionValue(quady.result));
+	printf("Emmited %u: %s %s %s %s.\n",offset, getIOpcodeName(quady.op), getExpressionValue(quady.arg1), getExpressionValue(quady.arg2), getExpressionValue(quady.result));
 
 	return quady;
 }
