@@ -1,14 +1,7 @@
-1:	assign 1  a
-2:	jeq a true 4
-3:	jump   15
-4:	sub 2 0 _t0
-5:	jeq a 2 8
-6:	assign false  _t0
-7:	jump   9
-8:	assign true  _t0
-9:	jeq _t0 true 11
-10:	jump   12
-11:	jump   15
-12:	sub 3 0 _t0
-13:	jump   1
-14:	jump   1
+1:	param   "Sadas"
+2:	param   c
+3:	param   b
+4:	param   a
+5:	call   c
+6:	geretval   _t0
+7:	assign _t0  x
