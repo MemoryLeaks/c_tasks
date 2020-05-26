@@ -54,7 +54,7 @@ vmarg make_operant(expression* e, vmarg arg) {
 				arg.val = user_new_var(e->sym);
 				switch (e->sym->varVal->scope) {
 					case GLOBAL: { arg.type = global_a; return arg; }
-					case LOCAL:  { arg.type = local_a;  return arg; }
+					case LOCAL: { arg.type = local_a; if (e->sym->type == FORMAL) { arg.type = formal_a; } return arg; }
 					case FORMAL: { arg.type = formal_a; return arg; }
 					default: assert(0);
 				}
@@ -144,6 +144,13 @@ void generate(enum vmart_t op, tesseract quad) {
 	t.srcLine = quad.line;
 	t.offset = a_pc;
 
+	if (op == vm_jump || op == vm_if_greater || op == vm_if_greatereq || op == vm_if_less || op == vm_if_lesseq || op == vm_if_eq 
+	|| op == vm_if_noteq ) {
+		t.result.type = label_a;
+		t.result.val = (unsigned int) quad.result->numConst;
+	}
+
+
 	a_emit(t);
 }
 
@@ -183,7 +190,7 @@ char* getAOP_text(enum iopcode type) {
 	if (type == 16)
 		return "call";
 	else if (type == 17)
-		return "param";
+		return "pusharg";
 	else if (type == 18)
 		return "return";
 	else if (type == 19)
@@ -205,6 +212,13 @@ char* getAOP_text(enum iopcode type) {
 }
 
 const char* getValue(vmarg arg) {
+	if (arg.type == 0 && arg.val > 0) {
+		char* valName = malloc(sizeof(char) * 16);
+		assert(valName);
+		memset(valName, '\0', 16);
+		sprintf(valName, "%d", (unsigned int) arg.val);
+		return valName;
+	}
 	if (arg.type == 1) {
 		return usr_var_table[arg.val]->varVal->name;
 	}
@@ -229,8 +243,8 @@ const char* getValue(vmarg arg) {
 		return str_const_table[arg.val];
 	}
 	else if (arg.type == 6) {
-		if (num_const_table[arg.val] == 0) return "false";
-		else  return "true";
+		if (num_const_table[arg.val] == 0) return "0";   // false
+		else  return "1";								 // true
 	}
 	else if (arg.type == 7) {
 		if (usr_fnc_table[arg.val]->funcVal)
@@ -271,13 +285,32 @@ void final_code() {
 		exit(0);
 	}
 
+	fprintf(fptr, "340666%d\n", a_pc);
 	for (int i = 1; i < 1024; i++) {
 		if (instructionTable[i].srcLine != 0) {
-			printf("%d:\t%s %s %s %s\n", instructionTable[i].offset, getAOP_text(instructionTable[i].opcode), getValue(instructionTable[i].arg1),
-				getValue(instructionTable[i].arg2), getValue(instructionTable[i].result));
+			fprintf(stdout, "%d:\t%s\t", instructionTable[i].offset, getAOP_text(instructionTable[i].opcode));
 
-			fprintf(fptr, "%d:\t%s %s %s %s\n", instructionTable[i].offset, getAOP_text(instructionTable[i].opcode), getValue(instructionTable[i].arg1),
-				getValue(instructionTable[i].arg2), getValue(instructionTable[i].result));
+			if (instructionTable[i].arg1.type != 0 || strcmp(getValue(instructionTable[i].arg1), "") != 0)
+				fprintf(stdout, "(%d)%s\t", instructionTable[i].arg1.type, getValue(instructionTable[i].arg1));
+
+			if (instructionTable[i].arg2.type != 0 || strcmp(getValue(instructionTable[i].arg2), "") != 0)
+				fprintf(stdout, "(%d)%s\t", instructionTable[i].arg2.type, getValue(instructionTable[i].arg2));
+
+			if (instructionTable[i].result.type != 0 || strcmp(getValue(instructionTable[i].result), "") != 0)
+				fprintf(stdout, "(%d)%s\n", instructionTable[i].result.type, getValue(instructionTable[i].result));
+
+
+			fprintf(fptr, "%d:\t%s\t", instructionTable[i].offset, getAOP_text(instructionTable[i].opcode));
+
+			if (instructionTable[i].arg1.type != 0 || strcmp(getValue(instructionTable[i].arg1), "") != 0)
+				fprintf(fptr, "(%d)%s\t", instructionTable[i].arg1.type, getValue(instructionTable[i].arg1));
+
+			if (instructionTable[i].arg2.type != 0 || strcmp(getValue(instructionTable[i].arg2), "") != 0)
+				fprintf(fptr, "(%d)%s\t", instructionTable[i].arg2.type, getValue(instructionTable[i].arg2));
+
+			if (instructionTable[i].result.type != 0 || strcmp(getValue(instructionTable[i].result), "") != 0)
+				fprintf(fptr, "(%d)%s\n", instructionTable[i].result.type, getValue(instructionTable[i].result));
+
 		}
 	}	
 
