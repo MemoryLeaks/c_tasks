@@ -42,7 +42,7 @@
 		strcat(currentTemp, tmp);
 		
 		if(SymTable_get(oSymTable, currentTemp) == NULL)
-			SymTable_put(oSymTable, currentTemp, 0, scope, yylineno, 1);
+			SymTable_put(oSymTable, currentTemp, 0, 0, yylineno, 1);
 	}
 
 	void printQuads() {

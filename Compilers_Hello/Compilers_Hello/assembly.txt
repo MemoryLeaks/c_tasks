@@ -1,33 +1,12 @@
 3406661023
-1:	assign	(4)0	(1)i
-2:	jle	(1)i	(1)N	(0)5
-3:	assign	(6)0	(1)_t0
-4:	jump	(0)6
-5:	assign	(6)1	(1)_t0
-6:	jeq	(1)_t0	(6)1	(0)8
-7:	jump	(0)33
-8:	add	(1)i	(4)1	(1)_t1
-9:	assign	(1)_t1	(1)i
-10:	jeq	(1)i	(2)nill	(0)13
-11:	assign	(6)0	(2)_t2
-12:	jump	(0)14
-13:	assign	(6)1	(2)_t2
-14:	jeq	(2)_t2	(6)1	(0)16
-15:	jump	(0)19
-16:	pusharg	(5)"Something went wrong!"
-17:	call	(8)print
-18:	geretval	(2)_t3
-19:	jgreq	(2)a	(4)5	(0)22
-20:	assign	(6)0	(1)_t0
-21:	jump	(0)23
-22:	assign	(6)1	(1)_t0
-23:	jeq	(1)_t0	(6)0	(0)27
-24:	jeq	(2)n	(6)0	(0)27
-25:	assign	(6)1	(1)_t1
-26:	jump	(0)28
-27:	assign	(6)0	(1)_t1
-28:	jeq	(1)_t1	(6)1	(0)30
-29:	jump	(0)32
-30:	add	(1)i	(4)1	(2)_t2
-31:	assign	(2)_t2	(1)i
-32:	jump	(0)2
+1:	jump	(0)7
+2:	enterfunc	(7)2
+3:	add	(3)a	(3)b	(1)_t0
+4:	return	(1)_t0
+5:	jump	(0)6
+6:	exitfunc	(7)2
+7:	pusharg	(4)10
+8:	pusharg	(4)5
+9:	call	(7)2
+10:	geretval	(1)_t0
+11:	assign	(1)_t0	(1)x

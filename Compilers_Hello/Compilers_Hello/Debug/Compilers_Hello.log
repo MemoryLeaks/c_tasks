@@ -1,2 +1,8 @@
-﻿  avm_tools.c
+﻿  Generating Lexical Analyzer
+  Generating Syntax Parser
+  al.c
+al.c(417,1): warning C4005: 'yywrap': macro redefinition
+al.c(74): message : see previous definition of 'yywrap'
+  syntax.c
+  Generating Code...
   Compilers_Hello.vcxproj -> C:\Users\Dell\Documents\GitHub\c_tasks\Compilers_Hello\Debug\Compilers_Hello.exe
