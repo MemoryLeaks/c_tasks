@@ -355,6 +355,27 @@ SymbolTableEntry* ScopeListGetSymbolAt(char* symbol, int scope) {
 	return NULL;
 }
 
+unsigned getSymbolOffset(char* symbol) {
+	for (int scope = 0; scope < 72; scope++) {
+		ScopeList* traverser = scopeHead[scope];
+		unsigned offset = 0;
+		while (traverser != NULL) {
+				if (traverser->symbol->varVal == NULL && (strcmp(traverser->symbol->funcVal->name, symbol) == 0))
+				{
+					return offset;
+				}
+				else if (traverser->symbol->funcVal == NULL && (strcmp(traverser->symbol->varVal->name, symbol) == 0)) {
+					return offset;
+				}
+			
+			++offset;
+			traverser = traverser->next;
+		}
+	}
+
+	return -1;
+}
+
 /*-------------------------------------------------------------------------------------------------------------*/
 
 char* getSymbolType(int x) {

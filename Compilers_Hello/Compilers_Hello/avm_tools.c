@@ -61,7 +61,8 @@ vmarg make_operant(expression* e, vmarg arg) {
 		case tableitem_e:
 		case newtable_e: {
 			if (e->sym) {
-				arg.val = user_new_var(e->sym);
+				arg.val = getSymbolOffset((char *) e->sym->varVal->name);
+				assert(arg.val != -1);
 				switch (e->sym->varVal->scope) {
 					case GLOBAL: { arg.type = global_a; return arg; }
 					case LOCAL: { arg.type = local_a; if (e->sym->type == FORMAL) { arg.type = formal_a; } return arg; }
@@ -229,14 +230,12 @@ const char* getValue(vmarg arg) {
 		sprintf(valName, "%d", (unsigned int) arg.val);
 		return valName;
 	}
-	if (arg.type == 1) {
-		return usr_var_table[arg.val]->varVal->name;
-	}
-	else if (arg.type == 2) {
-		return usr_var_table[arg.val]->varVal->name;
-	}
-	else if (arg.type == 3) {
-		return usr_var_table[arg.val]->varVal->name;
+	if (arg.type == 1 || arg.type == 2 || arg.type == 3) {
+		char* valName = malloc(sizeof(char) * 16);
+		assert(valName);
+		memset(valName, '\0', 16);
+		sprintf(valName, "%d", (unsigned int)arg.val);
+		return valName;
 	}
 	else if (arg.type == 4) {
 		char* valName = malloc(sizeof(char) * 16);
