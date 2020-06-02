@@ -59,7 +59,7 @@ SymbolTableEntry* usr_fnc_table[256];
 
 int glob_cnt;
 int local_cnt;
-int arg_cnt;
+int local_accumulator;
 
 instruction instructionTable[1024];
 unsigned a_pc;

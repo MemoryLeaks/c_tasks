@@ -1231,7 +1231,7 @@ int yyerror (char *yaccProvidedMessage)
 	fprintf(stderr, "%s: at line %d, before token: '%s'\n", yaccProvidedMessage, yylineno, yytext);
 	fprintf(stderr, "INPUT NOT VALID\n");
 
-	return 0;
+	exit(1);
 }
 
 void messageHandler(const char *state1, const char *state2) {

@@ -61,11 +61,21 @@ vmarg make_operant(expression* e, vmarg arg) {
 		case tableitem_e:
 		case newtable_e: {
 			if (e->sym) {
-				arg.val = getSymbolOffset((char *) e->sym->varVal->name);
+				int scope = -1;
+				int type = e->sym->type;
+				if (e->sym->varVal) {
+					arg.val = getSymbolOffset((char*)e->sym->varVal->name, e->sym->varVal->scope);
+					scope = e->sym->varVal->scope;
+				}
+				else {
+					arg.val = getSymbolOffset((char*)e->sym->funcVal->name, e->sym->funcVal->scope);
+					scope = e->sym->funcVal->scope;
+				}
+
 				assert(arg.val != -1);
-				switch (e->sym->varVal->scope) {
+				switch (type) {
 					case GLOBAL: { arg.type = global_a; return arg; }
-					case LOCAL: { arg.type = local_a; if (e->sym->type == FORMAL) { arg.type = formal_a; } return arg; }
+					case LOCAL: { arg.type = local_a;  return arg; }
 					case FORMAL: { arg.type = formal_a; return arg; }
 					default: assert(0);
 				}

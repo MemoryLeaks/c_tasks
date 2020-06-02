@@ -99,7 +99,7 @@ void Print(SymTable_T oSymTable);
 char* getSymbolType(int x);
 
 /*Gia thn 4-5h fash*/
-unsigned getSymbolOffset(char* symbol);
+unsigned getSymbolOffset(char* symbol, int scope);
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------ */
 /* ---------------------------------------------------------~  3rd Phase  ~------------------------------------------------------------------ */

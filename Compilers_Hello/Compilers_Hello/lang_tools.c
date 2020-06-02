@@ -355,22 +355,39 @@ SymbolTableEntry* ScopeListGetSymbolAt(char* symbol, int scope) {
 	return NULL;
 }
 
-unsigned getSymbolOffset(char* symbol) {
-	for (int scope = 0; scope < 72; scope++) {
-		ScopeList* traverser = scopeHead[scope];
-		unsigned offset = 0;
-		while (traverser != NULL) {
-				if (traverser->symbol->varVal == NULL && (strcmp(traverser->symbol->funcVal->name, symbol) == 0))
-				{
-					return offset;
-				}
-				else if (traverser->symbol->funcVal == NULL && (strcmp(traverser->symbol->varVal->name, symbol) == 0)) {
-					return offset;
-				}
-			
-			++offset;
-			traverser = traverser->next;
+unsigned getSymbolOffset(char* symbol, int scope) {
+	ScopeList* traverser = scopeHead[scope];
+	unsigned offset = 0;
+	unsigned locals_cnt = 0;
+	//metraei ta locals. ta opoia tha einai pushed stin lista mprosta. Etsi otan einai na epistrafei formal
+	//tha epistrafei to 4 px - 3 ta locals = 1
+	while (traverser != NULL) {
+
+		if (traverser->symbol->varVal == NULL && traverser->symbol->type == LOCAL)
+		{
+			locals_cnt++;
 		}
+		else if (traverser->symbol->funcVal == NULL && traverser->symbol->type == LOCAL) {
+			locals_cnt++;
+		}
+
+
+		if (traverser->symbol->varVal == NULL && (strcmp(traverser->symbol->funcVal->name, symbol) == 0))
+		{
+			if (traverser->symbol->type == FORMAL)
+				return offset - locals_cnt;
+			else
+				return offset;
+		}
+		else if (traverser->symbol->funcVal == NULL && (strcmp(traverser->symbol->varVal->name, symbol) == 0)) {
+			if (traverser->symbol->type == FORMAL)
+				return offset - locals_cnt;
+			else
+				return offset;
+		}
+
+		++offset;
+		traverser = traverser->next;
 	}
 
 	return -1;
@@ -419,7 +436,7 @@ tesseract emit(enum iopcode type, expression* expr1, expression* expr2, expressi
 	quady.line = line;
 	quady.label = offset;
 
-	printf("Emmited %u: %s %s %s %s.\n",offset, getIOpcodeName(quady.op), getExpressionValue(quady.arg1), getExpressionValue(quady.arg2), getExpressionValue(quady.result));
+	//printf("Emmited %u: %s %s %s %s.\n",offset, getIOpcodeName(quady.op), getExpressionValue(quady.arg1), getExpressionValue(quady.arg2), getExpressionValue(quady.result));
 
 	return quady;
 }
