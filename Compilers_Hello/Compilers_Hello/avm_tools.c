@@ -12,7 +12,7 @@ unsigned consts_new_number(double d) {
 	static unsigned i = 0;
 	num_const_table[i] = d;
 	i++;
-
+	glob_cnt = i;
 	return i - 1;
 }
 
@@ -149,7 +149,7 @@ vmarg make_operant(expression* e, vmarg arg) {
 	return arg;
 }
 
-void generate(enum vmart_t op, tesseract quad) {
+void generate(enum vmarg_t op, tesseract quad) {
 	instruction t = { 0, {0, 0}, {0, 0}, {0,0}, 0, 0 };
 	t.opcode = op;
 
@@ -251,15 +251,15 @@ const char* getValue(vmarg arg) {
 		char* valName = malloc(sizeof(char) * 16);
 		assert(valName);
 		memset(valName, '\0', 16);
-		if ((int) num_const_table[arg.val] == num_const_table[arg.val])
-			sprintf(valName, "%d", (int) num_const_table[arg.val]);
-		else
-			sprintf(valName, "%f", num_const_table[arg.val]);
-
+		sprintf(valName, "%d", (unsigned int)arg.val);
 		return valName;
 	}
 	else if (arg.type == 5) {
-		return str_const_table[arg.val];
+		char* valName = malloc(sizeof(char) * 16);
+		assert(valName);
+		memset(valName, '\0', 16);
+		sprintf(valName, "%d", (unsigned int)arg.val);
+		return valName;
 	}
 	else if (arg.type == 6) {
 		if (num_const_table[arg.val] == 0) return "0";   // false
@@ -273,13 +273,17 @@ const char* getValue(vmarg arg) {
 		return valAddress;
 	}
 	else if (arg.type == 8) {
-		return lib_fnc_table[arg.val];
+		char* valName = malloc(sizeof(char) * 16);
+		assert(valName);
+		memset(valName, '\0', 16);
+		sprintf(valName, "%d", (unsigned int)arg.val);
+		return valName;
 	}
 	else if (arg.type == 11) {
 		return usr_var_table[arg.val]->varVal->name;
 	}
 	else if (arg.type == 12) {
-		return "nill";
+		return "0";
 	}
 	else
 		return "";
@@ -305,7 +309,37 @@ void final_code() {
 		exit(0);
 	}
 
+
 	fprintf(fptr, "340666%d\n", a_pc);
+
+	fprintf(fptr, "Numbers\n");
+	printf("Numbers\n");
+	for (int i = 0; i < glob_cnt; i++) {
+		fprintf(stdout, "%d:\t%f\n", i, num_const_table[i]);
+		fprintf(fptr, "%d:\t%f\n", i, num_const_table[i]);
+	}
+
+	fprintf(fptr, "Strings\n");
+	printf("Strings\n");
+	for (int i = 0; i < 256; i++) {
+		if (str_const_table[i]) {
+			fprintf(stdout, "%d:\t%s\n", i, str_const_table[i]);
+			fprintf(fptr, "%d:\t%s\n", i, str_const_table[i]);
+		}
+	}
+	
+	fprintf(fptr, "Libcalls\n");
+	printf("Libcalls\n");
+	for (int i = 0; i < 256; i++) {
+		if (lib_fnc_table[i]) {
+			fprintf(stdout, "%d:\t%s\n", i, lib_fnc_table[i]);
+			fprintf(fptr, "%d:\t%s\n", i, lib_fnc_table[i]);
+		}
+	}
+
+	fprintf(stdout, "\n");
+	fprintf(fptr, "\n");
+
 	for (int i = 1; i < 1024; i++) {
 		if (instructionTable[i].srcLine != 0) {
 			fprintf(stdout, "%d:\t%s\t", instructionTable[i].offset, getAOP_text(instructionTable[i].opcode));

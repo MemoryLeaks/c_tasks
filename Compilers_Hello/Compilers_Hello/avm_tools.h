@@ -76,7 +76,7 @@ unsigned libr_new_function(char* fnc);
 vmarg make_operant(expression* e, vmarg arg);
 
 /* Kanei generate to katalilo opcode gia to alithino quad */
-void generate(enum vmart_t op, tesseract quad);
+void generate(enum vmarg_t op, tesseract quad);
 void generate_AND(tesseract q);
 void generate_OR(tesseract q);
 void generate_NOT(tesseract q);
