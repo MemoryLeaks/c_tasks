@@ -1,63 +1,75 @@
 3406661023
 Numbers
-0:	0.000000
-1:	3.000000
-2:	0.000000
-3:	2.000000
-4:	0.000000
-5:	1.000000
-6:	0.000000
-7:	3.140000
-8:	6.000000
-9:	1.000000
-10:	1.000000
-11:	1.000000
-12:	4.000000
+0:	100.000000
+1:	10.000000
+2:	15.000000
+3:	25.000000
+4:	8.000000
+5:	0.000000
+6:	9.000000
+7:	1.000000
+8:	1.000000
+9:	11.000000
+10:	15.000000
+11:	25.000000
+12:	18.000000
+13:	0.000000
+14:	19.000000
+15:	1.000000
+16:	1.000000
+17:	21.000000
+18:	25.000000
+19:	10.000000
+20:	10.000000
 Strings
-0:	"key"
-1:	"pi"
-2:	"range"
-3:	"kostas"
-4:	key
-5:	"range"
-6:	pi
-7:	range
+0:	"PASSED: y is: "
+1:	"FAILED: y is: "
+2:	"1"
+3:	"2"
+4:	"3"
 Libcalls
 0:	print
 1:	print
 2:	print
 3:	print
+4:	print
 
-1:	tablecreate	(1)5
-2:	tablesetelem	(1)5	(5)0	(4)0
-3:	tablesetelem	(1)5	(4)1	(4)2
-4:	tablesetelem	(1)5	(4)3	(4)4
-5:	tablesetelem	(1)5	(4)5	(4)6
-6:	assign	(1)5	(1)6
-7:	tablecreate	(1)5
-8:	tablesetelem	(1)5	(5)1	(4)7
-9:	tablesetelem	(1)5	(5)2	(4)8
-10:	assign	(1)5	(1)4
-11:	tablecreate	(1)5
-12:	tablesetelem	(1)5	(5)3	(6)1
-13:	tablesetelem	(1)5	(4)10	(1)4
-14:	assign	(1)5	(1)3
-15:	tablegetelem	(1)6	(5)4	(1)5
-16:	pusharg	(1)5
-17:	call	(8)0
-18:	geretval	(1)1
-19:	tablegetelem	(1)4	(5)5	(1)5
-20:	pusharg	(1)5
-21:	call	(8)1
-22:	geretval	(1)1
-23:	tablegetelem	(1)4	(5)6	(1)5
-24:	pusharg	(1)5
-25:	call	(8)2
-26:	geretval	(1)1
-27:	tablegetelem	(1)3	(4)11	(1)5
-28:	tablegetelem	(1)5	(5)7	(1)2
-29:	assign	(1)2	(1)0
-30:	add	(1)0	(4)12	(1)5
-31:	pusharg	(1)5
-32:	call	(8)3
-33:	geretval	(1)2
+1:	assign	(4)0	(1)3
+2:	div	(1)3	(4)1	(1)1
+3:	add	(1)1	(4)2	(1)0
+4:	assign	(1)0	(1)2
+5:	jeq	(1)2	(4)3	(0)8
+6:	assign	(6)0	(1)1
+7:	jump	(0)9
+8:	assign	(6)1	(1)1
+9:	jeq	(1)1	(6)1	(0)11
+10:	jump	(0)15
+11:	pusharg	(1)2
+12:	pusharg	(5)0
+13:	call	(8)0
+14:	geretval	(1)0
+15:	jneq	(1)2	(4)11	(0)18
+16:	assign	(6)0	(1)1
+17:	jump	(0)19
+18:	assign	(6)1	(1)1
+19:	jeq	(1)1	(6)1	(0)21
+20:	jump	(0)25
+21:	pusharg	(1)2
+22:	pusharg	(5)1
+23:	call	(8)1
+24:	geretval	(1)0
+25:	mod	(1)3	(4)19	(1)1
+26:	pusharg	(1)1
+27:	pusharg	(5)2
+28:	call	(8)2
+29:	geretval	(1)0
+30:	sub	(1)3	(1)2	(1)1
+31:	pusharg	(1)1
+32:	pusharg	(5)3
+33:	call	(8)3
+34:	geretval	(1)0
+35:	mul	(1)2	(4)20	(1)1
+36:	pusharg	(1)1
+37:	pusharg	(5)4
+38:	call	(8)4
+39:	geretval	(1)0
